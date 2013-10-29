@@ -1,0 +1,18 @@
+*.ncb
+Debug/
+Release/
+*/Debug/
+*/Release/
+
+# ignore all user setting file
+*.suo
+*.user
+
+#ignore svn file
+.svn/
+
+#ignore all desktop file
+desktop.ini
+
+#ignore dropbox file
+.dropbox

@@ -1,0 +1,2 @@
+ICEStarCraft project.
+Second edition.

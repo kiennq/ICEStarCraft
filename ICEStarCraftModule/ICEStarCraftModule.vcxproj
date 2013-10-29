@@ -1,0 +1,172 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectName>ICEStarCraft</ProjectName>
+    <ProjectGuid>{2E63AE74-758A-4607-9DE4-D28E814A6E13}</ProjectGuid>
+    <RootNamespace>ExampleAIModule</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>11.0.50727.1</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>$(SolutionDir)\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_USRDLL;EXAMPLEAIMODULE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader />
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>../lib/BWAPId.lib;../lib/BWTAd.lib;../lib/tinyxmld.lib;../lib/CGAL-vc90-mt-gd.lib;../lib/libboost_thread-vc90-mt-gd-1_40.lib;../lib/gmp-vc90-mt-gd.lib;../lib/mpfr-vc90-mt-gd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>../include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;EXAMPLEAIMODULE_EXPORTS;_SECURE_SCL 0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeader />
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>../lib/BWAPI.lib;../lib/BWTA.lib;../lib/tinyxml.lib;../lib/CGAL-vc90-mt.lib;../lib/libboost_thread-vc90-mt-1_40.lib;../lib/gmp-vc90-mt.lib;../lib/mpfr-vc90-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="Addon Managers\Common.cpp" />
+    <ClCompile Include="Source\Dll.cpp" />
+    <ClCompile Include="Addon Managers\EnhancedUI.cpp" />
+    <ClCompile Include="Source\ExampleAIModule.cpp" />
+    <ClCompile Include="temp.cpp" />
+    <ClCompile Include="Addon Managers\UnitGroup.cpp" />
+    <ClCompile Include="Addon Managers\UnitGroupManager.cpp" />
+    <ClCompile Include="Addon Managers\WorkerManager.cpp" />
+    <ClCompile Include="Addon Managers\InformationManager.cpp" />
+    <ClCompile Include="Addon Managers\MentalState.cpp" />
+    <ClCompile Include="Addon Managers\BuildManager.cpp" />
+    <ClCompile Include="Addon Managers\ConstructionManager.cpp" />
+    <ClCompile Include="Addon Managers\ProductionManager.cpp" />
+    <ClCompile Include="Addon Managers\Base.cpp" />
+    <ClCompile Include="Addon Managers\BaseManager.cpp" />
+    <ClCompile Include="Addon Managers\SupplyManager.cpp" />
+    <ClCompile Include="Addon Managers\BuildingPlacer.cpp" />
+    <ClCompile Include="Addon Managers\TechManager.cpp" />
+    <ClCompile Include="Addon Managers\UpgradeManager.cpp" />
+    <ClCompile Include="Addon Managers\BuildOrderManager.cpp" />
+    <ClCompile Include="Addon Managers\MetaUnit.cpp" />
+    <ClCompile Include="Addon Managers\UnitItem.cpp" />
+    <ClCompile Include="Addon Managers\TerrainManager.cpp" />
+    <ClCompile Include="Addon Managers\CommandRewrite.cpp" />
+    <ClCompile Include="Addon Managers\MacroUnitControl.cpp" />
+    <ClCompile Include="Addon Managers\EnemyStandard.cpp" />
+    <ClCompile Include="Addon Managers\Simulator.cpp" />
+    <ClCompile Include="Addon Managers\ScoutManager.cpp" />
+    <ClCompile Include="Addon Managers\GameFlow.cpp" />
+    <ClCompile Include="Addon Managers\vsProtossRules.cpp" />
+    <ClCompile Include="Addon Managers\TerrainGraph.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\include\EnhancedUI.h" />
+    <ClInclude Include="..\include\Common.h" />
+    <ClInclude Include="Source\ExampleAIModule.h" />
+    <ClInclude Include="..\include\RectangleArray.h" />
+    <ClInclude Include="..\include\UnitGroup.h" />
+    <ClInclude Include="..\include\UnitGroupManager.h" />
+    <ClInclude Include="..\include\WorkerManager.h" />
+    <ClInclude Include="..\include\InformationManager.h" />
+    <ClInclude Include="..\include\MentalState.h" />
+    <ClInclude Include="..\include\BuildManager.h" />
+    <ClInclude Include="..\include\ConstructionManager.h" />
+    <ClInclude Include="..\include\ProductionManager.h" />
+    <ClInclude Include="..\include\Base.h" />
+    <ClInclude Include="..\include\BaseManager.h" />
+    <ClInclude Include="..\include\SupplyManager.h" />
+    <ClInclude Include="..\include\BuildingPlacer.h" />
+    <ClInclude Include="..\include\Arbitrator.h" />
+    <ClInclude Include="..\include\Controller.h" />
+    <ClInclude Include="..\include\Heap.h" />
+    <ClInclude Include="..\include\TechManager.h" />
+    <ClInclude Include="..\include\UpgradeManager.h" />
+    <ClInclude Include="..\include\BuildOrderManager.h" />
+    <ClInclude Include="..\include\TechItem.h" />
+    <ClInclude Include="..\include\UnitItem.h" />
+    <ClInclude Include="..\include\TerrainManager.h" />
+    <ClInclude Include="..\include\CommandRewrite.h" />
+    <ClInclude Include="..\include\MacroUnitControl.h" />
+    <ClInclude Include="..\include\AllUsefulPlans.h" />
+    <ClInclude Include="..\include\EnemyStandard.h" />
+    <ClInclude Include="..\include\Simulator.h" />
+    <ClInclude Include="..\include\ScoutManager.h" />
+    <ClInclude Include="..\include\GameFlow.h" />
+    <ClInclude Include="..\include\vsProtossRules.h" />
+    <ClInclude Include="..\include\TerrainGraph.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\Bugs\Bugs.xlsx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </CustomBuild>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

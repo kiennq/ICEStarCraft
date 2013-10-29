@@ -1,0 +1,626 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<VisualStudioProject
+	ProjectType="Visual C++"
+	Version="9.00"
+	Name="ICEStarCraft"
+	ProjectGUID="{2E63AE74-758A-4607-9DE4-D28E814A6E13}"
+	RootNamespace="ExampleAIModule"
+	Keyword="Win32Proj"
+	TargetFrameworkVersion="196613"
+	>
+	<Platforms>
+		<Platform
+			Name="Win32"
+		/>
+	</Platforms>
+	<ToolFiles>
+	</ToolFiles>
+	<Configurations>
+		<Configuration
+			Name="Debug|Win32"
+			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="2"
+			CharacterSet="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="0"
+				AdditionalIncludeDirectories="$(SolutionDir)\include\"
+				PreprocessorDefinitions="WIN32;_WINDOWS;_USRDLL;EXAMPLEAIMODULE_EXPORTS"
+				MinimalRebuild="true"
+				BasicRuntimeChecks="3"
+				RuntimeLibrary="3"
+				UsePrecompiledHeader="0"
+				WarningLevel="3"
+				DebugInformationFormat="4"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalDependencies="$(BWAPI_DIR)/lib/BWAPId.lib $(BWAPI_DIR)/lib/BWTAd.lib $(BWAPI_DIR)/lib/tinyxmld.lib $(BWAPI_DIR)/lib/CGAL-vc90-mt-gd.lib $(BWAPI_DIR)/lib/libboost_thread-vc90-mt-gd-1_40.lib $(BWAPI_DIR)/lib/gmp-vc90-mt-gd.lib $(BWAPI_DIR)/lib/mpfr-vc90-mt-gd.lib"
+				LinkIncremental="2"
+				GenerateDebugInformation="true"
+				SubSystem="2"
+				TargetMachine="1"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+		</Configuration>
+		<Configuration
+			Name="Release|Win32"
+			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="2"
+			UseOfMFC="0"
+			CharacterSet="1"
+			WholeProgramOptimization="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="3"
+				EnableIntrinsicFunctions="true"
+				AdditionalIncludeDirectories="../include"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;EXAMPLEAIMODULE_EXPORTS;_SECURE_SCL 0"
+				RuntimeLibrary="2"
+				EnableFunctionLevelLinking="true"
+				UsePrecompiledHeader="0"
+				WarningLevel="3"
+				DebugInformationFormat="3"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalDependencies="$(BWAPI_DIR)/lib/BWAPI.lib $(BWAPI_DIR)/lib/BWTA.lib $(BWAPI_DIR)/lib/tinyxml.lib $(BWAPI_DIR)/lib/CGAL-vc90-mt.lib $(BWAPI_DIR)/lib/libboost_thread-vc90-mt-1_40.lib $(BWAPI_DIR)/lib/gmp-vc90-mt.lib $(BWAPI_DIR)/lib/mpfr-vc90-mt.lib"
+				LinkIncremental="2"
+				GenerateDebugInformation="true"
+				SubSystem="2"
+				OptimizeReferences="2"
+				EnableCOMDATFolding="2"
+				TargetMachine="1"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+		</Configuration>
+	</Configurations>
+	<References>
+	</References>
+	<Files>
+		<Filter
+			Name="Source Files"
+			Filter="cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
+			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
+			>
+			<File
+				RelativePath=".\Addon Managers\Common.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\Dll.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Addon Managers\EnhancedUI.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\include\EnhancedUI.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\ICEStarCraft.cpp"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="Resource Files"
+			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
+			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
+			>
+		</Filter>
+		<Filter
+			Name="Addon Managers"
+			>
+			<Filter
+				Name="UnitGroup Manager"
+				>
+				<File
+					RelativePath=".\Addon Managers\UnitGroup.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\include\UnitGroup.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Addon Managers\UnitGroupManager.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\include\UnitGroupManager.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Worker Manager"
+				>
+				<File
+					RelativePath=".\Addon Managers\WorkerManager.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\include\WorkerManager.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Information Manager"
+				>
+				<File
+					RelativePath=".\Addon Managers\EnemyUnit.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\include\EnemyUnit.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Addon Managers\InformationManager.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\include\InformationManager.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Addon Managers\MentalState.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\include\MentalState.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Build Manager"
+				>
+				<File
+					RelativePath=".\Addon Managers\BuildManager.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\include\BuildManager.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Addon Managers\ConstructionManager.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\include\ConstructionManager.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Addon Managers\ProductionManager.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\include\ProductionManager.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Base Manager"
+				>
+				<File
+					RelativePath=".\Addon Managers\Base.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\include\Base.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Addon Managers\BaseManager.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\include\BaseManager.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Supply Manager"
+				>
+				<File
+					RelativePath=".\Addon Managers\SupplyManager.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\include\SupplyManager.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Building Placer"
+				>
+				<File
+					RelativePath=".\Addon Managers\BuildingPlacer.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\include\BuildingPlacer.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Arbitrator"
+				>
+				<File
+					RelativePath="..\include\Arbitrator.h"
+					>
+				</File>
+				<File
+					RelativePath="..\include\Controller.h"
+					>
+				</File>
+				<File
+					RelativePath="..\include\Heap.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="TechManager"
+				>
+				<File
+					RelativePath=".\Addon Managers\TechManager.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\include\TechManager.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="UpgradeManager"
+				>
+				<File
+					RelativePath=".\Addon Managers\UpgradeManager.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\include\UpgradeManager.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="BuildOrderManager"
+				>
+				<File
+					RelativePath=".\Addon Managers\BuildOrderManager.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\include\BuildOrderManager.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Addon Managers\MetaUnit.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\include\TechItem.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Addon Managers\UnitItem.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\include\UnitItem.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Terrain Manager"
+				>
+				<File
+					RelativePath=".\Addon Managers\MapInfo.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\include\MapInfo.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Addon Managers\TerrainManager.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\include\TerrainManager.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="MacroManager"
+				>
+				<File
+					RelativePath=".\Addon Managers\ArmyManager.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\include\ArmyManager.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Addon Managers\BaseDefenseManager.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\include\BaseDefenseManager.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Addon Managers\BattleManager.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\include\BattleManager.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Addon Managers\CommandRewrite.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\include\CommandRewrite.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Addon Managers\DropManager.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\include\DropManager.h"
+					>
+				</File>
+				<File
+					RelativePath="..\include\MacroUnitControl.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\include\MacroUnitControl.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Addon Managers\MicroUnitControl.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\include\MicroUnitControl.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Addon Managers\MineManager.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\include\MineManager.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Simulator"
+				>
+				<File
+					RelativePath="..\include\AllUsefulPlans.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Addon Managers\EnemyStandard.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\include\EnemyStandard.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Addon Managers\Simulator.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\include\Simulator.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Scout Manager"
+				>
+				<File
+					RelativePath=".\Addon Managers\ScoutManager.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\include\ScoutManager.h"
+					>
+				</File>
+				<Filter
+					Name="ScoutController-PF"
+					>
+					<File
+						RelativePath=".\Addon Managers\ScoutController.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\include\ScoutController.h"
+						>
+					</File>
+				</Filter>
+			</Filter>
+			<Filter
+				Name="Game Rules"
+				>
+				<File
+					RelativePath=".\Addon Managers\GameFlow.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\include\GameFlow.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Addon Managers\vsProtossRules.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\include\vsProtossRules.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Terrain Graph"
+				>
+				<File
+					RelativePath=".\Addon Managers\TerrainGraph.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\include\TerrainGraph.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Helper"
+				>
+				<File
+					RelativePath=".\Addon Managers\Helper.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\include\Helper.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Addon Managers\PFFunctions.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\include\PFFunctions.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Addon Managers\Vector2.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\include\Vector2.h"
+					>
+				</File>
+			</Filter>
+		</Filter>
+		<Filter
+			Name="Header Files"
+			Filter="h;hpp;hxx;hm;inl;inc;xsd"
+			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
+			>
+			<File
+				RelativePath="..\include\Common.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\ICEStarCraft.h"
+				>
+			</File>
+			<File
+				RelativePath="..\include\RectangleArray.h"
+				>
+			</File>
+		</Filter>
+	</Files>
+	<Globals>
+	</Globals>
+</VisualStudioProject>
