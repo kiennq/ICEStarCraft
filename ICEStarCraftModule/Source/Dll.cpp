@@ -9,26 +9,23 @@
 #include "ICEStarCraft.h"
 namespace BWAPI { Game* Broodwar; }
 BOOL APIENTRY DllMain( HANDLE hModule, 
-                       DWORD  ul_reason_for_call, 
-                       LPVOID lpReserved
-					 )
+                      DWORD  ul_reason_for_call, 
+                      LPVOID lpReserved
+                      )
 {
-    
 	switch (ul_reason_for_call)
 	{
 	case DLL_PROCESS_ATTACH:
-    BWAPI::BWAPI_init();
+		BWAPI::BWAPI_init();
 		break;
 	case DLL_PROCESS_DETACH:
 		break;
 	}
-
-
 	return TRUE;
 }
 
- extern "C" __declspec(dllexport) BWAPI::AIModule* newAIModule(BWAPI::Game* game)
+extern "C" __declspec(dllexport) BWAPI::AIModule* newAIModule(BWAPI::Game* game)
 {
-  BWAPI::Broodwar=game;
-  return new ICEStarCraftModule();
+	BWAPI::Broodwar=game;
+	return new ICEStarCraftModule();
 }

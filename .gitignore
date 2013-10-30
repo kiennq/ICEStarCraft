@@ -8,11 +8,14 @@ Release/
 *.suo
 *.user
 
-#ignore svn file
+# ignore svn file
 .svn/
 
-#ignore all desktop file
+# ignore all desktop file
 desktop.ini
 
-#ignore dropbox file
+# ignore dropbox file
 .dropbox
+
+# ignore misc. files
+*.idc
