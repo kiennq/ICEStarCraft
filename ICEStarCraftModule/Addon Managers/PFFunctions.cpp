@@ -6,7 +6,7 @@ using namespace ICEStarCraft;
 using namespace std;
 
 /* Calculate velocity of a source */
-Vector2 PFFunctions::getVelocitySource(Position& s, Position& p)
+Vector2 PFFunctions::getVelocitySource(const Position& s, const Position& p)
 {
 	int x = p.x() - s.x();
 	int y = p.y() - s.y();
@@ -21,7 +21,7 @@ Vector2 PFFunctions::getVelocitySource(Position& s, Position& p)
 }
 
 /* Calculate velocity of a vortex */
-Vector2 PFFunctions::getVelocityVortex(Position& s, Position& p)
+Vector2 PFFunctions::getVelocityVortex(const Position& s, const Position& p)
 {
 	int x = p.x() - s.x();
 	int y = p.y() - s.y();

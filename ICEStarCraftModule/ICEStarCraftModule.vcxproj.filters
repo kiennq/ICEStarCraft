@@ -5,70 +5,73 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
-    </Filter>
     <Filter Include="Resource Files">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
     </Filter>
     <Filter Include="Addon Managers">
-      <UniqueIdentifier>{26214ae1-aec3-4d69-a9e5-303ac20ced6c}</UniqueIdentifier>
+      <UniqueIdentifier>{da00345f-baad-4e12-abe2-c2cd4d8b2320}</UniqueIdentifier>
     </Filter>
     <Filter Include="Addon Managers\UnitGroup Manager">
-      <UniqueIdentifier>{8dbb3dbf-e4b8-45a6-8248-d4ef00f3ca8f}</UniqueIdentifier>
+      <UniqueIdentifier>{3f897ff3-6b92-4c5b-a4f6-4684e4d07b5b}</UniqueIdentifier>
     </Filter>
     <Filter Include="Addon Managers\Worker Manager">
-      <UniqueIdentifier>{dc62a636-aa42-42c5-bb22-0afdc06ed70e}</UniqueIdentifier>
+      <UniqueIdentifier>{1adf0ba7-7366-4019-80ef-519532defea2}</UniqueIdentifier>
     </Filter>
     <Filter Include="Addon Managers\Information Manager">
-      <UniqueIdentifier>{bba0177f-b0a4-4ee2-b592-da28002bcbaf}</UniqueIdentifier>
+      <UniqueIdentifier>{a55c9edc-8302-4431-b83c-f7cf401f1d03}</UniqueIdentifier>
     </Filter>
     <Filter Include="Addon Managers\Build Manager">
-      <UniqueIdentifier>{c80ad250-6cd0-4716-98e8-4bd48b722cd3}</UniqueIdentifier>
+      <UniqueIdentifier>{2711792c-8b2e-4274-b919-bed53a2cae5c}</UniqueIdentifier>
     </Filter>
     <Filter Include="Addon Managers\Base Manager">
-      <UniqueIdentifier>{2ccc55b4-f16c-4023-a030-16316efb877e}</UniqueIdentifier>
+      <UniqueIdentifier>{b300765f-fe81-4ae7-9e9c-a1283a973592}</UniqueIdentifier>
     </Filter>
     <Filter Include="Addon Managers\Supply Manager">
-      <UniqueIdentifier>{8d141f7b-3ddf-46c5-8be9-3d7fbe6a51ed}</UniqueIdentifier>
+      <UniqueIdentifier>{4b03f19d-5f31-46e6-bc5b-c7accf2bf5c3}</UniqueIdentifier>
     </Filter>
     <Filter Include="Addon Managers\Building Placer">
-      <UniqueIdentifier>{e4ee2cb2-0f8e-4d43-afc5-f037b1c664cd}</UniqueIdentifier>
+      <UniqueIdentifier>{12ed9029-12b4-4e97-ac7e-a35d18b6ef5d}</UniqueIdentifier>
     </Filter>
     <Filter Include="Addon Managers\Arbitrator">
-      <UniqueIdentifier>{ec0b942e-e9aa-4a06-9485-4cf5eea2088b}</UniqueIdentifier>
+      <UniqueIdentifier>{6a3911cc-6d17-4238-8dad-e13a33b437bc}</UniqueIdentifier>
     </Filter>
     <Filter Include="Addon Managers\TechManager">
-      <UniqueIdentifier>{430699a9-8daa-48c2-8999-a55d2d2b30f8}</UniqueIdentifier>
+      <UniqueIdentifier>{20ed46a7-ef1e-4e07-b10e-8a86fb340ac2}</UniqueIdentifier>
     </Filter>
     <Filter Include="Addon Managers\UpgradeManager">
-      <UniqueIdentifier>{21de3b12-5a3f-4363-891b-e3ec6cdd4e1d}</UniqueIdentifier>
+      <UniqueIdentifier>{5c6a747f-e45c-4f90-8772-11acd514ae04}</UniqueIdentifier>
     </Filter>
     <Filter Include="Addon Managers\BuildOrderManager">
-      <UniqueIdentifier>{a88d30f2-39d0-4561-b612-b7df9a95bc2f}</UniqueIdentifier>
+      <UniqueIdentifier>{4917ce65-68e0-49da-b6ed-331742f96b32}</UniqueIdentifier>
     </Filter>
     <Filter Include="Addon Managers\Terrain Manager">
-      <UniqueIdentifier>{c892a3b5-32df-44db-932d-027ece4ba253}</UniqueIdentifier>
+      <UniqueIdentifier>{0759b27c-ef47-4e48-af4b-6110484290d2}</UniqueIdentifier>
     </Filter>
     <Filter Include="Addon Managers\MacroManager">
-      <UniqueIdentifier>{1ffbceff-945f-4117-84a6-67f1f2375960}</UniqueIdentifier>
+      <UniqueIdentifier>{4babc11a-5839-46e1-8bec-5553382a1aed}</UniqueIdentifier>
     </Filter>
     <Filter Include="Addon Managers\Simulator">
-      <UniqueIdentifier>{6077f64e-0110-4106-9c41-97582168d267}</UniqueIdentifier>
+      <UniqueIdentifier>{d2fad0f3-cb12-4384-a430-968a43595a86}</UniqueIdentifier>
     </Filter>
     <Filter Include="Addon Managers\Scout Manager">
-      <UniqueIdentifier>{aded820f-ce70-4d9d-8a28-6d4ef110d63e}</UniqueIdentifier>
+      <UniqueIdentifier>{7b0b8fd9-3dfb-43fb-948b-29a6e05de13f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Addon Managers\Scout Manager\ScoutController-PF">
+      <UniqueIdentifier>{beb71ce5-5c93-480c-8385-ee552760fb06}</UniqueIdentifier>
     </Filter>
     <Filter Include="Addon Managers\Game Rules">
-      <UniqueIdentifier>{0192b551-bcf1-4172-9be9-6074f94aa90c}</UniqueIdentifier>
+      <UniqueIdentifier>{d6bca91e-3a3d-41ec-91e0-cb7ff37739cd}</UniqueIdentifier>
     </Filter>
     <Filter Include="Addon Managers\Terrain Graph">
-      <UniqueIdentifier>{0595daf2-6236-475a-ad44-05dce04f2811}</UniqueIdentifier>
+      <UniqueIdentifier>{0ab10b8d-0ee0-4f71-bbb8-b80ed8e6c670}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Bugs">
-      <UniqueIdentifier>{31acee8d-8b0e-4432-9fd4-e25ee086e50c}</UniqueIdentifier>
+    <Filter Include="Addon Managers\Helper">
+      <UniqueIdentifier>{7db1ef46-8d2a-4c4a-97e7-4b234e45be26}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -81,11 +84,8 @@
     <ClCompile Include="Addon Managers\EnhancedUI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\ExampleAIModule.cpp">
+    <ClCompile Include="Source\ICEStarCraft.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="temp.cpp">
-      <Filter>Addon Managers</Filter>
     </ClCompile>
     <ClCompile Include="Addon Managers\UnitGroup.cpp">
       <Filter>Addon Managers\UnitGroup Manager</Filter>
@@ -95,6 +95,9 @@
     </ClCompile>
     <ClCompile Include="Addon Managers\WorkerManager.cpp">
       <Filter>Addon Managers\Worker Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="Addon Managers\EnemyUnit.cpp">
+      <Filter>Addon Managers\Information Manager</Filter>
     </ClCompile>
     <ClCompile Include="Addon Managers\InformationManager.cpp">
       <Filter>Addon Managers\Information Manager</Filter>
@@ -138,13 +141,34 @@
     <ClCompile Include="Addon Managers\UnitItem.cpp">
       <Filter>Addon Managers\BuildOrderManager</Filter>
     </ClCompile>
+    <ClCompile Include="Addon Managers\MapInfo.cpp">
+      <Filter>Addon Managers\Terrain Manager</Filter>
+    </ClCompile>
     <ClCompile Include="Addon Managers\TerrainManager.cpp">
       <Filter>Addon Managers\Terrain Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="Addon Managers\ArmyManager.cpp">
+      <Filter>Addon Managers\MacroManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Addon Managers\BaseDefenseManager.cpp">
+      <Filter>Addon Managers\MacroManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Addon Managers\BattleManager.cpp">
+      <Filter>Addon Managers\MacroManager</Filter>
     </ClCompile>
     <ClCompile Include="Addon Managers\CommandRewrite.cpp">
       <Filter>Addon Managers\MacroManager</Filter>
     </ClCompile>
-    <ClCompile Include="Addon Managers\MacroUnitControl.cpp">
+    <ClCompile Include="Addon Managers\DropManager.cpp">
+      <Filter>Addon Managers\MacroManager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\include\MacroUnitControl.cpp">
+      <Filter>Addon Managers\MacroManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Addon Managers\MicroUnitControl.cpp">
+      <Filter>Addon Managers\MacroManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Addon Managers\MineManager.cpp">
       <Filter>Addon Managers\MacroManager</Filter>
     </ClCompile>
     <ClCompile Include="Addon Managers\EnemyStandard.cpp">
@@ -156,6 +180,9 @@
     <ClCompile Include="Addon Managers\ScoutManager.cpp">
       <Filter>Addon Managers\Scout Manager</Filter>
     </ClCompile>
+    <ClCompile Include="Addon Managers\ScoutController.cpp">
+      <Filter>Addon Managers\Scout Manager\ScoutController-PF</Filter>
+    </ClCompile>
     <ClCompile Include="Addon Managers\GameFlow.cpp">
       <Filter>Addon Managers\Game Rules</Filter>
     </ClCompile>
@@ -165,19 +192,19 @@
     <ClCompile Include="Addon Managers\TerrainGraph.cpp">
       <Filter>Addon Managers\Terrain Graph</Filter>
     </ClCompile>
+    <ClCompile Include="Addon Managers\Helper.cpp">
+      <Filter>Addon Managers\Helper</Filter>
+    </ClCompile>
+    <ClCompile Include="Addon Managers\PFFunctions.cpp">
+      <Filter>Addon Managers\Helper</Filter>
+    </ClCompile>
+    <ClCompile Include="Addon Managers\Vector2.cpp">
+      <Filter>Addon Managers\Helper</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\EnhancedUI.h">
       <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\Common.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\ExampleAIModule.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\RectangleArray.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\UnitGroup.h">
       <Filter>Addon Managers\UnitGroup Manager</Filter>
@@ -187,6 +214,9 @@
     </ClInclude>
     <ClInclude Include="..\include\WorkerManager.h">
       <Filter>Addon Managers\Worker Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\EnemyUnit.h">
+      <Filter>Addon Managers\Information Manager</Filter>
     </ClInclude>
     <ClInclude Include="..\include\InformationManager.h">
       <Filter>Addon Managers\Information Manager</Filter>
@@ -239,13 +269,34 @@
     <ClInclude Include="..\include\UnitItem.h">
       <Filter>Addon Managers\BuildOrderManager</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\MapInfo.h">
+      <Filter>Addon Managers\Terrain Manager</Filter>
+    </ClInclude>
     <ClInclude Include="..\include\TerrainManager.h">
       <Filter>Addon Managers\Terrain Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\ArmyManager.h">
+      <Filter>Addon Managers\MacroManager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\BaseDefenseManager.h">
+      <Filter>Addon Managers\MacroManager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\BattleManager.h">
+      <Filter>Addon Managers\MacroManager</Filter>
     </ClInclude>
     <ClInclude Include="..\include\CommandRewrite.h">
       <Filter>Addon Managers\MacroManager</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\DropManager.h">
+      <Filter>Addon Managers\MacroManager</Filter>
+    </ClInclude>
     <ClInclude Include="..\include\MacroUnitControl.h">
+      <Filter>Addon Managers\MacroManager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MicroUnitControl.h">
+      <Filter>Addon Managers\MacroManager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MineManager.h">
       <Filter>Addon Managers\MacroManager</Filter>
     </ClInclude>
     <ClInclude Include="..\include\AllUsefulPlans.h">
@@ -260,6 +311,9 @@
     <ClInclude Include="..\include\ScoutManager.h">
       <Filter>Addon Managers\Scout Manager</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\ScoutController.h">
+      <Filter>Addon Managers\Scout Manager\ScoutController-PF</Filter>
+    </ClInclude>
     <ClInclude Include="..\include\GameFlow.h">
       <Filter>Addon Managers\Game Rules</Filter>
     </ClInclude>
@@ -269,10 +323,23 @@
     <ClInclude Include="..\include\TerrainGraph.h">
       <Filter>Addon Managers\Terrain Graph</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <CustomBuild Include="..\Bugs\Bugs.xlsx">
-      <Filter>Bugs</Filter>
-    </CustomBuild>
+    <ClInclude Include="..\include\Helper.h">
+      <Filter>Addon Managers\Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\PFFunctions.h">
+      <Filter>Addon Managers\Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Vector2.h">
+      <Filter>Addon Managers\Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Common.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ICEStarCraft.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\RectangleArray.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

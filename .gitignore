@@ -1,8 +1,11 @@
 *.ncb
+*.sdf
+*.opensdf
 Debug/
 Release/
 */Debug/
 */Release/
+*/ipch/
 
 # ignore all user setting file
 *.suo

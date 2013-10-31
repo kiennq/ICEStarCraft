@@ -19,15 +19,15 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <PlatformToolset>v110</PlatformToolset>
     <UseOfMfc>false</UseOfMfc>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v90</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <PlatformToolset>v110</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v90</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -40,17 +40,19 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <_ProjectFileVersion>11.0.50727.1</_ProjectFileVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
-    <IntDir>$(Configuration)\</IntDir>
-    <LinkIncremental>true</LinkIncremental>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
-    <IntDir>$(Configuration)\</IntDir>
-    <LinkIncremental>true</LinkIncremental>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Configuration)\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</LinkIncremental>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -60,12 +62,13 @@
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <PrecompiledHeader />
+      <PrecompiledHeader>
+      </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>../lib/BWAPId.lib;../lib/BWTAd.lib;../lib/tinyxmld.lib;../lib/CGAL-vc90-mt-gd.lib;../lib/libboost_thread-vc90-mt-gd-1_40.lib;../lib/gmp-vc90-mt-gd.lib;../lib/mpfr-vc90-mt-gd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(BWAPI_DIR)/lib/BWAPId.lib;$(BWAPI_DIR)/lib/BWTAd.lib;$(BWAPI_DIR)/lib/tinyxmld.lib;$(BWAPI_DIR)/lib/CGAL-vc90-mt-gd.lib;$(BWAPI_DIR)/lib/libboost_thread-vc90-mt-gd-1_40.lib;$(BWAPI_DIR)/lib/gmp-vc90-mt-gd.lib;$(BWAPI_DIR)/lib/mpfr-vc90-mt-gd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
@@ -73,19 +76,22 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
+      <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <AdditionalIncludeDirectories>../include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;EXAMPLEAIMODULE_EXPORTS;_SECURE_SCL 0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>false</MinimalRebuild>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <PrecompiledHeader />
+      <PrecompiledHeader>
+      </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>../lib/BWAPI.lib;../lib/BWTA.lib;../lib/tinyxml.lib;../lib/CGAL-vc90-mt.lib;../lib/libboost_thread-vc90-mt-1_40.lib;../lib/gmp-vc90-mt.lib;../lib/mpfr-vc90-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <AdditionalDependencies>$(BWAPI_DIR)/lib/BWAPI.lib;$(BWAPI_DIR)/lib/BWTA.lib;$(BWAPI_DIR)/lib/tinyxml.lib;$(BWAPI_DIR)/lib/CGAL-vc90-mt.lib;$(BWAPI_DIR)/lib/libboost_thread-vc90-mt-1_40.lib;$(BWAPI_DIR)/lib/gmp-vc90-mt.lib;$(BWAPI_DIR)/lib/mpfr-vc90-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -96,11 +102,11 @@
     <ClCompile Include="Addon Managers\Common.cpp" />
     <ClCompile Include="Source\Dll.cpp" />
     <ClCompile Include="Addon Managers\EnhancedUI.cpp" />
-    <ClCompile Include="Source\ExampleAIModule.cpp" />
-    <ClCompile Include="temp.cpp" />
+    <ClCompile Include="Source\ICEStarCraft.cpp" />
     <ClCompile Include="Addon Managers\UnitGroup.cpp" />
     <ClCompile Include="Addon Managers\UnitGroupManager.cpp" />
     <ClCompile Include="Addon Managers\WorkerManager.cpp" />
+    <ClCompile Include="Addon Managers\EnemyUnit.cpp" />
     <ClCompile Include="Addon Managers\InformationManager.cpp" />
     <ClCompile Include="Addon Managers\MentalState.cpp" />
     <ClCompile Include="Addon Managers\BuildManager.cpp" />
@@ -115,24 +121,33 @@
     <ClCompile Include="Addon Managers\BuildOrderManager.cpp" />
     <ClCompile Include="Addon Managers\MetaUnit.cpp" />
     <ClCompile Include="Addon Managers\UnitItem.cpp" />
+    <ClCompile Include="Addon Managers\MapInfo.cpp" />
     <ClCompile Include="Addon Managers\TerrainManager.cpp" />
+    <ClCompile Include="Addon Managers\ArmyManager.cpp" />
+    <ClCompile Include="Addon Managers\BaseDefenseManager.cpp" />
+    <ClCompile Include="Addon Managers\BattleManager.cpp" />
     <ClCompile Include="Addon Managers\CommandRewrite.cpp" />
-    <ClCompile Include="Addon Managers\MacroUnitControl.cpp" />
+    <ClCompile Include="Addon Managers\DropManager.cpp" />
+    <ClCompile Include="..\include\MacroUnitControl.cpp" />
+    <ClCompile Include="Addon Managers\MicroUnitControl.cpp" />
+    <ClCompile Include="Addon Managers\MineManager.cpp" />
     <ClCompile Include="Addon Managers\EnemyStandard.cpp" />
     <ClCompile Include="Addon Managers\Simulator.cpp" />
     <ClCompile Include="Addon Managers\ScoutManager.cpp" />
+    <ClCompile Include="Addon Managers\ScoutController.cpp" />
     <ClCompile Include="Addon Managers\GameFlow.cpp" />
     <ClCompile Include="Addon Managers\vsProtossRules.cpp" />
     <ClCompile Include="Addon Managers\TerrainGraph.cpp" />
+    <ClCompile Include="Addon Managers\Helper.cpp" />
+    <ClCompile Include="Addon Managers\PFFunctions.cpp" />
+    <ClCompile Include="Addon Managers\Vector2.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\EnhancedUI.h" />
-    <ClInclude Include="..\include\Common.h" />
-    <ClInclude Include="Source\ExampleAIModule.h" />
-    <ClInclude Include="..\include\RectangleArray.h" />
     <ClInclude Include="..\include\UnitGroup.h" />
     <ClInclude Include="..\include\UnitGroupManager.h" />
     <ClInclude Include="..\include\WorkerManager.h" />
+    <ClInclude Include="..\include\EnemyUnit.h" />
     <ClInclude Include="..\include\InformationManager.h" />
     <ClInclude Include="..\include\MentalState.h" />
     <ClInclude Include="..\include\BuildManager.h" />
@@ -150,21 +165,30 @@
     <ClInclude Include="..\include\BuildOrderManager.h" />
     <ClInclude Include="..\include\TechItem.h" />
     <ClInclude Include="..\include\UnitItem.h" />
+    <ClInclude Include="..\include\MapInfo.h" />
     <ClInclude Include="..\include\TerrainManager.h" />
+    <ClInclude Include="..\include\ArmyManager.h" />
+    <ClInclude Include="..\include\BaseDefenseManager.h" />
+    <ClInclude Include="..\include\BattleManager.h" />
     <ClInclude Include="..\include\CommandRewrite.h" />
+    <ClInclude Include="..\include\DropManager.h" />
     <ClInclude Include="..\include\MacroUnitControl.h" />
+    <ClInclude Include="..\include\MicroUnitControl.h" />
+    <ClInclude Include="..\include\MineManager.h" />
     <ClInclude Include="..\include\AllUsefulPlans.h" />
     <ClInclude Include="..\include\EnemyStandard.h" />
     <ClInclude Include="..\include\Simulator.h" />
     <ClInclude Include="..\include\ScoutManager.h" />
+    <ClInclude Include="..\include\ScoutController.h" />
     <ClInclude Include="..\include\GameFlow.h" />
     <ClInclude Include="..\include\vsProtossRules.h" />
     <ClInclude Include="..\include\TerrainGraph.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <CustomBuild Include="..\Bugs\Bugs.xlsx">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </CustomBuild>
+    <ClInclude Include="..\include\Helper.h" />
+    <ClInclude Include="..\include\PFFunctions.h" />
+    <ClInclude Include="..\include\Vector2.h" />
+    <ClInclude Include="..\include\Common.h" />
+    <ClInclude Include="Source\ICEStarCraft.h" />
+    <ClInclude Include="..\include\RectangleArray.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

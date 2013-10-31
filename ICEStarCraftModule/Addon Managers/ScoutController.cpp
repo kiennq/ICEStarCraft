@@ -257,21 +257,30 @@ void ScoutController::onSendText(const std::string& text )
 
 void ScoutController::detectUnseenUnitInsideBunker()
 {
-  for each (Bullet *b in Broodwar->getBullets()) {
+  for each (Bullet *b in Broodwar->getBullets()) 
+	{
     Unit *underAtkUnit = b->getTarget();
-    if (underAtkUnit && !b->getSource() && underAtkUnit->getPlayer() == Broodwar->self()) {
+    if (underAtkUnit && !b->getSource() && underAtkUnit->getPlayer() == Broodwar->self()) 
+		{
       set<Unit*> inRadius = underAtkUnit->getUnitsInRadius(underAtkUnit->getType().sightRange() + 16);
       set<Unit*> bunkerInsight;
-      for each (Unit *u in inRadius) {
-        if (u->getType() == UnitTypes::Terran_Bunker) {
+      for each (Unit *u in inRadius) 
+			{
+        if (u->getType() == UnitTypes::Terran_Bunker) 
+				{
           Vector2 line2Bunker = Vector2(underAtkUnit->getPosition() - u->getPosition());
           Vector2 bulletSpeed = Vector2(underAtkUnit->getPosition() - b->getPosition());
           if (line2Bunker.cos(bulletSpeed) > 0.9) {
-            if (b->getType() == BulletTypes::Gauss_Rifle_Hit ) {
+            if (b->getType() == BulletTypes::Gauss_Rifle_Hit ) 
+						{
               _enBunker[u] = UnitTypes::Terran_Marine;
-            } else if (b->getType() == BulletTypes::C_10_Canister_Rifle_Hit) {
+            } 
+						else if (b->getType() == BulletTypes::C_10_Canister_Rifle_Hit) 
+						{
               _enBunker[u] = UnitTypes::Terran_Ghost;
-            } else if (b->getType() == BulletTypes::Invisible) {
+            }
+						else if (b->getType() == BulletTypes::Invisible) 
+						{
               _enBunker[u] = UnitTypes::Terran_Firebat;
             }
 
@@ -293,14 +302,16 @@ list<Position>& ScoutController::getBorder(BWTA::Region* r)
   bor = _border.insert(bor, make_pair(r, list<Position>()));
 
   BWTA::Polygon b = r->getPolygon();
-  for (vector<Position>::const_iterator i = b.begin(); i != b.end(); i++){
+  for (vector<Position>::const_iterator i = b.begin(); i != b.end(); i++)
+	{
     vector<Position>::const_iterator n = i + 1;
     if (n == b.end()) n = b.begin();
 
     int num = i->getApproxDistance(*n)/48;
     if (!num) num = 1;
 
-    for (int j = 0; j < num; j++) {
+    for (int j = 0; j < num; j++) 
+		{
       int ix = i->x() < 64 ? -16 : (i->x() > Broodwar->mapWidth()*TILE_SIZE-96 ? Broodwar->mapWidth()*TILE_SIZE+16 : i->x());
       int nx = n->x() < 64 ? -16 : (n->x() > Broodwar->mapWidth()*TILE_SIZE-96 ? Broodwar->mapWidth()*TILE_SIZE+16 : n->x());
       int iy = i->y() < 64 ? -16 : (i->y() > Broodwar->mapHeight()*TILE_SIZE-96 ? Broodwar->mapHeight()*TILE_SIZE+16 : i->y());
@@ -314,7 +325,8 @@ list<Position>& ScoutController::getBorder(BWTA::Region* r)
 
 void ScoutController::addToScoutSet( BWAPI::Unit *u )
 {
-  if (_scouts.find(u) == _scouts.end()) {
+  if (_scouts.find(u) == _scouts.end()) 
+	{
     _scouts.insert(make_pair(u, make_pair(u->getPosition(), 1)));
     _lastPositions.insert(make_pair(u, _StuckInfo(u->getPosition(), Broodwar->getFrameCount(), false, NULL)));
   }
@@ -348,10 +360,13 @@ Vector2 ScoutController::calculatePVal( Unit* scout )
 
 
 	// Calculate unitPVal
-	while (insightUnits.size() > 0) {
+	while (insightUnits.size() > 0) 
+	{
     set<Unit*>::iterator i = insightUnits.begin();
-    if ((*i)->getType() == UnitTypes::Terran_Bunker) {
-      for each (Unit* u in (*i)->getLoadedUnits()) {
+    if ((*i)->getType() == UnitTypes::Terran_Bunker) 
+		{
+      for each (Unit* u in (*i)->getLoadedUnits()) 
+			{
         insightUnits.insert(u);
       }
     }
@@ -359,8 +374,10 @@ Vector2 ScoutController::calculatePVal( Unit* scout )
 
 		Vector2 u_tmp = unitPVal(*i, scout);
 		UnitType ut = (*i)->getType();
-		if(Broodwar->self()->isEnemy((*i)->getPlayer()) && ut.canAttack() && 
-			(!ut.isWorker() || (*i)->getTarget()==scout || (*i)->getOrderTarget()==scout)) {
+		if (Broodwar->self()->isEnemy((*i)->getPlayer()) 
+				&& ut.canAttack() 
+				&& (!ut.isWorker() || (*i)->getTarget()==scout || (*i)->getOrderTarget()==scout)) 
+		{
 				en_dir += u_tmp;	
 				enNum++;
 				s += u_tmp;
@@ -408,7 +425,8 @@ Vector2 ScoutController::calculatePVal( Unit* scout )
 
 	// Checking if enemy infront of us
 	double cosEn = en_dir.cos(r_tmp);
-	if ((cosEn < -0.5 && enNum >=3) || (cosEn < -0.85)) {
+	if ((cosEn < -0.5 && enNum >=3) || (cosEn < -0.85)) 
+	{
 		/*_p[0] = -_p[0];
 		_p[4] = -_p[4];
 		_p[6] = -_p[6];*/

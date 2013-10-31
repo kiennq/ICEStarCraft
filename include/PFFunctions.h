@@ -13,8 +13,8 @@ namespace ICEStarCraft
 
 	public:
 		
-		static Vector2 getVelocitySource(Position& s, Position& p);
-		static Vector2 getVelocityVortex(Position& s, Position& p);
+		static Vector2 getVelocitySource(const Position& s, const Position& p);
+		static Vector2 getVelocityVortex(const Position& s, const Position& p);
 		static Vector2 getVelocityObstacle(const Position& o, const Position& p, const double r, const double c, const double s);
 		static Vector2 getVelocityObstacleSource(const Position& s, const Position& p, const Position& o, const double r2);
 
