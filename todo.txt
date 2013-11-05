@@ -1,0 +1,13 @@
+(*) Scout:
+  - Fix stucking on chokepoint behaviour
+  - Allow to go to second base more smoothly
+
+Improve on BuildManager, ConstructionManager, ...:
+  - Allow cancel inBuild building (Construction)
+  - ...
+
+Improve on Dropship
+
+(*)Quickfix for fighting value evaluation?
+
+(*) Read gameflow value from config file?
