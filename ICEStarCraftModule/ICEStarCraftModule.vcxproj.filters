@@ -73,6 +73,9 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
+    <Filter Include="Addon Managers\Helper\json">
+      <UniqueIdentifier>{ab150581-bdcc-4f67-8fc0-fd5128c89247}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Addon Managers\Common.cpp">
@@ -200,6 +203,12 @@
     </ClCompile>
     <ClCompile Include="Addon Managers\Vector2.cpp">
       <Filter>Addon Managers\Helper</Filter>
+    </ClCompile>
+    <ClCompile Include="Addon Managers\Config.cpp">
+      <Filter>Addon Managers\Helper</Filter>
+    </ClCompile>
+    <ClCompile Include="..\include\json\jsoncpp.cpp">
+      <Filter>Addon Managers\Helper\json</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -340,6 +349,15 @@
     </ClInclude>
     <ClInclude Include="..\include\RectangleArray.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Config.h">
+      <Filter>Addon Managers\Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\json\json-forwards.h">
+      <Filter>Addon Managers\Helper\json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\json\json.h">
+      <Filter>Addon Managers\Helper\json</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

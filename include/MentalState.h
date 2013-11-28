@@ -73,7 +73,7 @@ public:
 	void counterMeasure();
 	void baseUnderAttack();
 	bool getUnderAttackFlag();
-	void upDateSightRange();
+	void updateSightRange();
 	UnitGroup enemyInSight;
 	bool goAttack;
 	void attackTimingCheck();

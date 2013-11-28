@@ -257,6 +257,9 @@ BWTA::BaseLocation* TerrainManager::getNearestBase(BWTA::BaseLocation* base, boo
 vector<BWTA::Chokepoint*> TerrainManager::getUsefulChokepoints(BWTA::BaseLocation* base)
 {
 	// return 3 useful choke points for this start location
+  // 1st: the chokepoint of nearest base that closest to this start location
+  // 2nd: the chokepoint of nearest base that closest to map center 
+  // 3rd: the chokepoint of 3rd region that closest to map center and tend toward center
 
 	vector<BWTA::Chokepoint*> chokepoints;
 

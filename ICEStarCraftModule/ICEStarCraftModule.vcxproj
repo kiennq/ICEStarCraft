@@ -99,7 +99,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\include\json\jsoncpp.cpp" />
     <ClCompile Include="Addon Managers\Common.cpp" />
+    <ClCompile Include="Addon Managers\Config.cpp" />
     <ClCompile Include="Source\Dll.cpp" />
     <ClCompile Include="Addon Managers\EnhancedUI.cpp" />
     <ClCompile Include="Source\ICEStarCraft.cpp" />
@@ -143,7 +145,10 @@
     <ClCompile Include="Addon Managers\Vector2.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\include\Config.h" />
     <ClInclude Include="..\include\EnhancedUI.h" />
+    <ClInclude Include="..\include\json\json-forwards.h" />
+    <ClInclude Include="..\include\json\json.h" />
     <ClInclude Include="..\include\UnitGroup.h" />
     <ClInclude Include="..\include\UnitGroupManager.h" />
     <ClInclude Include="..\include\WorkerManager.h" />

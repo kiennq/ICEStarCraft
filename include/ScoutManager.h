@@ -22,6 +22,7 @@ class TerrainManager;
 class issueOnce;
 class MentalClass;
 
+//TODO: Add an Arbitrator::Controller here, best scout should be close to target
 class ScoutManager
 {
 public:

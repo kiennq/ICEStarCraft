@@ -204,7 +204,7 @@ void ICEStarCraftModule::onFrame()
 
 	this->mental->setEnemyPlanFlag();
 	this->mental->counterMeasure();
-	this->mental->upDateSightRange();
+	this->mental->updateSightRange();
 	this->mental->attackTimingCheck();
 	if (Broodwar->getFrameCount()%24 == 0)
 		this->mental->baseUnderAttack();

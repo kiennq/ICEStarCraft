@@ -55,7 +55,7 @@ void MentalClass::onFrame()
 {
 	setEnemyPlanFlag();
 	counterMeasure();
-	upDateSightRange();
+	updateSightRange();
 	attackTimingCheck();
 	baseUnderAttack();
 	this->tpTiming->CheckTiming();
@@ -847,7 +847,7 @@ void MentalClass::destroy()
 	if (theMentalManager) delete theMentalManager;
 }
 
-void MentalClass::upDateSightRange()
+void MentalClass::updateSightRange()
 {
 	this->baseSightRangeLimitation = 30 + Broodwar->self()->supplyUsed()/4;
 }

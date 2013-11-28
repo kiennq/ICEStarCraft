@@ -27,6 +27,7 @@
 #include <Helper.h>
 #include "PFFunctions.h"
 #include <boost/shared_ptr.hpp>
+#include "Config.h"
 
 
 #define _BATTLE_DEBUG

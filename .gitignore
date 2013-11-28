@@ -5,7 +5,7 @@ Debug/
 Release/
 */Debug/
 */Release/
-*/ipch/
+*ipch/
 
 # ignore all user setting file
 *.suo

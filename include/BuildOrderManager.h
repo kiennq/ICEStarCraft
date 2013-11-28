@@ -23,11 +23,14 @@ class TerrainManager;
 class BuildOrderManager
 {
 public:
+  // The data for this priority level
 	class PriorityLevel
 	{
 	public:
 		std::list<TechItem> techs;
-		std::map<BWAPI::UnitType, std::map<BWAPI::UnitType, UnitItem > > units;
+    // Map of the builder (factory and worker) and the desired unit.
+    // Second map of the desired unit and its other info (number, buildPosition)
+		std::map<BWAPI::UnitType, std::map<BWAPI::UnitType, UnitItem>> units;
 	};
 	class Resources
 	{
@@ -148,7 +151,8 @@ private:
 	ScoutManager* scoutManager;
 	TerrainManager* terrainManager;
 
-	std::map<int, PriorityLevel > items;
+  // Map between priority and unit's other information
+	std::map<int, PriorityLevel> items;
 	int usedMinerals;
 	int usedGas;
 	std::list<MetaUnit> MetaUnits;

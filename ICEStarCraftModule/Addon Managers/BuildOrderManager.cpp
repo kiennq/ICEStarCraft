@@ -423,6 +423,7 @@ void BuildOrderManager::update()
 	int time = Broodwar->getFrameCount();
 	
 	//_T_
+  // Besure to destroy mine in the commandCenter site before hand
 	if (time%(24*10) == 11)
 	{
 		for (map<TilePosition,int>::iterator i = this->plannedCommandCenter.begin(); i != this->plannedCommandCenter.end();)
@@ -651,7 +652,7 @@ void BuildOrderManager::updatePlan()
 		}
 
 		//get the remaining tech
-		list<TechItem > remainingTech=l->second.techs;
+		list<TechItem> remainingTech=l->second.techs;
 
 		if (this->dependencyResolver)
 		{
@@ -828,11 +829,10 @@ void BuildOrderManager::build(int count, BWAPI::UnitType t, int priority, BWAPI:
 	nextUpdateFrame=0;
 }
 
-
-//add
+// Change this one a little bit
 void BuildOrderManager::deleteItem(BWAPI::UnitType t,int priority)
 {
-	for(map< int, PriorityLevel >::iterator l=items.begin();l!=items.end();l++)
+	for(map<int, PriorityLevel>::iterator l=items.begin();l!=items.end();l++)
 	{// first check the priority, then check the unit type that want to stop build. In fact, the code is checking what builds this unit type(because when it inserted as)
 		//items[priority].units[t.whatBuilds().first].insert(make_pair(t,UnitItem(t)));
 		if (l->first== priority && ((l->second.units.find(t.whatBuilds().first)) != (l->second.units.end())))
@@ -844,7 +844,7 @@ void BuildOrderManager::deleteItem(BWAPI::UnitType t,int priority)
 }
 void BuildOrderManager::deleteItem(BWAPI::UnitType t,int priority, BWTA::Region* r)
 {
-	for(map< int, PriorityLevel >::iterator l=items.begin();l!=items.end();l++)
+	for(map<int, PriorityLevel>::iterator l=items.begin();l!=items.end();l++)
 	{// first check the priority, then check the unit type that want to stop build. In fact, the code is checking what builds this unit type(because when it inserted as)
 		//items[priority].units[t.whatBuilds().first].insert(make_pair(t,UnitItem(t)));
 		if (l->first== priority && ((l->second.units.find(t.whatBuilds().first)) != (l->second.units.end())))
@@ -857,7 +857,7 @@ void BuildOrderManager::deleteItem(BWAPI::UnitType t,int priority, BWTA::Region*
 }
 void BuildOrderManager::deleteItem(BWAPI::UnitType t)
 {
-	for(map< int, PriorityLevel >::iterator l=items.begin();l!=items.end();l++)
+	for(map<int, PriorityLevel>::iterator l=items.begin();l!=items.end();l++)
 	{// first check the priority, then check the unit type that want to stop build. In fact, the code is checking what builds this unit type(because when it inserted as)
 		//items[priority].units[t.whatBuilds().first].insert(make_pair(t,UnitItem(t)));
 		if ((l->second.units.find(t.whatBuilds().first)) != (l->second.units.end()))
@@ -873,7 +873,7 @@ void BuildOrderManager::adjustPriority(BWAPI::UnitType t,int variation)
 	for(map< int, PriorityLevel >::iterator l=items.begin();l!=items.end();l++)
 	{// first check the priority, then check the unit type that want to stop build. In fact, the code is checking what builds this unit type(because when it inserted as)
 		//items[priority].units[t.whatBuilds().first].insert(make_pair(t,UnitItem(t)));
-		std::map<BWAPI::UnitType, std::map<BWAPI::UnitType, UnitItem > >::iterator k = l->second.units.find(t.whatBuilds().first);
+		map<BWAPI::UnitType, map<BWAPI::UnitType, UnitItem>>::iterator k = l->second.units.find(t.whatBuilds().first);
 		if (k != (l->second.units.end())){	
 			items[l->first + variation].units[t.whatBuilds().first].insert(make_pair(t,UnitItem(t)));
 			l->second.units.erase(k);
@@ -881,7 +881,7 @@ void BuildOrderManager::adjustPriority(BWAPI::UnitType t,int variation)
 		}			
 	}
 }
-
+// _E
 
 
 void BuildOrderManager::buildAdditional(int count, BWAPI::UnitType t, int priority, BWAPI::TilePosition seedPosition)
@@ -1031,7 +1031,7 @@ int BuildOrderManager::getPlannedCount(BWAPI::UnitType t)
 int BuildOrderManager::getPlannedCount(BWAPI::UnitType t, int minPriority)
 {
 	//builder unit type
-      	UnitType builder=t.whatBuilds().first;
+  UnitType builder=t.whatBuilds().first;
 
 	int c=this->buildManager->getPlannedCount(t);
 

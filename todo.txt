@@ -6,8 +6,19 @@ Improve on BuildManager, ConstructionManager, ...:
   - Allow cancel inBuild building (Construction)
   - ...
 
-Improve on Dropship
+Improve on Abitrator:
+  - Revoke offer if return false in onRevoke (seem unnecessary)
 
-(*)Quickfix for fighting value evaluation?
+(*) ScoutManager should using Arbitrator::Controller
 
-(*) Read gameflow value from config file?
+(*) Improve on Dropship
+
+(*) Quickfix for fighting value evaluation?
+
+(**) Read gameflow value from config file?
+- Cache map to config file
+- Parameterize Gameflow to config file
+
+(*) Prevent tank kills it self by attacking zealot
+
+Try to look at the micromanagement

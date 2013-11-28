@@ -1,4 +1,4 @@
-#include <algorithm>
+﻿#include <algorithm>
 #include "WorkerManager.h"
 #include "BaseManager.h"
 #include <BWTA.h>
@@ -26,11 +26,10 @@ void WorkerManager::destroy()
 }
 
 WorkerManager::WorkerManager()
-:_mineralPS(0),
-_mineralPM(0),
-_averageMineralPS(0),
-_averageMineralPM(0)
-
+  :_mineralPS(0)
+  ,_mineralPM(0)
+  ,_averageMineralPS(0)
+  ,_averageMineralPM(0)
 {
 	arbitrator = NULL;
 
