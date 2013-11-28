@@ -579,6 +579,14 @@
 				Name="Helper"
 				>
 				<File
+					RelativePath=".\Addon Managers\Config.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\include\Config.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Addon Managers\Helper.cpp"
 					>
 				</File>
@@ -602,6 +610,22 @@
 					RelativePath="..\include\Vector2.h"
 					>
 				</File>
+				<Filter
+					Name="json"
+					>
+					<File
+						RelativePath="..\include\json\json-forwards.h"
+						>
+					</File>
+					<File
+						RelativePath="..\include\json\json.h"
+						>
+					</File>
+					<File
+						RelativePath="..\include\json\jsoncpp.cpp"
+						>
+					</File>
+				</Filter>
 			</Filter>
 		</Filter>
 		<Filter
