@@ -1,4 +1,5 @@
 #include "GameFlow.h"
+#include "Config.h"
 
 using namespace BWAPI;
 using namespace BWTA;
@@ -34,6 +35,7 @@ GameFlow::GameFlow()
 	this->mineral = 0;
 	this->gas = 0;
 	this->TurretTilePositions.clear();
+  this->_debugMode = Config::i().DEBUG_GAME_FLOW();
 }
 
 void GameFlow::setManagers(BuildOrderManager* bom,UpgradeManager* um)
@@ -1676,6 +1678,7 @@ void GameFlow::onFrameTP()
 void GameFlow::showDebugInfo()
 {
 	
+  if (!_debugMode) return;
 	// draw planned units info
 	int x = 5;
 	int y = 10;

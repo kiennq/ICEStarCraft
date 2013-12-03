@@ -942,7 +942,7 @@ void MyInfoManager::showDebugInfo()
 	Broodwar->drawTextScreen(180,325,"\x07 mAV: %.2f | %.2f - deadUnits: %d - deadWorkers: %d",attackValue(),attackValue()/(1+getDeadUnitCount()),getDeadUnitCount(),getDeadWorkerCount());
 }
 
-set<EnemyUnit*> EnemyInfoManager::getAllEnemyUnits()
+set<EnemyUnit*>& EnemyInfoManager::getAllEnemyUnits()
 {
 	return allEnemyUnits;
 }

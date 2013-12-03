@@ -1,5 +1,6 @@
 #include "ScoutController.h"
 #include "TerrainManager.h"
+#include "Config.h"
 
 using namespace BWAPI;
 using namespace BWTA;
@@ -75,6 +76,14 @@ void ScoutController::onFrame()
 #ifdef _HUMAN_PLAY
 	return;
 #endif
+
+  if (Broodwar->getFrameCount()%1 == 0)
+  {
+    detectUnseenUnitInsideBunker();
+    _registerEnUnitPosition();
+    _fadeUnits();
+  }
+
 	for (map<Unit*, pair<Position, int> >::iterator i = _scouts.begin(); i!=_scouts.end(); i++) {
 
 #ifdef _SCOUT_DEBUG
@@ -126,8 +135,8 @@ void ScoutController::onFrame()
       else
         Broodwar->printf("%s: %s", "Unknown source", b->getType().getName().c_str());
     }*/
-    if (_lastPositions[i->first].stuck) {
-      Position mPos = _lastPositions[i->first].mineral->getPosition();
+    if (_scoutLastPositions[i->first].fStuck) {
+      Position mPos = _scoutLastPositions[i->first].mineral->getPosition();
       Broodwar->drawLineMap(scout_pos.x(), scout_pos.y(), mPos.x(), mPos.y(), Colors::Brown);
       Broodwar->drawCircleMap(mPos.x(), mPos.y(), 3, Colors::Brown);
     }
@@ -135,21 +144,28 @@ void ScoutController::onFrame()
 
 #endif // _SCOUT_DEBUG
 
-		if(Broodwar->getFrameCount()%1==0 ||Helper::nearReachPos(i->first, i->second.first) || Helper::nearReachPos(i->first, i->first->getTargetPosition(), 32)) {
+		if(Broodwar->getFrameCount()%1==0 ||Helper::nearReachPos(i->first, i->second.first) || Helper::nearReachPos(i->first, i->first->getTargetPosition(), 32)) 
+    {
       Position target = i->first->getPosition();
-      _StuckInfo& unitLastLoc = _lastPositions[i->first];
-      if (unitLastLoc.stuck) {
-        if (target.getApproxDistance(unitLastLoc.pos) > 16) {
-          unitLastLoc.stuck = false;
-          unitLastLoc.frame = Broodwar->getFrameCount();
+      _UnitInfo& unitLastLoc = _scoutLastPositions[i->first];
+      if (unitLastLoc.fStuck) 
+      {
+        if (target.getApproxDistance(unitLastLoc.pos) > 16) 
+        {
+          unitLastLoc.fStuck = false;
+          unitLastLoc.iFrame = Broodwar->getFrameCount();
           unitLastLoc.pos = target;
         }
-      } else {
+      } 
+      else 
+      {
         //Seem we stuck
-        if (target.getApproxDistance(unitLastLoc.pos) < 4 && Broodwar->getFrameCount()-unitLastLoc.frame > 3) {
-          unitLastLoc.stuck = true;
+        if (target.getApproxDistance(unitLastLoc.pos) < 4 && Broodwar->getFrameCount()-unitLastLoc.iFrame > 3) 
+        {
+          unitLastLoc.fStuck = true;
           // Find mineral patch
-          if (!unitLastLoc.mineral || !unitLastLoc.mineral->exists()) {
+          if (!unitLastLoc.mineral || !unitLastLoc.mineral->exists()) 
+          {
             /*double dis = -9999;
             for each (Unit* u in Broodwar->getMinerals()) {
               int _tmp = u->getPosition().getApproxDistance(target) > 64 ? 0 : -99;
@@ -168,14 +184,18 @@ void ScoutController::onFrame()
           }
           i->first->rightClick(unitLastLoc.mineral);
           //Broodwar->printf("Click on mineral");
-        } else {
-          if (target.getApproxDistance(unitLastLoc.pos) > 2) {
-            unitLastLoc.frame = Broodwar->getFrameCount();
+        }
+        else
+        {
+          if (target.getApproxDistance(unitLastLoc.pos) > 2)
+          {
+            unitLastLoc.iFrame = Broodwar->getFrameCount();
             unitLastLoc.pos = target;
-          } else {
+          }
+          else
+          {
             //Broodwar->printf("Stuck plus %d", Broodwar->getFrameCount() - unitLastLoc.frame);
           }
-          detectUnseenUnitInsideBunker();
           // recalculate potential value
           int rev = i->second.second;
           _p[0] *= rev;
@@ -192,10 +212,12 @@ void ScoutController::onFrame()
           double ratio = 32.0 / speed.r();
           Vector2 seg = speed * ratio;
           target = seg*3 + target;
-          while (!Helper::isWalkable(target)) {
+          while (!Helper::isWalkable(target))
+          {
             target = seg + target;
             //if (BWTA::getRegion(target) != BWTA::getRegion(i->first->getPosition())) {
-            if (!target.isValid()) {
+            if (!target.isValid())
+            {
               target = seg*(-1) + target;
               break;
             }
@@ -206,7 +228,6 @@ void ScoutController::onFrame()
       }
     }
 	}
-
 }
 
 void ScoutController::onUnitDestroy( Unit *u )
@@ -214,9 +235,10 @@ void ScoutController::onUnitDestroy( Unit *u )
   if (u->getType() == UnitTypes::Terran_Bunker)
     _enBunker.erase(u);
 
-  if (_scouts.empty()) return;
 	map<Unit*, pair<Position, int> >::iterator i = _scouts.find(u);
 	if (i != _scouts.end()) _scouts.erase(i);
+  _fadeUnit(u);
+
 #ifdef _LOG_TO_FILE
 	if (_scouts.empty()) Broodwar->restartGame();
 #endif
@@ -225,18 +247,21 @@ void ScoutController::onUnitDestroy( Unit *u )
 
 void ScoutController::onUnitDiscover( Unit *u )
 {
-	if (Broodwar->self()->isEnemy(u->getPlayer()) && u->getType().isBuilding()){
+	if (Broodwar->self()->isEnemy(u->getPlayer()) && u->getType().isBuilding())
+  {
     if (u->getType() == UnitTypes::Terran_Bunker) {
       map<Unit*, UnitType>::iterator bunker = _enBunker.find(u);
       if (bunker == _enBunker.end()) 
         _enBunker.insert(make_pair(u, UnitTypes::None));
     }
     _enBuildings.insert(u);
+
 #ifdef _LOG_TO_FILE
 		_enDiscoveredBuildings++;
 #endif
 	}
-	if (Broodwar->self()->isEnemy(u->getPlayer())){
+	if (Broodwar->self()->isEnemy(u->getPlayer()))
+  {
 		_enUnits[u->getType()].insert(u);
 	}
 }
@@ -295,6 +320,45 @@ void ScoutController::detectUnseenUnitInsideBunker()
   }
 }
 
+
+void ScoutController::_registerEnUnitPosition()
+{
+  for each (Unit* u in Broodwar->enemy()->getUnits())
+  {
+    int fadeTime = u->getType().isBuilding()? Config::i().TIME_BUILDING_FADE()
+                                            : Config::i().TIME_MOVING_UNIT_FADE();
+    // Insert into unit's list
+    if (u->getType() == UnitTypes::Terran_Bunker) 
+		{
+      for each (Unit* inBunker in u->getLoadedUnits()) 
+			{
+        _eUnitPos[inBunker] =  _UnitInfo(u->getPosition(), Broodwar->getFrameCount(), fadeTime);
+      }
+    }
+    _eUnitPos[u] =  _UnitInfo(u->getPosition(), Broodwar->getFrameCount(), fadeTime);
+  }
+}
+
+void ScoutController::_fadeUnit(Unit* u)
+{
+  _eUnitPos.erase(u);
+}
+
+void ScoutController::_fadeUnits()
+{
+  for (map<Unit*, _UnitInfo>::iterator i = _eUnitPos.begin(); i != _eUnitPos.end();)
+  {
+    if (Broodwar->getFrameCount()-i->second.iFrame > i->second.ctFadeThres)
+    {
+      _eUnitPos.erase(i++);
+    }
+    else
+    {
+      i++;
+    }
+  }
+}
+
 list<Position>& ScoutController::getBorder(BWTA::Region* r)
 {
   map<BWTA::Region*, list<Position>>::iterator bor = _border.find(r);
@@ -328,20 +392,19 @@ void ScoutController::addToScoutSet( BWAPI::Unit *u )
   if (_scouts.find(u) == _scouts.end()) 
 	{
     _scouts.insert(make_pair(u, make_pair(u->getPosition(), 1)));
-    _lastPositions.insert(make_pair(u, _StuckInfo(u->getPosition(), Broodwar->getFrameCount(), false, NULL)));
+    _scoutLastPositions.insert(make_pair(u, _UnitInfo(u->getPosition(), Broodwar->getFrameCount(), false, NULL)));
   }
 }
 
 void ScoutController::removeFromScoutSet( BWAPI::Unit *u )
 {
   _scouts.erase(u);
-  _lastPositions.erase(u);
+  _scoutLastPositions.erase(u);
 }
 
 Vector2 ScoutController::calculatePVal( Unit* scout )
 {
 	BWTA::Region* curReg = BWTA::getRegion(scout->getPosition());
-	set<Unit*> insightUnits = scout->getUnitsInRadius(scout->getType().sightRange()+96);
 
 	//Broodwar->printf("Perimeter: %.2f, radius: %d", curReg->getPolygon().getPerimeter(), (int)(curReg->getPolygon().getPerimeter()/(2*M_PI)));
 
@@ -360,43 +423,39 @@ Vector2 ScoutController::calculatePVal( Unit* scout )
 
 
 	// Calculate unitPVal
-	while (insightUnits.size() > 0) 
+  for (map<Unit*, _UnitInfo>::iterator im = _eUnitPos.begin(); im != _eUnitPos.end(); im++) 
 	{
-    set<Unit*>::iterator i = insightUnits.begin();
-    if ((*i)->getType() == UnitTypes::Terran_Bunker) 
-		{
-      for each (Unit* u in (*i)->getLoadedUnits()) 
-			{
-        insightUnits.insert(u);
-      }
+    Unit* u = im->first;
+    if (u->isBeingConstructed() && u->getRemainingBuildTime() > 40)
+    {
+      continue;
     }
-		Vector2 _dir = vortexPotential(curReg->getCenter(), (*i)->getPosition())*_p[0];
+		Vector2 _dir = vortexPotential(curReg->getCenter(), (u)->getPosition())*_p[0];
 
-		Vector2 u_tmp = unitPVal(*i, scout);
-		UnitType ut = (*i)->getType();
-		if (Broodwar->self()->isEnemy((*i)->getPlayer()) 
-				&& ut.canAttack() 
-				&& (!ut.isWorker() || (*i)->getTarget()==scout || (*i)->getOrderTarget()==scout)) 
+		Vector2 u_tmp = unitPVal(u, scout);
+		UnitType ut = (u)->getType();
+    if (Broodwar->self()->isEnemy((u)->getPlayer()) &&
+        ut.canAttack() &&
+        (!ut.isWorker() || (u)->getTarget()==scout || (u)->getOrderTarget()==scout)) 
 		{
 				en_dir += u_tmp;	
 				enNum++;
 				s += u_tmp;
 #ifdef _SCOUT_DEBUG
-				_list_o.push_back(make_pair((*i)->getPosition(), ut.groundWeapon().maxRange()));
-        _screenPos += (*i)->getPosition();
+				_list_o.push_back(make_pair((u)->getPosition(), ut.groundWeapon().maxRange()));
+        _screenPos += (u)->getPosition();
 #endif
 		} else {
 			// obstacle
 			obstacleNum++;
 			obstacleVal += u_tmp;
 #ifdef _SCOUT_DEBUG
-			_list_o.push_back(make_pair((*i)->getPosition(), (ut.dimensionRight() + ut.dimensionLeft() + ut.dimensionUp() + ut.dimensionDown())/2));
+			_list_o.push_back(make_pair((u)->getPosition(), (ut.dimensionRight() + ut.dimensionLeft() + ut.dimensionUp() + ut.dimensionDown())/2));
 #endif
 		}
 #ifdef _SCOUT_DEBUG
 		_list_u.push_back(u_tmp*100);
 #endif // _SCOUT_DEBUG
-    insightUnits.erase(i);
 	}
 	// Add back obstacle value after averaged
 	if (obstacleNum) s+= obstacleVal*(1.0/obstacleNum);
@@ -456,13 +515,13 @@ Vector2 ScoutController::unitPVal( BWAPI::Unit* u, BWAPI::Unit* s)
 	int r = (ut.dimensionRight() + ut.dimensionLeft() + ut.dimensionUp() + ut.dimensionDown())/2;
 	if (u->isInvincible()) {
 		// Mineral and other indestructive obstacle
-		/*if (c.getApproxDistance(p) < _p[2]) {
+		if (c.getApproxDistance(p) < _p[2]) {
 			return obsVortexPotential(u->getPosition(), p, c, r*r)*_p[0] + obsSourcePotential(u->getPosition(), p, c, r*r)*_p[1];;
 		} else {
 			return obsVortexPotential(u->getPosition(), p, c, r*r)*_p[0] - obsSourcePotential(u->getPosition(), p, c, r*r)*_p[1];;
-		}*/
+		}
 
-		return vortexPotential(u->getPosition(), p)*_p[6];
+		//return vortexPotential(u->getPosition(), p)*_p[6];
   } else if(ut.isBuilding() && !u->isLifted() && !ut.canAttack() && ut != UnitTypes::Terran_Bunker){
 		//Broodwar->drawCircleMap(u->getPosition().x(), u->getPosition().y(), 2, Colors::Red, true);
 		//Broodwar->drawCircleMap(u->getPosition().x(), u->getPosition().y(), u->getPosition().getDistance(s->getPosition()), Colors::Orange);
@@ -538,7 +597,8 @@ Vector2 ScoutController::borderPVal( BWTA::Region* r, BWAPI::Unit* s)
 	Position p = s->getPosition();
 	int numBorder = 0;
 	Vector2 b;
-  _p[3] = r->getPolygon().getPerimeter()/(M_PI * 13);
+  int borderCo = r->getPolygon().getPerimeter()/(M_PI * 15);
+  _p[3] = borderCo > _p[3]? borderCo : _p[3];
 #ifdef _SCOUT_DEBUG
 	list<Vector2> list_b;
 #endif
@@ -698,4 +758,6 @@ Vector2 ScoutController::rotateAroundBuilding( BWAPI::Unit* scout )
 	}
 	return _dir;
 }
+
+
 

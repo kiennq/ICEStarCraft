@@ -1,5 +1,6 @@
 (*) Scout:
-  - Fix stucking on chokepoint behaviour
+  + Fix stucking on chokepoint behaviour
+  - remember old unit
   - Allow to go to second base more smoothly
 
 Improve on BuildManager, ConstructionManager, ...:
@@ -16,8 +17,9 @@ Improve on Abitrator:
 (*) Quickfix for fighting value evaluation?
 
 (**) Read gameflow value from config file?
-- Cache map to config file
-- Parameterize Gameflow to config file
+  + Config file as in json format
+  - Cache map to config file
+  - Parameterize Gameflow to config file
 
 (*) Prevent tank kills it self by attacking zealot
 

@@ -108,7 +108,7 @@ public:
 	MyInfoManager* mInfor;
 
 	//_T_
-	std::set<EnemyUnit*> getAllEnemyUnits();
+	std::set<EnemyUnit*>& getAllEnemyUnits();
 	EnemyUnit* getEnemyUnit(BWAPI::Unit*);
 	bool isEnemyBase(BWTA::BaseLocation*);
 	int countUnitNum(UnitType type, BWAPI::Position p = Positions::None, int radius = 12 * 32);

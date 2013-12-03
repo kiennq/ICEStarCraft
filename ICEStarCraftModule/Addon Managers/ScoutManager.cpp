@@ -10,15 +10,6 @@ using namespace ICEStarCraft;
 
 ScoutManager* theScoutManager = NULL;
 
-static const Position Up = Position(0,-48);
-static const Position Down = Position(0,48);
-static const Position Left = Position(-48,0);
-static const Position Right = Position(48,0);
-static const Position UpLeft = Position(-48,-48);
-static const Position UpRight = Position(48,-48);
-static const Position DownLeft = Position(-48,48);
-static const Position DownRight = Position(48,48);
-
 ScoutManager* ScoutManager::create()
 {
   if (theScoutManager) return theScoutManager;
@@ -71,22 +62,9 @@ ScoutManager::ScoutManager()
   mInfo=NULL;
   eInfo=NULL;
 
-	_switchRegionFlag = false;
+	_fSwitchRegion = false;
 	_nextTargetBase = NULL;
 
-  this->ScoutUpPosition = BWAPI::Positions::None;
-  this->ScoutDownPosition = BWAPI::Positions::None;
-  this->ScoutLeftPosition = BWAPI::Positions::None;
-  this->ScoutRightPosition = BWAPI::Positions::None;
-  this->ScoutUpRightPosition = BWAPI::Positions::None;
-  this->ScoutUpLeftPosition = BWAPI::Positions::None;
-  this->ScoutDownRightPosition = BWAPI::Positions::None;
-  this->ScoutDownLeftPosition = BWAPI::Positions::None;
-  this->ScoutCenterPosition = BWAPI::Positions::None;
-  this->SMD = 32;
-  this->moveLevel = 0;
-  //12;
-	
 	this->deadScoutUnitCount = 0;
 };
 
@@ -509,7 +487,11 @@ void ScoutManager::scoutEnemyOpening(Unit* u)
       }
       if(this->ScoutUnitPuporseMap[u]==EnemyOpening)
 			{       
-				if (!_switchRegionFlag && BWTA::getRegion(u->getPosition()) == enemyStartLocation->getRegion())
+        Chokepoint* chkPoint = BWTA::getNearestChokepoint(u->getPosition());
+				if (!_fSwitchRegion &&
+            BWTA::getRegion(u->getPosition()) == enemyStartLocation->getRegion() && 
+            chkPoint &&
+            u->getPosition().getApproxDistance(chkPoint->getCenter()) > 120)
 				{
 					if (Broodwar->getFrameCount() % (24*60) == 0)
 					{
@@ -520,7 +502,10 @@ void ScoutManager::scoutEnemyOpening(Unit* u)
                 if (b!=enemyStartLocation)
 								{
                   double tdis = BWTA::getGroundDistance(b->getTilePosition(),enemyStartLocation->getTilePosition());
-                  if (dis>tdis && !(BWTA::getShortestPath(b->getTilePosition(), enemyStartLocation->getTilePosition()).empty()) && !b->getGeysers().empty()) {
+                  if (dis > tdis && 
+                      !(BWTA::getShortestPath(b->getTilePosition(), enemyStartLocation->getTilePosition()).empty()) && 
+                      !b->getGeysers().empty())
+                  {
                     dis = tdis;
                     _nextTargetBase = b;
                   } 
@@ -528,7 +513,7 @@ void ScoutManager::scoutEnemyOpening(Unit* u)
               }
 						}
 						ScoutController::create()->removeFromScoutSet(u);
-						_switchRegionFlag = true;
+						_fSwitchRegion = true;
 						u->move(_nextTargetBase->getPosition());
 						// Broodwar->printf("Go to next base");
 					}
@@ -538,12 +523,16 @@ void ScoutManager::scoutEnemyOpening(Unit* u)
 						ScoutController::create()->onFrame();
 					}
 				}
-				else if (_nextTargetBase && _switchRegionFlag && BWTA::getRegion(u->getPosition()) == _nextTargetBase->getRegion())
+				else if (_nextTargetBase && 
+                 _fSwitchRegion &&
+                 BWTA::getRegion(u->getPosition()) == _nextTargetBase->getRegion() &&
+                 chkPoint &&
+                 u->getPosition().getApproxDistance(chkPoint->getCenter()) > 120)
 				{
 					if (Broodwar->getFrameCount() % (24*10) == 0)
 					{
 						ScoutController::create()->removeFromScoutSet(u);
-						_switchRegionFlag = false;
+						_fSwitchRegion = false;
 						u->move(enemyStartLocation->getPosition());
 						// Broodwar->printf("Go to enemy base");
 					}
@@ -553,7 +542,7 @@ void ScoutManager::scoutEnemyOpening(Unit* u)
 						ScoutController::create()->onFrame();
 					}
 				}
-				else if (!_switchRegionFlag)
+				else if (!_fSwitchRegion)
 				{
 					u->move(enemyStartLocation->getPosition());
         }
@@ -1465,448 +1454,8 @@ bool isWalkTileWalkable(Position pos)
   return Broodwar->isWalkable(pos.x()/8, pos.y()/8) && SelectAllEnemy().not(isFlyer,isLifted).inRadius(16,pos).empty();
 }
 
-
-void ScoutManager::testScoutRun(Unit* u)
-{
-  double BestP;
-  Position NextPosition = BWAPI::Positions::None;
-
-  if (Broodwar->getFrameCount()%8==0){
-    //Broodwar->printf("Scout Position (%d,%d)",u->getPosition().x(),u->getPosition().y());
-    //Broodwar->printf("EBase Position (%d,%d)",enemyStartLocation->getPosition().x(),enemyStartLocation->getPosition().y());
-    //Broodwar->printf("Distance (%f)",u->getTilePosition().getDistance(enemyStartLocation->getTilePosition()));
-    //decide detect range
-    int sightRange = UnitTypes::Terran_SCV.sightRange()+32;
-    Position scvPosition = u->getPosition();
-    std::set<Unit*> unitInRange =Broodwar->getUnitsInRadius(scvPosition,sightRange);
-
-
-    BWTA::Region* R=BWTA::getRegion(this->enemyStartLocation->getPosition());
-
-    Position NearestPerimeter = R->getPolygon().getNearestPoint(u->getPosition());
-
-    for each(Unit* e in unitInRange){
-      if (e->getType().isBuilding() || e->getType().isInvincible()){
-        double size = sqrt(1.0*e->getType().dimensionUp()*e->getType().dimensionDown() + 1.0*e->getType().dimensionRight()*e->getType().dimensionLeft());
-        if (e->getPosition().getApproxDistance(u->getPosition())<=size*2){
-          SMD = 16;
-          break;
-        }			
-        else{
-          SMD = 64;
-        }					
-      }
-    }
-    if (u->getPosition().getApproxDistance(NearestPerimeter) <= 32*3){
-      SMD = 16;
-    }			
-    else{
-      SMD = 64;
-    }			
-
-    ScoutUpPosition.x() = u->getPosition().x();
-    ScoutUpPosition.y() = u->getPosition().y()-SMD;
-
-    ScoutDownPosition.x() = u->getPosition().x();
-    ScoutDownPosition.y() = u->getPosition().y()+SMD;
-
-    ScoutLeftPosition.x() = u->getPosition().x()-SMD;
-    ScoutLeftPosition.y() = u->getPosition().y();
-
-    ScoutRightPosition.x() = u->getPosition().x()+SMD;
-    ScoutRightPosition.y() = u->getPosition().y();
-
-    ScoutUpRightPosition.x() = u->getPosition().x()+SMD;
-    ScoutUpRightPosition.y() = u->getPosition().y()-SMD;
-
-    ScoutUpLeftPosition.x() = u->getPosition().x()-SMD;
-    ScoutUpLeftPosition.y() = u->getPosition().y()-SMD;
-
-    ScoutDownRightPosition.x() = u->getPosition().x()+SMD;
-    ScoutDownRightPosition.y() = u->getPosition().y()+SMD;
-
-    ScoutDownLeftPosition.x() = u->getPosition().x()-SMD;
-    ScoutDownLeftPosition.y() = u->getPosition().y()+SMD;
-
-    ScoutCenterPosition.x() = u->getPosition().x();
-    ScoutCenterPosition.y() = u->getPosition().y();
-
-    //movement range limitation
-    UpP = CalculationPotential(ScoutUpPosition,enemyStartLocation->getPosition());
-    DownP = CalculationPotential(ScoutDownPosition,enemyStartLocation->getPosition());
-    LeftP = CalculationPotential(ScoutLeftPosition,enemyStartLocation->getPosition());
-    RightP = CalculationPotential(ScoutRightPosition,enemyStartLocation->getPosition());
-    UpRightP = CalculationPotential(ScoutUpRightPosition,enemyStartLocation->getPosition());
-    UpLeftP  = CalculationPotential(ScoutUpLeftPosition,enemyStartLocation->getPosition());
-    DownRightP = CalculationPotential(ScoutDownRightPosition,enemyStartLocation->getPosition());
-    DownLeftP = CalculationPotential(ScoutDownLeftPosition,enemyStartLocation->getPosition());
-    CenterP = CalculationPotential(ScoutCenterPosition,enemyStartLocation->getPosition())-1;
-
-    double mUpU = -100;
-    double mDownU = -100;
-    double mLeftU = -100;
-    double mRightU = -100;
-    double mUpRightU = -100;
-    double mUpLeftU = -100;
-    double mDownRightU = -100;
-    double mDownLeftU = -100;
-
-    for each(Unit* e in unitInRange){
-      if (e->getType().isInvincible()){
-        UpP = UpP+CalculationPotentialBuilding(ScoutUpPosition,e);
-        DownP = DownP+CalculationPotentialBuilding(ScoutDownPosition,e);
-        LeftP = LeftP+CalculationPotentialBuilding(ScoutLeftPosition,e);
-        RightP = RightP+CalculationPotentialBuilding(ScoutRightPosition,e);
-        UpRightP = UpRightP+CalculationPotentialBuilding(ScoutUpRightPosition,e);
-        UpLeftP = UpLeftP+CalculationPotentialBuilding(ScoutUpLeftPosition,e);
-        DownRightP = DownRightP+CalculationPotentialBuilding(ScoutDownRightPosition,e);
-        DownLeftP = DownLeftP+CalculationPotentialBuilding(ScoutDownLeftPosition,e);
-        CenterP = CenterP+CalculationPotentialBuilding(ScoutCenterPosition,e);
-      }
-      else if (!Broodwar->self()->isEnemy(e->getPlayer())){
-        continue;
-      }
-      else if(e->getType().isWorker() && !e->isAttacking()){
-        continue;
-      }
-      else if(e->getType().isBuilding()){
-        if(e->getType()==UnitTypes::Protoss_Photon_Cannon || e->getType()==UnitTypes::Zerg_Sunken_Colony)
-        {
-          UpP = UpP+CalculationPotentialDangerousBuilding(ScoutUpPosition,e);
-          DownP = DownP+CalculationPotentialDangerousBuilding(ScoutDownPosition,e);
-          LeftP = LeftP+CalculationPotentialDangerousBuilding(ScoutLeftPosition,e);
-          RightP = RightP+CalculationPotentialDangerousBuilding(ScoutRightPosition,e);
-          UpRightP = UpRightP+CalculationPotentialDangerousBuilding(ScoutUpRightPosition,e);
-          UpLeftP = UpLeftP+CalculationPotentialDangerousBuilding(ScoutUpLeftPosition,e);
-          DownRightP = DownRightP+CalculationPotentialDangerousBuilding(ScoutDownRightPosition,e);
-          DownLeftP = DownLeftP+CalculationPotentialDangerousBuilding(ScoutDownLeftPosition,e);
-          CenterP = CenterP+CalculationPotentialDangerousBuilding(ScoutCenterPosition,e);
-        }
-        else
-        {
-          UpP = UpP+CalculationPotentialBuilding(ScoutUpPosition,e);
-          DownP = DownP+CalculationPotentialBuilding(ScoutDownPosition,e);
-          LeftP = LeftP+CalculationPotentialBuilding(ScoutLeftPosition,e);
-          RightP = RightP+CalculationPotentialBuilding(ScoutRightPosition,e);
-          UpRightP = UpRightP+CalculationPotentialBuilding(ScoutUpRightPosition,e);
-          UpLeftP = UpLeftP+CalculationPotentialBuilding(ScoutUpLeftPosition,e);
-          DownRightP = DownRightP+CalculationPotentialBuilding(ScoutDownRightPosition,e);
-          DownLeftP = DownLeftP+CalculationPotentialBuilding(ScoutDownLeftPosition,e);
-          CenterP = CenterP+CalculationPotentialBuilding(ScoutCenterPosition,e);
-        }
-      }
-      else if(!e->getType().isBuilding()){
-        mUpU = max(mUpU,CalculationPotentialUnit(ScoutUpPosition,e));
-        mDownU = max(mDownU, CalculationPotentialUnit(ScoutDownPosition,e));
-        mLeftU = max(mLeftU,CalculationPotentialUnit(ScoutLeftPosition,e));
-        mRightU = max(mRightU, CalculationPotentialUnit(ScoutRightPosition,e));
-        mUpRightU = max(mUpRightU, CalculationPotentialUnit(ScoutUpRightPosition,e));
-        mUpLeftU = max(mUpLeftU, CalculationPotentialUnit(ScoutUpLeftPosition,e));
-        mDownRightU = max(mDownRightU, CalculationPotentialUnit(ScoutDownRightPosition,e));
-        mDownLeftU = max(mDownLeftU, CalculationPotentialUnit(ScoutDownLeftPosition,e));
-
-        //UpP = UpP+CalculationPotentialUnit(ScoutUpPosition,e);
-        //DownP = DownP+CalculationPotentialUnit(ScoutDownPosition,e);
-        //LeftP = LeftP+CalculationPotentialUnit(ScoutLeftPosition,e);
-        //RightP = RightP+CalculationPotentialUnit(ScoutRightPosition,e);
-        //UpRightP = UpRightP+CalculationPotentialUnit(ScoutUpRightPosition,e);
-        //UpLeftP = UpLeftP+CalculationPotentialUnit(ScoutUpLeftPosition,e);
-        //DownRightP = DownRightP+CalculationPotentialUnit(ScoutDownRightPosition,e);
-        //DownLeftP = DownLeftP+CalculationPotentialUnit(ScoutDownLeftPosition,e);
-        //CenterP = CenterP+CalculationPotentialUnit(ScoutCenterPosition,e);
-      }
-    }
-
-    UpP += mUpU;
-    DownP += mDownU;
-    LeftP += mLeftU;
-    RightP += mRightU;
-    UpLeftP += mUpLeftU;
-    UpRightP += mUpRightU;
-    DownLeftP += mDownLeftU;
-    DownRightP += mDownRightU;
-
-    //UpP = UpP+PolygonPotentialValue(ScoutUpPosition);
-    //DownP = DownP+PolygonPotentialValue(ScoutDownPosition);
-    //LeftP = LeftP+PolygonPotentialValue(ScoutLeftPosition);
-    //RightP = RightP+PolygonPotentialValue(ScoutRightPosition);
-    //UpRightP = UpRightP+PolygonPotentialValue(ScoutUpRightPosition);
-    //UpLeftP = UpLeftP+PolygonPotentialValue(ScoutUpLeftPosition);
-    //DownRightP = DownRightP+PolygonPotentialValue(ScoutDownRightPosition);
-    //DownLeftP = DownLeftP+PolygonPotentialValue(ScoutDownLeftPosition);
-    //CenterP = CenterP+PolygonPotentialValue(ScoutCenterPosition);
-    UpP = UpP+CalculationPotentialPerimeter(ScoutUpPosition);
-    DownP = DownP+CalculationPotentialPerimeter(ScoutDownPosition);
-    LeftP = LeftP+CalculationPotentialPerimeter(ScoutLeftPosition);
-    RightP = RightP+CalculationPotentialPerimeter(ScoutRightPosition);
-    UpRightP = UpRightP+CalculationPotentialPerimeter(ScoutUpRightPosition);
-    UpLeftP = UpLeftP+CalculationPotentialPerimeter(ScoutUpLeftPosition);
-    DownRightP = DownRightP+CalculationPotentialPerimeter(ScoutDownRightPosition);
-    DownLeftP = DownLeftP+CalculationPotentialPerimeter(ScoutDownLeftPosition);
-    CenterP = CenterP+CalculationPotentialPerimeter(ScoutCenterPosition);
-
-
-    srand((unsigned)time(NULL));
-
-    BestP = CenterP - 1;
-    NextPosition = ScoutCenterPosition;
-    Broodwar->drawCircleMap(ScoutLeftPosition.x(),ScoutLeftPosition.y(),2,Colors::Green);
-    Broodwar->drawCircleMap(ScoutRightPosition.x(),ScoutRightPosition.y(),2,Colors::Green);
-    Broodwar->drawCircleMap(ScoutUpPosition.x(),ScoutUpPosition.y(),2,Colors::Green);
-    Broodwar->drawCircleMap(ScoutDownPosition.x(),ScoutDownPosition.y(),2,Colors::Green);
-    Broodwar->drawCircleMap(ScoutUpLeftPosition.x(),ScoutUpLeftPosition.y(),2,Colors::Green);
-    Broodwar->drawCircleMap(ScoutUpRightPosition.x(),ScoutUpRightPosition.y(),2,Colors::Green);
-    Broodwar->drawCircleMap(ScoutDownLeftPosition.x(),ScoutDownLeftPosition.y(),2,Colors::Green);
-    Broodwar->drawCircleMap(ScoutDownRightPosition.x(),ScoutDownRightPosition.y(),2,Colors::Green);
-    if(UpP + (isWalkTileWalkable(ScoutUpPosition)?0:-100) + ((double) rand() / (RAND_MAX+1)) > BestP + ((double) rand() / (RAND_MAX+1))){
-      BestP = UpP;
-      if (isWalkTileWalkable((ScoutCenterPosition + Up)))
-        NextPosition = ScoutCenterPosition + Up;
-    }
-    if(DownP + (isWalkTileWalkable(ScoutDownPosition)?0:-100) + ((double) rand() / (RAND_MAX+1)) >BestP + ((double) rand() / (RAND_MAX+1))){
-      BestP = DownP;
-      if (isWalkTileWalkable((ScoutCenterPosition + Down)))
-        NextPosition = ScoutCenterPosition + Down;
-    }
-    if(LeftP +(isWalkTileWalkable(ScoutLeftPosition)?0:-100) + ((double) rand() / (RAND_MAX+1))>BestP+((double) rand() / (RAND_MAX+1))){
-      BestP = LeftP;
-      if (isWalkTileWalkable((ScoutCenterPosition + Left)))
-        NextPosition = ScoutCenterPosition + Left;
-    }
-    if(RightP +(isWalkTileWalkable(ScoutRightPosition)?0:-100)+((double) rand() / (RAND_MAX+1)) >BestP+((double) rand() / (RAND_MAX+1))){
-      BestP = RightP;
-      if (isWalkTileWalkable((ScoutCenterPosition + Right)))
-        NextPosition = ScoutCenterPosition + Right;
-    }
-    if(DownRightP +(isWalkTileWalkable(ScoutDownRightPosition)?0:-100)+((double) rand() / (RAND_MAX+1)) >BestP+((double) rand() / (RAND_MAX+1))){
-      BestP = DownRightP;
-      if (isWalkTileWalkable((ScoutCenterPosition + DownRight)))
-        NextPosition = ScoutCenterPosition + DownRight;
-    }
-    if(DownLeftP +(isWalkTileWalkable(ScoutDownLeftPosition)?0:-100)+((double) rand() / (RAND_MAX+1)) > BestP+((double) rand() / (RAND_MAX+1))){
-      BestP = DownLeftP;
-      if (isWalkTileWalkable((ScoutCenterPosition + DownLeft)))
-        NextPosition = ScoutCenterPosition + DownLeft;
-    }
-    if(UpRightP +(isWalkTileWalkable(ScoutUpRightPosition)?0:-100)+((double) rand() / (RAND_MAX+1)) >BestP+((double) rand() / (RAND_MAX+1))){
-      BestP = UpRightP;
-      if (isWalkTileWalkable((ScoutCenterPosition + UpRight)))
-        NextPosition = ScoutCenterPosition + UpRight;
-    }
-    if(UpLeftP +(isWalkTileWalkable(ScoutUpLeftPosition)?0:-100)+((double) rand() / (RAND_MAX+1)) > BestP+((double) rand() / (RAND_MAX+1))){
-      BestP = UpLeftP;
-      if (isWalkTileWalkable((ScoutCenterPosition + UpLeft)))
-        NextPosition = ScoutCenterPosition + UpLeft;
-    }
-
-    Broodwar->printf("BestP (%f)",BestP);
-    if (NextPosition!=ScoutCenterPosition){
-      if (u->isStuck()){
-        if(this->workerMG->_workersTarget[u])
-          u->rightClick(this->workerMG->_workersTarget[u]);
-      }
-      else
-        u->move(NextPosition);
-    }		
-    else{
-
-      if(this->workerMG->_workersTarget[u])
-        u->rightClick(this->workerMG->_workersTarget[u]);
-    }
-    //Distance=(sqrt((ux-ex)^2+(uy-ey)^2)/32)
-
-    /*np.x() = u->getPosition().x()+30;
-    np.y() = u->getPosition().y();
-    u->move(np);
-    }
-    else{
-    np.x() = u->getPosition().x();
-    np.y() = u->getPosition().y()+30;
-    u->move(np);
-    }*/
-
-  }
-}
-
-double ScoutManager::CalculationPotential(Position m,Position e)
-{
-  double D;
-  double x,y,d;
-  double P = 0;
-
-  // distance between m and e
-  x = (m.x()-e.x())*(m.x()-e.x());
-  y = (m.y()-e.y())*(m.y()-e.y());
-  //d = x+y;
-  d = m.getDistance(e);
-  // from position distance to tileposition distance,so divide 32
-  D=(d)/32;
-
-
-  if (D>30)
-    P = -100;
-  else
-    P = 0;
-
-
-
-
-  //if(D<2){
-  //	P = D*3-2;
-  //}
-  //else if(D>=2&&D<10){
-  //	P = 10;
-  //}
-  //else if(D>=10){
-  //	P = 20 - D;
-  //}
-
-  return P;
-}
-
-double ScoutManager::CalculationPotentialUnit(Position m,Unit* e)
-{
-  double D;
-  double x,y,d;
-  double P = 0;
-  double AttackRange = e->getType().groundWeapon().maxRange()*1.0/32.0 + 0.5;
-
-
-  x = (m.x()-e->getPosition().x())*(m.x()-e->getPosition().x());
-  y = (m.y()-e->getPosition().y())*(m.y()-e->getPosition().y());
-  //d = x+y;
-  d = m.getDistance(e->getPosition());
-
-  D=(d)/32;
-
-  Broodwar->drawCircleMap(e->getPosition().x(),e->getPosition().y(),(int)(AttackRange*32),Colors::White);
-  Broodwar->drawCircleMap(e->getPosition().x(),e->getPosition().y(),(int)(AttackRange*32 + 2*32),Colors::Red);
-  Broodwar->drawTextMap(e->getPosition().x(),e->getPosition().y(),"%lf",D);
-
-  if(D<=AttackRange){
-    P = -exp(AttackRange+3-D);
-  }
-  else if(D<=AttackRange+2){
-    //P = D;
-    P = 2*log(D-AttackRange);
-  } else {
-    P = 2*log(D);
-  }
-
-  return P;
-}
-
-double ScoutManager::CalculationPotentialBuilding(Position m,Unit* e)
-{
-  //return 0;
-  double D;
-  double x,y,d;
-  double P=0;
-  double Size = 2.5;
-  Size = sqrt(1.0*e->getType().dimensionUp()*e->getType().dimensionDown() + 1.0*e->getType().dimensionRight()*e->getType().dimensionLeft())/32.0;
-
-  x = (m.x()-e->getPosition().x())*(m.x()-e->getPosition().x());
-  y = (m.y()-e->getPosition().y())*(m.y()-e->getPosition().y());
-  //d = x+y;
-  d = m.getDistance(e->getPosition());
-
-  D=(d)/32;
-
-  Broodwar->drawCircleMap(e->getPosition().x(), e->getPosition().y(), (int)(Size*32+8), Colors::White);
-
-  if(D<=Size+0.25){
-    P = D-Size - 1.25;
-  }
-  return P;
-}
-
-double ScoutManager::CalculationPotentialDangerousBuilding(Position m,Unit* e)
-{
-  double D;
-  double x,y,d;
-  double P;
-  int AttackRange = e->getType().groundWeapon().maxRange()/32+1;
-
-  x = (m.x()-e->getPosition().x())*(m.x()-e->getPosition().x());
-  y = (m.y()-e->getPosition().y())*(m.y()-e->getPosition().y());
-  //d = x+y;
-  d = m.getDistance(e->getPosition());
-
-  D=(d)/32;
-
-  if(D<=AttackRange){
-    P = D/AttackRange-5;
-  }
-  else if(D>AttackRange){
-    P = 0;
-  }
-
-  return P;
-}
-
 void ScoutManager::destroy()
 {
   if (theScoutManager) delete theScoutManager;
-
-}
-
-
-double ScoutManager::CalculationPotentialPerimeter(Position m)
-{
-  double D;
-  double x,y,d;
-  double P;
-  double num= 0 ;
-  BWTA::Region* R=BWTA::getRegion(this->enemyStartLocation->getPosition());
-  Position NearestPerimeter;
-
-  NearestPerimeter = R->getPolygon().getNearestPoint(m);
-
-  x = (m.x()-NearestPerimeter.x())*(m.x()-NearestPerimeter.x());
-  y = (m.y()-NearestPerimeter.y())*(m.y()-NearestPerimeter.y());
-  //d = x+y;
-  d = m.getDistance(NearestPerimeter);
-
-  D=(d)/32;
-
-  //Broodwar->drawCircleMap(NearestPerimeter.x(),NearestPerimeter.y(),32,Colors::Orange);
-  Broodwar->drawCircleMap(NearestPerimeter.x(),NearestPerimeter.y(),2*32,Colors::Yellow);
-
-  if(D<=1.75){
-    P = -exp(4-D)-1;
-  }
-  else P = 1 + 2*log(D);
-
-  return P;
-}
-
-double ScoutManager::PolygonPotentialValue(Position po)
-{
-  return 0;
-  double D;
-  double P=0;
-  double num = 0;
-  BWTA::Region* R=BWTA::getRegion(this->enemyStartLocation->getPosition());
-  Position NearestPerimeter = R->getPolygon().getNearestPoint(po); 
-
-  BWTA::Polygon polygonVector = R->getPolygon();
-
-  D = po.getDistance(NearestPerimeter)/32;
-
-  for(Polygon::iterator i = polygonVector.begin(); i != polygonVector.end();i++){
-    if (NearestPerimeter.getDistance(*i)<=32){
-      Broodwar->drawCircleMap(i->x(),i->y(),32,Colors::Orange);
-      //Broodwar->drawCircleMap(i->x(),i->y(),32*3,Colors::Yellow);
-      num++;
-    }
-  }
-
-  if (D<=1){
-    P = (D-2)*num;
-  } else if(D<=3){
-    P = (D-1)*num;
-  }
-  //else P = 3*num;*/
-  return P;
 
 }

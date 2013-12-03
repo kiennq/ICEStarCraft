@@ -71,6 +71,9 @@ private:
 	TerrainManager* terrainManager;
 	UpgradeManager* upgradeManager;
 	MentalClass* mental;
+
+  // _K_
+  bool _debugMode;
 	
 	//_T_
 	void autoTrainArmy();

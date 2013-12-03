@@ -264,24 +264,51 @@ void MacroManager::controlLiftedBuildings()
 			continue;
 		}
 
-		UnitGroup enemy = SelectAllEnemy()(isCompleted)(canAttack,Bunker).not(isFlyer,isWorker).inRadius(u->getType().sightRange() + 32*6, u->getPosition());
+    // Change to eInfo
+		//UnitGroup enemy = SelectAllEnemy()(isCompleted)(canAttack,Bunker).not(isFlyer,isWorker).inRadius(u->getType().sightRange() + 32*6, u->getPosition());
+    // Just follow tank
+    set<EnemyUnit*> enemy;
+    Position enTankPos;
+    int td = 99999;
+    for each (EnemyUnit* eU in eInfo->getAllEnemyUnits())
+    {
+      UnitType ut = eU->getType();
+      Position up = eU->getPosition();
+      if (ut == UnitTypes::Terran_Siege_Tank_Siege_Mode || ut == UnitTypes::Terran_Siege_Tank_Tank_Mode) 
+      {
+        if (td > up.getApproxDistance(terrainManager->mSecondChokepoint->getCenter()))
+        {
+          td = up.getApproxDistance(terrainManager->mSecondChokepoint->getCenter());
+          enTankPos = up;
+        }
+        enemy.insert(eU);
+        //enTankPos += eU->getPosition();
+      }
+    }
+
 		if (enemy.empty())
 		{
 			if (terrainManager->eSecondChokepoint && u->getPosition().getApproxDistance(terrainManager->eSecondChokepoint->getCenter()) > 32)
 			{
 				u->move(terrainManager->eSecondChokepoint->getCenter());
+        Position ckp2 = terrainManager->eSecondChokepoint->getCenter();
+        Broodwar->drawCircleMap(ckp2.x(), ckp2.y(), 5, Colors::Green, true);
+        Broodwar->drawLineMap(u->getPosition().x(), u->getPosition().y(), ckp2.x(), ckp2.y(), Colors::Green);
 			}							
 		}
 		// follow the enemy center
 		else
 		{
-			UnitGroup eTank = enemy(Siege_Tank);
-			Position pos = eTank.empty() ? enemy.getCenter() : eTank.getCenter();
-			u->move(pos);
+			//UnitGroup eTank = enemy(Siege_Tank);
+			//Position pos = eTank.empty() ? enemy.getCenter() : eTank.getCenter();
+			//u->move(pos);
+      u->move(Position(enTankPos.x(), enTankPos.y()));
+      Broodwar->drawCircleMap(enTankPos.x(), enTankPos.y(), 5, Colors::Green, true);
+      Broodwar->drawLineMap(u->getPosition().x(), u->getPosition().y(), enTankPos.x(), enTankPos.y(), Colors::Green);
 		}
 	}
 
-	if (Broodwar->getFrameCount() > 24*60*5)
+	if (Broodwar->getFrameCount() > 24*60*5.5)
 	{
 		SelectAll()(isCompleted)(Barracks,Engineering_Bay).not(isLifted).lift();
 	}

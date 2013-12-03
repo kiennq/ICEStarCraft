@@ -10,7 +10,7 @@
 
 
 #ifndef _SCOUT_DEBUG
-//#define _SCOUT_DEBUG
+#define _SCOUT_DEBUG
 #endif
 
 #ifndef _LOG_TO_FILE
@@ -71,7 +71,7 @@ namespace ICEStarCraft {
     std::map<BWAPI::Unit*, BWAPI::UnitType> _enBunker;
 		std::set<BWTA::BaseLocation*> _enBaseLoacation;
 		std::set<BWAPI::Unit*> _enBuildings;
-		std::map<BWAPI::UnitType,std::set<BWAPI::Unit*> > _enUnits;
+		std::map<BWAPI::UnitType,std::set<BWAPI::Unit*>> _enUnits;
     std::map<BWTA::Region*, std::list<BWAPI::Position>> _border;
 #ifdef _LOG_TO_FILE
 		int _enDiscoveredBuildings;
@@ -84,19 +84,32 @@ namespace ICEStarCraft {
 	private:
 		int _paralength;
 		double* _p;
-    static struct _StuckInfo {
+    // Custom unit info
+    static struct _UnitInfo {
       BWAPI::Position pos;
-      int frame;
-      bool stuck;
+      int iFrame;
+      // when stucked, click on predefined mineral
+      bool fStuck;
       BWAPI::Unit* mineral;
-      _StuckInfo(BWAPI::Position pos, int frame, bool stuck, BWAPI::Unit* mineral)
-        : pos(pos),
-        frame(frame), 
-        stuck(stuck), 
-        mineral(mineral){}
-      _StuckInfo(){}
+      // unit will fade after a certain time
+      int ctFadeThres;
+
+      _UnitInfo(const BWAPI::Position& pos, int iFrame, bool fStuck, BWAPI::Unit* mineral)
+        : pos(pos)
+        , iFrame(iFrame)
+        , fStuck(fStuck)
+        , mineral(mineral) {}
+
+      _UnitInfo(const BWAPI::Position& pos, int iFrame, int ctFadeThres)
+        : pos(pos)
+        , iFrame(iFrame)
+        , ctFadeThres(ctFadeThres) {} 
+
+      _UnitInfo(){}
     };
-    std::map<BWAPI::Unit*, _StuckInfo> _lastPositions;
+    std::map<BWAPI::Unit*, _UnitInfo> _scoutLastPositions;
+    // Store the position of enemy units
+    std::map<BWAPI::Unit*, _UnitInfo> _eUnitPos;
 
 #ifdef _SCOUT_DEBUG
 		bool show_object_r;
@@ -106,12 +119,17 @@ namespace ICEStarCraft {
 		bool show_all_p;
 
     BWAPI::Position _screenPos;
-		std::map<BWAPI::Unit*, std::list<Vector2> > _unit_p;
-		std::map<BWAPI::Unit*, std::list<Vector2> > _region_p;
-		std::map<BWAPI::Unit*, std::list<Vector2> > _border_p;
-		std::map<BWAPI::Unit*, std::list<Vector2> > _all_p;
-		std::map<BWAPI::Unit*, std::list<std::pair<BWAPI::Position, int> > > _obj;
+		std::map<BWAPI::Unit*, std::list<Vector2>> _unit_p;
+		std::map<BWAPI::Unit*, std::list<Vector2>> _region_p;
+		std::map<BWAPI::Unit*, std::list<Vector2>> _border_p;
+		std::map<BWAPI::Unit*, std::list<Vector2>> _all_p;
+		std::map<BWAPI::Unit*, std::list<std::pair<BWAPI::Position, int>>> _obj;
 #endif // _SCOUT_DEBUG
+
+    void _registerEnUnitPosition();
+    // Fade unit instantly
+    void _fadeUnit(BWAPI::Unit* u);
+    void _fadeUnits();
 
 	};
 

@@ -75,18 +75,10 @@ public:
 	bool scoutFinish(Unit* u ,BaseLocation* bl);
 	bool seeResourceDepot(Unit* u ,BaseLocation* bl);
 	void setScoutNum(int num);
-	void testScoutRun(Unit* u);
-	double CalculationPotential(Position m,Position e);
-	double CalculationPotentialUnit(Position m,Unit* e);
-	double CalculationPotentialBuilding(Position m,Unit* e);
-	double CalculationPotentialPerimeter(Position m);
 
 	//important positions for scanner to scan, such as enemy startPostion, chokepoint etc.
 	std::set<Position>essentialPostions;
 	MentalClass* mental;
-
-	double CalculationPotentialDangerousBuilding(Position m,Unit* e);
-	double PolygonPotentialValue(Position po);
 
 protected:
 	ScoutManager();
@@ -128,7 +120,7 @@ private:
 	Position ScoutDownLeftPosition;
 	Position ScoutCenterPosition;
 
-	bool _switchRegionFlag;
+	bool _fSwitchRegion;
 	BaseLocation* _nextTargetBase;
 
 	int SMD;

@@ -10,6 +10,7 @@
 #include <vector>
 #include <list>
 #include <ConstructionManager.h>
+#include <Config.h>
 #include <ctime>
 
 using namespace std;
@@ -43,7 +44,7 @@ BuildOrderManager::BuildOrderManager(BuildManager* buildManager, TechManager* te
 	this->usedMinerals       = 0;
 	this->usedGas            = 0;
 	this->dependencyResolver = false;
-	this->debugMode          = false;
+	this->debugMode          = Config::i().DEBUG_BUILD_ORDER_MANAGER();
 	this->mental = MentalClass::create();
 	UnitItem::getBuildManager() = buildManager;
 	for(set<BWAPI::UnitType>::const_iterator i=UnitTypes::allUnitTypes().begin();i!=UnitTypes::allUnitTypes().end();i++)
@@ -72,7 +73,7 @@ BuildOrderManager::BuildOrderManager(BuildManager* buildManager,SupplyManager* s
 	this->usedMinerals       = 0;
 	this->usedGas            = 0;
 	this->dependencyResolver = false;
-	this->debugMode          = false;
+	this->debugMode          = Config::i().DEBUG_BUILD_ORDER_MANAGER();
 	UnitItem::getBuildManager() = buildManager;
 	for(set<BWAPI::UnitType>::const_iterator i=UnitTypes::allUnitTypes().begin();i!=UnitTypes::allUnitTypes().end();i++)
 	{
@@ -532,8 +533,10 @@ void BuildOrderManager::update()
 					this->plannedCommandCenter[tp] = Broodwar->getFrameCount();
 				}
 			}
-			else
-				this->reserveResources(factory,unit);
+			else if (unit != UnitTypes::Terran_Command_Center)
+      {
+        this->reserveResources(factory,unit);
+      }
 		}
 		else if (tech!=TechTypes::None)
 		{
@@ -1195,9 +1198,9 @@ void BuildOrderManager::autoExpand(int priority,int maxlimit)
 {
 	static bool checkDistance = true;
 
-	if (getPlannedCount(UnitTypes::Terran_Command_Center,100) >= maxlimit)
+	if (getPlannedCount(UnitTypes::Terran_Command_Center,0) >= maxlimit)
 	{
-		int plancount = getPlannedCount(UnitTypes::Terran_Command_Center,100);
+		int plancount = getPlannedCount(UnitTypes::Terran_Command_Center,0);
 		return;
 	}
 

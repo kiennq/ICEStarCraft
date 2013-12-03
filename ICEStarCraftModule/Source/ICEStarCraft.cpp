@@ -78,7 +78,6 @@ void ICEStarCraftModule::onStart()
 	this->macroManager = MacroManager::create();
 
 	this->buildOrderManager  = new BuildOrderManager(this->buildManager,this->techManager,this->upgradeManager,workerManager,this->supplyManager);
-	this->buildOrderManager->setDebugMode(false);
 	if (Broodwar->enemy()->getRace() == Races::Protoss)
 	{
 		this->buildManager->setBuildDistance(0);
