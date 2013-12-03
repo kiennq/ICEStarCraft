@@ -122,7 +122,9 @@ void GameFlow::onFrame()
 	}
 
 	//build Turret
-	if (Broodwar->getFrameCount() >= 24*60*10 && Broodwar->getFrameCount()%(24*20) == 0 &&	Broodwar->enemy()->getRace() != Races::Zerg)
+	if (Broodwar->getFrameCount() >= Config::i().GF_TURRET_BUILD_TIME() && 
+      Broodwar->getFrameCount()%(24*20) == 0 &&	
+      Broodwar->enemy()->getRace() != Races::Zerg)
 	{
 		if (Broodwar->self()->allUnitCount(UnitTypes::Terran_Engineering_Bay) < 1 && this->buildOrder->getPlannedCount(UnitTypes::Terran_Engineering_Bay,65) < 1)
 		{
