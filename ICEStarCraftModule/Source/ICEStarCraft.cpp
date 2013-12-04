@@ -775,6 +775,14 @@ void ICEStarCraftModule::showDebugInfo()
 	MyInfoManager::create()->showDebugInfo();
 	TerrainManager::create()->showDebugInfo();
 
+  for each (Unit* u in Broodwar->getAllUnits())
+  {
+    if (u->isSelected())
+    {
+      Broodwar->drawTextMap(u->getPosition().x(), u->getPosition().y()-u->getType().dimensionUp(), "%ld %d", (int)u, u->getID());
+    }
+  }
+
 	for each (Unit* u in Broodwar->self()->getUnits())
 	{
 		if (u->isSelected())

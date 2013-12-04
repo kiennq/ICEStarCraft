@@ -35,9 +35,9 @@ ScoutManager::ScoutManager()
   this->terrainManager = NULL;
   this->scoutGroup.clear();
   this->needScoutNum = 1;
-  this->ScoutUnitPuporseMap.clear();
+  this->ScoutUnitPurposeMap.clear();
   this->lastExplorPosition=BWAPI::Positions::None;
-  this->ScoutUnitLastPuporseMap.clear();
+  this->ScoutUnitLastPurposeMap.clear();
   this->returnTimes = 0;
   this->lockedPositionSet.clear();
   this->expansionToScout.clear();
@@ -86,7 +86,7 @@ void ScoutManager::SCVScout(ScoutPurpose purpose)
   }
 
 	// send only 1 SCV to scout
-	for (map<Unit*,ScoutPurpose>::iterator i = this->ScoutUnitPuporseMap.begin(); i != this->ScoutUnitPuporseMap.end(); i++)
+	for (map<Unit*,ScoutPurpose>::iterator i = this->ScoutUnitPurposeMap.begin(); i != this->ScoutUnitPurposeMap.end(); i++)
 	{
 		if (i->first && i->first->exists() && i->second == purpose)
 		{
@@ -111,8 +111,8 @@ void ScoutManager::SCVScout(ScoutPurpose purpose)
 		{
       continue;
     }
-    else if (this->ScoutUnitPuporseMap.find(u) == this->ScoutUnitPuporseMap.end())
-      this->ScoutUnitPuporseMap[u] = purpose;
+    else if (this->ScoutUnitPurposeMap.find(u) == this->ScoutUnitPurposeMap.end())
+      this->ScoutUnitPurposeMap[u] = purpose;
   }
 }
 
@@ -125,14 +125,14 @@ void ScoutManager::VultureScout(ScoutPurpose purpose)
 		{
 			//Broodwar->printf("delete vulture from scout group");
 			this->scoutGroup.erase(u);
-			this->ScoutUnitPuporseMap.erase(u);
+			this->ScoutUnitPurposeMap.erase(u);
 		}
 
-		if (u->getType() == UnitTypes::Terran_SCV && this->ScoutUnitPuporseMap[u] == ScoutManager::EnemyExpansion)
+		if (u->getType() == UnitTypes::Terran_SCV && this->ScoutUnitPurposeMap[u] == ScoutManager::EnemyExpansion)
 		{
 			//Broodwar->printf("delete SCV from scout group");
 			this->scoutGroup.erase(u);
-			this->ScoutUnitPuporseMap.erase(u);
+			this->ScoutUnitPurposeMap.erase(u);
 			this->workerMG->_workerUnits.insert(u);
 			this->workerMG->_workerState.erase(u);
 		}
@@ -165,9 +165,9 @@ void ScoutManager::VultureScout(ScoutPurpose purpose)
 	
   for each(Unit* u in this->scoutGroup)
 	{
-    if(this->ScoutUnitPuporseMap.find(u) == this->ScoutUnitPuporseMap.end())
+    if(this->ScoutUnitPurposeMap.find(u) == this->ScoutUnitPurposeMap.end())
 		{
-      this->ScoutUnitPuporseMap[u] = purpose;
+      this->ScoutUnitPurposeMap[u] = purpose;
 		}
   }
 }
@@ -371,9 +371,9 @@ void ScoutManager::onUnitDestroy(Unit* unit)
     this->scoutGroup.erase(unit);
 		this->deadScoutUnitCount++;
   }
-  if (this->ScoutUnitPuporseMap.find(unit) != this->ScoutUnitPuporseMap.end())
+  if (this->ScoutUnitPurposeMap.find(unit) != this->ScoutUnitPurposeMap.end())
 	{
-    this->ScoutUnitPuporseMap.erase(unit);
+    this->ScoutUnitPurposeMap.erase(unit);
   }
   ScoutController::create()->onUnitDestroy(unit);
 }
@@ -387,7 +387,7 @@ void ScoutManager::scoutEnemyLocation(Unit* u)
 {
 	if(this->enemyStartLocation != NULL||Broodwar->getFrameCount()>24*60*6)
 	{
-		this->ScoutUnitPuporseMap[u] = EnemyOpening;
+		this->ScoutUnitPurposeMap[u] = EnemyOpening;
 		return;
 	}
 	
@@ -401,7 +401,7 @@ void ScoutManager::scoutEnemyLocation(Unit* u)
 		return;
 	}
 
-	if(this->ScoutUnitPuporseMap[u] == EnemyStartLocation)
+	if(this->ScoutUnitPurposeMap[u] == EnemyStartLocation)
 	{
 		UnitGroup inRadiusSet = SelectAllEnemy().inRadius(u->getType().sightRange(),u->getPosition());
 		if (inRadiusSet(isBuilding).size() >= 1)
@@ -411,7 +411,7 @@ void ScoutManager::scoutEnemyLocation(Unit* u)
 				if (getRegion(inRadiusSet(isBuilding).getCenter()) == getRegion(bl->getPosition()))
 				{
 					this->enemyStartLocation = bl;	
-					this->ScoutUnitPuporseMap[u] = EnemyOpening;	
+					this->ScoutUnitPurposeMap[u] = EnemyOpening;	
 					//Broodwar->printf("Enemy StartLocation is (%d,%d)",bl->getPosition().x(),bl->getPosition().y());
 					return;
 				}
@@ -426,7 +426,7 @@ void ScoutManager::scoutEnemyLocation(Unit* u)
 			{
 				this->enemyStartLocation = bl;
 				currentSearchTarget = bl;
-				this->ScoutUnitPuporseMap[u] = EnemyOpening;	
+				this->ScoutUnitPurposeMap[u] = EnemyOpening;	
 				//Broodwar->printf("The rest location must be EnemyStartLocation!");
 			}
 			else
@@ -459,7 +459,7 @@ void ScoutManager::scoutEnemyLocation(Unit* u)
 							if(onTileUnit->getPlayer() == Broodwar->enemy() && onTileUnit->getType().isResourceDepot())
 							{
 								this->enemyStartLocation = bl;
-								this->ScoutUnitPuporseMap[u] = EnemyOpening;
+								this->ScoutUnitPurposeMap[u] = EnemyOpening;
 								//Broodwar->printf("Enemy StartLocation is (%d,%d)",bl->getPosition().x(),bl->getPosition().y());
 								return;
 							}										
@@ -485,7 +485,7 @@ void ScoutManager::scoutEnemyOpening(Unit* u)
       if (u->isConstructing()){
         return;
       }
-      if(this->ScoutUnitPuporseMap[u]==EnemyOpening)
+      if(this->ScoutUnitPurposeMap[u]==EnemyOpening)
 			{       
         Chokepoint* chkPoint = BWTA::getNearestChokepoint(u->getPosition());
 				if (!_fSwitchRegion &&
@@ -621,7 +621,7 @@ void ScoutManager::scoutEnemyExpansion(Unit* u)
 	//Broodwar->drawTextScreen(5,60,"BaseLocationNeedToScout: %d | %d",this->baseLocationNeedToScout.size(),Broodwar->getFrameCount());
 	//Broodwar->drawTextScreen(5,70,"BaseLocationExplored: %d",this->baseLocationsExplored.size());
 	
-	if (this->ScoutUnitPuporseMap[u] != EnemyExpansion)
+	if (this->ScoutUnitPurposeMap[u] != EnemyExpansion)
 	{
 		return;
 	}
@@ -652,7 +652,7 @@ void ScoutManager::scoutEnemyExpansion(Unit* u)
 	if (this->baseLocationNeedToScout.empty())
 	{
 		this->scoutGroup.erase(u);
-		this->ScoutUnitPuporseMap.erase(u);
+		this->ScoutUnitPurposeMap.erase(u);
 		Broodwar->printf("Finish scouting");
 		return;
 	}
@@ -733,7 +733,7 @@ void ScoutManager::scoutEnemyArmyNum(Unit* u)
 
 void ScoutManager::scoutMyMainBase(Unit* u)
 {
-	if (u->getType() != UnitTypes::Terran_SCV || this->ScoutUnitPuporseMap[u] != MyMainBase)
+	if (u->getType() != UnitTypes::Terran_SCV || this->ScoutUnitPurposeMap[u] != MyMainBase)
 	{
 		return;
 	}
@@ -750,7 +750,7 @@ void ScoutManager::scoutMyMainBase(Unit* u)
 		  ||
 			u->getOrder() == Orders::ConstructingBuilding || u->isConstructing() || u->isAttacking() || u->isRepairing())
 	{
-		this->ScoutUnitPuporseMap.erase(u);
+		this->ScoutUnitPurposeMap.erase(u);
 		this->scoutGroup.erase(u);
 		this->workerMG->_workerUnits.insert(u);
 		this->workerMG->_workerState.erase(u);
@@ -813,9 +813,9 @@ void ScoutManager::AsPreWarning(Unit* u)
   //for each(Unit* u in this->scoutGroup)
 	{
     if (u->getType()==UnitTypes::Terran_SCV || u->getType()==UnitTypes::Terran_Vulture ){
-      if(this->ScoutUnitPuporseMap[u]==PreWarning){
+      if(this->ScoutUnitPurposeMap[u]==PreWarning){
         if (Broodwar->getFrameCount()<24*60*5 && Broodwar->getFrameCount()%24*25==0){
-          this->ScoutUnitPuporseMap[u]=EnemyOpening;
+          this->ScoutUnitPurposeMap[u]=EnemyOpening;
           return;
         }
         if(unitInDanger(u)==false){
@@ -1099,8 +1099,9 @@ void ScoutManager::onFrame()
   if ((this->LocationsHasEnemy.find(this->enemyStartLocation)==this->LocationsHasEnemy.end()) && this->enemyStartLocation!=NULL)
     this->LocationsHasEnemy.insert(this->enemyStartLocation);
 
-	for(std::map<Unit*,ScoutPurpose>::iterator i=this->ScoutUnitPuporseMap.begin();i!=this->ScoutUnitPuporseMap.end();i++)
+	for(std::map<Unit*,ScoutPurpose>::iterator j=this->ScoutUnitPurposeMap.begin();j!=this->ScoutUnitPurposeMap.end();)
 	{
+    std::map<Unit*, ScoutPurpose>::iterator i = j++;
 		switch ((*i).second)
 		{
 		case EnemyStartLocation:
@@ -1285,9 +1286,9 @@ void ScoutManager::explorEnemyBase(Unit* u)
 
 void ScoutManager::unitFlee(Unit* u)
 {
-  if (this->ScoutUnitPuporseMap[u]==Running && unitInDanger(u))
+  if (this->ScoutUnitPurposeMap[u]==Running && unitInDanger(u))
 	{
-    if(this->ScoutUnitLastPuporseMap.find(u)!=this->ScoutUnitLastPuporseMap.end()){
+    if(this->ScoutUnitLastPurposeMap.find(u)!=this->ScoutUnitLastPurposeMap.end()){
       //if(this->ScoutUnitLastPuporseMap[u]==EnemyOpening){
       //	if(scoutFinish(u,this->enemyStartLocation)){
       //		this->ScoutUnitLastPuporseMap[u]=PreWarning;
@@ -1313,8 +1314,8 @@ void ScoutManager::unitFlee(Unit* u)
   }
 
   else{
-    this->ScoutUnitPuporseMap[u] = this->ScoutUnitLastPuporseMap[u];
-    this->ScoutUnitLastPuporseMap.erase(u);
+    this->ScoutUnitPurposeMap[u] = this->ScoutUnitLastPurposeMap[u];
+    this->ScoutUnitLastPurposeMap.erase(u);
     return;
   }
 }
@@ -1399,7 +1400,7 @@ bool ScoutManager::seeResourceDepot(Unit* u ,BaseLocation* bl)
 bool ScoutManager::scoutFinish(Unit* u ,BaseLocation* bl)
 {
   if (u->getType()==UnitTypes::Terran_Vulture ||u->getType()==UnitTypes::Terran_SCV){
-    if(ScoutUnitPuporseMap[u]==EnemyOpening){
+    if(ScoutUnitPurposeMap[u]==EnemyOpening){
       if(Broodwar->getFrameCount()>=24*60*6)
         return true;
       else if (SelectAllEnemy()(Dragoon,Vulture,Siege_Tank,Sunken_Colony,Ion_Cannon).inRadius(u->getType().sightRange()*2,bl->getPosition()).size()>=1)

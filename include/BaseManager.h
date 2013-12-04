@@ -18,14 +18,16 @@ public:
 	void onUnitDestroy(BWAPI::Unit* u);
 	//BaseClass* createBase(BWAPI::Unit* unit);
 	void update();
-	std::set<BWAPI::Unit*> getAllMineralSet();
-	std::set<BWAPI::Unit*> getAllGeyserSet();
-	std::set<BWAPI::Unit*> getMyMineralSet();
-	std::set<BaseClass*> getBaseSet();
-	std::map<BWTA::BaseLocation*,BWAPI::Unit*> getBLtoCCMap();
+	std::set<BWAPI::Unit*>& getAllMineralSet();
+	std::set<BWAPI::Unit*>& getAllGeyserSet();
+	std::set<BWAPI::Unit*>& getMyMineralSet();
+	std::set<BaseClass*>& getBaseSet();
+  std::set<BaseClass*> getEffectiveBaseSet();
+	std::map<BWTA::BaseLocation*,BWAPI::Unit*>& getBLtoCCMap();
+	std::map<BWTA::BaseLocation*,BaseClass*>& getBLtoBCMap();
 	bool getAllMineOutFlag();
 	void expandPlan(); 
-	std::set<BWTA::BaseLocation*> getPlanExpansionSet();
+	std::set<BWTA::BaseLocation*>& getPlanExpansionSet();
 	void setManagers(BuildOrderManager* b);
 	bool needProtection(BaseClass* bc);
 	void sendArmyProtect(UnitGroup ug, BaseClass* bc);
@@ -41,7 +43,7 @@ public:
 	std::set<BWTA::BaseLocation*> locationHasEnemy;
 
 	BWTA::BaseLocation* getEnemyStartLocation();
-	std::set<BWTA::BaseLocation*> getLocationHasEnemySet();
+	std::set<BWTA::BaseLocation*>& getLocationHasEnemySet();
 
 	std::set<BWAPI::Unit*> allMineralSet;
 	std::set<BWAPI::Unit*> allGeyserSet;
@@ -51,7 +53,7 @@ private:
 	bool allMineOut;
 	std::map<BWTA::BaseLocation*,BaseClass*> BLtoBCMap;//baselocation to baseclass map
 	std::map<BWTA::BaseLocation*,BWAPI::Unit*> BLtoCCMap;//baselocation to command center map
-	std::set<BaseClass*>mAllBaseSet; //my all bases set
+	std::set<BaseClass*>_mAllBaseSet; //my all bases set
 	unsigned int mineralSize;
 	unsigned int geryserSize;
 	

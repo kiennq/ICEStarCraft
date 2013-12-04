@@ -486,7 +486,7 @@ void WorkerManager::onFrame()
 {
 	//each base at least should have 10 workers, this is to prevent worker endless repair
 	//ex: all workers dead for going to repair unit in dangerous place
-	if (SelectAll()(isCompleted)(SCV).size() >= 10)
+	if (SelectAll()(isCompleted)(SCV).size() >= 10*this->bmc->getBLtoCCMap().size())
 		workerRepair();
 
 	if (Broodwar->getFrameCount()%12 == 0)

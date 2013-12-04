@@ -64,8 +64,8 @@ public:
 	std::set<BWTA::BaseLocation*> expansionToScout;
 	void setManagers();
 	void explorEnemyBase(Unit* u);
-	std::map<Unit*,ScoutPurpose> ScoutUnitPuporseMap;
-	std::map<Unit*,ScoutPurpose> ScoutUnitLastPuporseMap;
+	std::map<Unit*,ScoutPurpose> ScoutUnitPurposeMap;
+	std::map<Unit*,ScoutPurpose> ScoutUnitLastPurposeMap;
 	BWTA::BaseLocation *myStartLocation;
 	BWTA::BaseLocation *enemyStartLocation;
 	void setExpansionToScout();

@@ -24,10 +24,10 @@ void BaseManager::destroy()
 void BaseManager::onUnitDestroy(BWAPI::Unit* u)
 { 
 	if (u->getPlayer()==Broodwar->self() && (u->getType() == UnitTypes::Terran_SCV || u->getType() == UnitTypes::Terran_Command_Center)){
-		for each(BaseClass* b in this->mAllBaseSet){
+		for each(BaseClass* b in this->_mAllBaseSet){
 			//	b->onBaseDestroy(u);
 			if (b->getBaseLocation()->getTilePosition() == u->getTilePosition()){
-				this->mAllBaseSet.erase(b);
+				this->_mAllBaseSet.erase(b);
 				for each(Unit* mi in b->getMinerals()){
 					allMineralSet.erase(mi);
 				}			
@@ -56,7 +56,7 @@ BaseManager::BaseManager()
 	//BLtoBCMap[BWTA::getStartLocation(Broodwar->self())]=startBase;
 	BLtoCCMap.clear();
 	BLtoBCMap.clear();
-	mAllBaseSet.insert(startBase);
+	_mAllBaseSet.insert(startBase);
 	allMineralSet.clear();
 	planedExpansionSet.clear();
 	EnemyOnBL=false;
@@ -73,7 +73,7 @@ BaseManager::BaseManager()
 
 
 
-std::set<BWAPI::Unit*> BaseManager::getMyMineralSet()
+std::set<BWAPI::Unit*>& BaseManager::getMyMineralSet()
 {
 	return this->allMineralSet;
 }
@@ -110,7 +110,7 @@ void BaseManager::update()
 							if(base->getBaseLocation() != BWTA::getStartLocation(Broodwar->self()))
 							{
 								this->checkflag = false;
-								this->mAllBaseSet.insert(base);
+								this->_mAllBaseSet.insert(base);
 								this->checkflag = true;
 							}
 						}				
@@ -132,7 +132,7 @@ void BaseManager::update()
 							if(base->getBaseLocation() != BWTA::getStartLocation(Broodwar->self()))
 							{
 								this->checkflag = false;
-								this->mAllBaseSet.insert(base);
+								this->_mAllBaseSet.insert(base);
 								this->checkflag = true;
 							}				
 						}	
@@ -161,12 +161,12 @@ void BaseManager::update()
 			}		
 		}*/
 		
-		for each (BaseClass* bc in this->mAllBaseSet)
+		for each (BaseClass* bc in this->_mAllBaseSet)
 		{
 			bc->scvDefendBase();	
 		}
 				
-		for each(BaseClass* bc in mAllBaseSet)
+		for each(BaseClass* bc in _mAllBaseSet)
 		{
 			if (bc->isMinedOut())
 			{
@@ -250,13 +250,27 @@ void BaseManager::update()
 
 
 
-std::set<BaseClass*> BaseManager::getBaseSet()
+std::set<BaseClass*>& BaseManager::getBaseSet()
 {
-	return this->mAllBaseSet;
+	return this->_mAllBaseSet;
 
 }
 
-std::set<Unit*> BaseManager::getAllMineralSet()
+std::set<BaseClass*> BaseManager::getEffectiveBaseSet()
+{
+  std::set<BaseClass*> effectiveSet;
+	for each (BaseClass* b in _mAllBaseSet)
+  {
+    if (!b->isMinedOut())
+    {
+      effectiveSet.insert(b);
+    }
+  }
+  return effectiveSet;
+}
+
+
+std::set<Unit*>& BaseManager::getAllMineralSet()
 {
 	/*for (std::set<BaseClass*>::const_iterator b = mAllBaseSet.begin(); b != mAllBaseSet.end(); b++){
 		for each(Unit* mineral in (*b)->getMinerals()){
@@ -266,7 +280,7 @@ std::set<Unit*> BaseManager::getAllMineralSet()
 	return this->allMineralSet;
 }
 
-std::set<Unit*> BaseManager::getAllGeyserSet()
+std::set<Unit*>& BaseManager::getAllGeyserSet()
 {
 	/*this->mGeyserSet.clear();
 	for (std::set<BaseClass*>::const_iterator b = mAllBaseSet.begin(); b != mAllBaseSet.end(); b++){
@@ -278,9 +292,14 @@ std::set<Unit*> BaseManager::getAllGeyserSet()
 	return this->allGeyserSet;
 }
 
-std::map<BWTA::BaseLocation*,BWAPI::Unit*> BaseManager::getBLtoCCMap()
+std::map<BWTA::BaseLocation*,BWAPI::Unit*>& BaseManager::getBLtoCCMap()
 {
 	return this->BLtoCCMap;
+}
+
+std::map<BWTA::BaseLocation*,BaseClass*>& BaseManager::getBLtoBCMap()
+{
+	return this->BLtoBCMap;
 }
 
 bool BaseManager::getAllMineOutFlag()
@@ -333,7 +352,7 @@ void BaseManager::expandPlan()
 	}
 }
 
-std::set<BWTA::BaseLocation*> BaseManager::getPlanExpansionSet()
+std::set<BWTA::BaseLocation*>& BaseManager::getPlanExpansionSet()
 {
 	return this->planedExpansionSet;
 }
@@ -347,7 +366,7 @@ BWTA::BaseLocation* BaseManager::getEnemyStartLocation()
 {
 	return this->enmeyStartLocation  = scm->enemyStartLocation;
 }
-std::set<BWTA::BaseLocation*> BaseManager::getLocationHasEnemySet()
+std::set<BWTA::BaseLocation*>& BaseManager::getLocationHasEnemySet()
 {
 	return this->scm->LocationsHasEnemy;
 
@@ -404,7 +423,7 @@ void BaseManager::ProtectArmy()
 	//int t=(int)this->mAllBaseSet.size();
 	//t=t-1;
 	//n=n*t;
-	for each(BaseClass* bl in this->mAllBaseSet)
+	for each(BaseClass* bl in this->_mAllBaseSet)
 	{
 		if(bl->getBaseLocation() == this->myStartBase) continue;
 		if(n>=(int)protectGroup.size() &&0<(int)protectGroup.size())

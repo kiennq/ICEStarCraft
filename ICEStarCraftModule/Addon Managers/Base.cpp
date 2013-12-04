@@ -453,6 +453,7 @@ void BaseClass::scvDefendBase()
 
 	double ePower = 0;
 	int buildingNum = 0;
+  bool onlySCV = false;
 
 	for each (Unit* e in this->enemyToDefend)
 	{
@@ -461,19 +462,22 @@ void BaseClass::scvDefendBase()
 		if (type.isWorker())
 		{
 			ePower += 1.0 * (e->getHitPoints() + e->getShields()) * type.maxGroundHits() * type.groundWeapon().damageAmount() / type.groundWeapon().damageCooldown();
+      onlySCV &= true;
 		}
 		else if (type.isBuilding() && !type.canAttack())
 		{
 			buildingNum++;
+      onlySCV &= false;
 		}
 		else if (type.groundWeapon() != WeaponTypes::None)
 		{
 			ePower += 2.0 * (e->getHitPoints() + e->getShields()) * type.maxGroundHits() * type.groundWeapon().damageAmount() / type.groundWeapon().damageCooldown();
+      onlySCV &= false;
 		}
 	}
 	
 	// the number of scv we need 
-	int num = (int)(ePower / scvPower) + 1 + 2 * buildingNum;
+	int num = (int)(ePower / scvPower) + (onlySCV ? 1 : 0) + 2 * buildingNum;
 	//Broodwar->printf("ePower: %.2f | scvPower: %.2f | need %d",ePower,scvPower,num);
 
 	// exception: remove SCVs that are constructing or have too low HP

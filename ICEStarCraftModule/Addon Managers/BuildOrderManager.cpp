@@ -533,7 +533,7 @@ void BuildOrderManager::update()
 					this->plannedCommandCenter[tp] = Broodwar->getFrameCount();
 				}
 			}
-			else if (unit != UnitTypes::Terran_Command_Center)
+			else //if (unit != UnitTypes::Terran_Command_Center)
       {
         this->reserveResources(factory,unit);
       }

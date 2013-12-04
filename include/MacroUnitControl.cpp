@@ -245,6 +245,7 @@ void MacroManager::controlLiftedBuildings()
 	for each (Unit* u in liftedBuildings)
 	{
 		Vector2 v = Vector2(0,0);
+    // Runaway from enemy anti-air to our tanks
 		for each (EnemyUnit* e in eInfo->getAllEnemyUnits())
 		{
 			if (e->getType() != UnitTypes::Terran_Bunker && e->getType().airWeapon() == WeaponTypes::None)
@@ -259,6 +260,13 @@ void MacroManager::controlLiftedBuildings()
 		}
 		if (v != Vector2(0,0))
 		{
+      for each (Unit* m in SelectAll()(isCompleted)(Siege_Tank))
+      {
+        if (m->getPosition().getApproxDistance(u->getPosition()) <= 32*50)
+        {
+          v += PFFunctions::getVelocitySource(m->getPosition(),u->getPosition())*(-1000);
+        }
+      }
 			v = v * (128.0 / v.approxLen());
 			u->move((v + u->getPosition()).makeValid());
 			continue;
@@ -268,25 +276,28 @@ void MacroManager::controlLiftedBuildings()
 		//UnitGroup enemy = SelectAllEnemy()(isCompleted)(canAttack,Bunker).not(isFlyer,isWorker).inRadius(u->getType().sightRange() + 32*6, u->getPosition());
     // Just follow tank
     set<EnemyUnit*> enemy;
-    Position enTankPos;
+    Position enTankPos = Positions::None;
     int td = 99999;
     for each (EnemyUnit* eU in eInfo->getAllEnemyUnits())
     {
-      UnitType ut = eU->getType();
-      Position up = eU->getPosition();
-      if (ut == UnitTypes::Terran_Siege_Tank_Siege_Mode || ut == UnitTypes::Terran_Siege_Tank_Tank_Mode) 
+      UnitType et = eU->getType();
+      Position ep = eU->getPosition();
+      if (et == UnitTypes::Terran_Siege_Tank_Siege_Mode || et == UnitTypes::Terran_Siege_Tank_Tank_Mode) 
       {
-        if (td > up.getApproxDistance(terrainManager->mSecondChokepoint->getCenter()))
+        if (td > ep.getApproxDistance(terrainManager->mSecondChokepoint->getCenter()))
         {
-          td = up.getApproxDistance(terrainManager->mSecondChokepoint->getCenter());
-          enTankPos = up;
+          td = ep.getApproxDistance(terrainManager->mSecondChokepoint->getCenter());
+          enTankPos = ep;
         }
         enemy.insert(eU);
         //enTankPos += eU->getPosition();
       }
     }
 
-		if (enemy.empty())
+		if (enemy.empty() || 
+        enTankPos == Positions::None ||
+        enTankPos == Positions::Unknown ||
+        enTankPos == Positions::Invalid)
 		{
 			if (terrainManager->eSecondChokepoint && u->getPosition().getApproxDistance(terrainManager->eSecondChokepoint->getCenter()) > 32)
 			{
@@ -306,6 +317,7 @@ void MacroManager::controlLiftedBuildings()
       Broodwar->drawCircleMap(enTankPos.x(), enTankPos.y(), 5, Colors::Green, true);
       Broodwar->drawLineMap(u->getPosition().x(), u->getPosition().y(), enTankPos.x(), enTankPos.y(), Colors::Green);
 		}
+    Broodwar->drawTextMap(u->getPosition().x(), u->getPosition().y()-u->getType().dimensionUp(), "(%d %d)", u->getTargetPosition().x(), u->getTargetPosition().y());
 	}
 
 	if (Broodwar->getFrameCount() > 24*60*5.5)
