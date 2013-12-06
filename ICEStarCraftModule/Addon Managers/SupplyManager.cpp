@@ -85,7 +85,7 @@ int SupplyManager::getPlannedSupply() const
 	//plannedSupply+=buildOrderManager->getPlannedCount(BWAPI::UnitTypes::Protoss_Pylon)*BWAPI::UnitTypes::Protoss_Pylon.supplyProvided();
 	//plannedSupply+=buildOrderManager->getPlannedCount(BWAPI::UnitTypes::Zerg_Overlord)*BWAPI::UnitTypes::Zerg_Overlord.supplyProvided();
 
-	plannedSupply+=SelectAll()(Command_Center)(isCompleted).size()*BWAPI::UnitTypes::Terran_Command_Center.supplyProvided();
+	plannedSupply+=SelectAll()(Command_Center).size()*BWAPI::UnitTypes::Terran_Command_Center.supplyProvided();
 	//plannedSupply+=SelectAll()(Supply_Depot)(isCompleted||isConstructing).size()*BWAPI::UnitTypes::Terran_Supply_Depot.supplyProvided();
 	//plannedSupply+=SelectAll(BWAPI::UnitTypes::Protoss_Nexus).size()*BWAPI::UnitTypes::Protoss_Nexus.supplyProvided();
 	//plannedSupply+=SelectAll(BWAPI::UnitTypes::Zerg_Hatchery).size()*BWAPI::UnitTypes::Zerg_Hatchery.supplyProvided();

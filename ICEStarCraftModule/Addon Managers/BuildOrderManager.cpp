@@ -269,10 +269,10 @@ UnitType getUnitType(set<UnitType>& validUnitTypes,vector<pair<BWAPI::UnitType, 
 	return answer;
 }
 
-pair<TechType,UpgradeType> getTechOrUpgradeType(set<TechType>& validTechTypes, set<UpgradeType>& validUpgradeTypes, list<TechItem> &remainingTech)
+pair<TechType,UpgradeType> getTechOrUpgradeType(set<TechType>& validTechTypes, set<UpgradeType>& validUpgradeTypes, set<TechItem> &remainingTech)
 {
 	pair<TechType,UpgradeType> answer(TechTypes::None,UpgradeTypes::None);
-	for(list<TechItem>::iterator i=remainingTech.begin();i!=remainingTech.end();i++)
+	for(set<TechItem>::iterator i=remainingTech.begin();i!=remainingTech.end();i++)
 	{
 		//use the first valid unit type we find
 		TechType t=(*i).techType;
@@ -625,7 +625,7 @@ void BuildOrderManager::updatePlan()
 
 		//First consider all techs and upgrades for this priority level
 		set<UnitType> techUnitTypes;
-		for(list<TechItem>::iterator i=l->second.techs.begin();i!=l->second.techs.end();i++)
+		for(set<TechItem>::iterator i=l->second.techs.begin();i!=l->second.techs.end();i++)
 		{
 			if (i->techType!=TechTypes::None)
 				techUnitTypes.insert(i->techType.whatResearches());
@@ -655,12 +655,12 @@ void BuildOrderManager::updatePlan()
 		}
 
 		//get the remaining tech
-		list<TechItem> remainingTech=l->second.techs;
+		set<TechItem> remainingTech=l->second.techs;
 
 		if (this->dependencyResolver)
 		{
 			//check dependencies
-			for(list<TechItem>::iterator i=remainingTech.begin();i!=remainingTech.end();i++)
+			for(set<TechItem>::iterator i=remainingTech.begin();i!=remainingTech.end();i++)
 			{
 				TechType t=i->techType;
 				UpgradeType u=i->upgradeType;
@@ -905,14 +905,14 @@ void BuildOrderManager::research(BWAPI::TechType t, int priority)
 {
 	if (t==BWAPI::TechTypes::None || t==BWAPI::TechTypes::Unknown) return;
 
-	items[priority].techs.push_back(TechItem(t));
+	items[priority].techs.insert(TechItem(t));
 	nextUpdateFrame=0;
 }
 
 void BuildOrderManager::upgrade(int level, BWAPI::UpgradeType t, int priority)
 {
 	if (t==BWAPI::UpgradeTypes::None || t==BWAPI::UpgradeTypes::Unknown) return;
-	items[priority].techs.push_back(TechItem(t,level));
+	items[priority].techs.insert(TechItem(t,level));
 	nextUpdateFrame=0;
 }
 
@@ -1134,8 +1134,8 @@ void BuildOrderManager::setDebugMode(bool debugMode)
 
 void BuildOrderManager::removeCompletedItems(PriorityLevel* p)
 {
-	list<TechItem>::iterator i2;
-	for(list<TechItem>::iterator i=p->techs.begin();i!=p->techs.end();i=i2)
+	set<TechItem>::iterator i2;
+	for(set<TechItem>::iterator i=p->techs.begin();i!=p->techs.end();i=i2)
 	{
 		i2=i;
 		i2++;

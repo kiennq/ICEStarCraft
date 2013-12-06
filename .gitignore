@@ -6,6 +6,8 @@ Release/
 */Debug/
 */Release/
 *ipch/
+*.patch
+todo*
 
 # ignore all user setting file
 *.suo
@@ -22,3 +24,6 @@ desktop.ini
 
 # ignore misc. files
 *.idc
+
+# ignore swap file
+*.swp

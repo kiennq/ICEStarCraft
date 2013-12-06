@@ -85,15 +85,17 @@ bwtaBL BaseClass::getBaseLocation()
 
 const std::set<BWAPI::Unit*>& BaseClass::getMinerals() const
 {
+  static std::set<BWAPI::Unit*> none;
 	if (mBaseLocation == NULL)
-		return std::set<BWAPI::Unit*>();
+		return none;
 	else
 		return mBaseLocation->getMinerals(); 
 }
 const std::set<BWAPI::Unit*>& BaseClass::getGeysers() const
 {
+  static std::set<BWAPI::Unit*> none;
 	if (mBaseLocation == NULL)
-		return std::set<BWAPI::Unit*>();
+		return none;
 	else
 		return mBaseLocation->getGeysers();
 
@@ -453,7 +455,7 @@ void BaseClass::scvDefendBase()
 
 	double ePower = 0;
 	int buildingNum = 0;
-  bool onlySCV = false;
+  bool onlySCV = true;
 
 	for each (Unit* e in this->enemyToDefend)
 	{
@@ -477,7 +479,8 @@ void BaseClass::scvDefendBase()
 	}
 	
 	// the number of scv we need 
-	int num = (int)(ePower / scvPower) + (onlySCV ? 1 : 0) + 2 * buildingNum;
+	int num = (int)(ePower / scvPower) + (onlySCV ? 0 : 1) + 2 * buildingNum;
+  num = num > 0 ? num : 1;
 	//Broodwar->printf("ePower: %.2f | scvPower: %.2f | need %d",ePower,scvPower,num);
 
 	// exception: remove SCVs that are constructing or have too low HP

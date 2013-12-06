@@ -27,7 +27,7 @@ public:
 	class PriorityLevel
 	{
 	public:
-		std::list<TechItem> techs;
+		std::set<TechItem> techs;
     // Map of the builder (factory and worker) and the desired unit.
     // Second map of the desired unit and its other info (number, buildPosition)
 		std::map<BWAPI::UnitType, std::map<BWAPI::UnitType, UnitItem>> units;
