@@ -82,8 +82,6 @@ BuildOrderManager::BuildOrderManager(BuildManager* buildManager,SupplyManager* s
 	
 }
 
-
-
 //returns the next frame that the given unit type will be ready to produce units or research tech or upgrades
 int BuildOrderManager::nextFreeTime(const MetaUnit* unit)
 {
@@ -487,12 +485,14 @@ void BuildOrderManager::update()
 		//Broodwar->printf("updatePlan %.0f ms",(float)(1000*(clock()-t)/CLOCKS_PER_SEC));
 		this->nextUpdateFrame = time+24*3;
 	}
+
 	y=0;
 	this->reservedResources.clear();
 	this->reservedUnits.clear();
 	this->isGasLimited=false;
 	this->isMineralLimited=false;
-	debug("time=%d",time);
+	//debug("time=%d",time);
+	debug("");
 	list<Type>::iterator i2;
 	for(list<Type>::iterator i=this->savedPlan.begin();i!=this->savedPlan.end();i=i2)
 	{
@@ -817,6 +817,8 @@ string BuildOrderManager::getName() const
 }
 void BuildOrderManager::build(int count, BWAPI::UnitType t, int priority, BWAPI::TilePosition seedPosition, bool buildWithSpace)
 {
+	//Broodwar->printf("build %d %s %d | %d",count,t.getName().c_str(),priority,Broodwar->getFrameCount());
+
 	int space = buildWithSpace? 3 : -1;
 	if (t == BWAPI::UnitTypes::None || t == BWAPI::UnitTypes::Unknown) return;
 	if (seedPosition == BWAPI::TilePositions::None || seedPosition == BWAPI::TilePositions::Unknown)
@@ -889,6 +891,8 @@ void BuildOrderManager::adjustPriority(BWAPI::UnitType t,int variation)
 
 void BuildOrderManager::buildAdditional(int count, BWAPI::UnitType t, int priority, BWAPI::TilePosition seedPosition)
 {
+	//Broodwar->printf("buildAdditional %d %s %d | %d",count,t.getName().c_str(),priority,Broodwar->getFrameCount());
+
 	if (t == BWAPI::UnitTypes::None || t == BWAPI::UnitTypes::Unknown) return;
 	if (seedPosition == BWAPI::TilePositions::None || seedPosition == BWAPI::TilePositions::Unknown)
 		seedPosition=BWAPI::Broodwar->self()->getStartLocation();

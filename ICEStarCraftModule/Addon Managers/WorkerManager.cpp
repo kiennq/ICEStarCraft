@@ -1167,7 +1167,13 @@ void WorkerManager::workerRepair()
 		{
 			continue;
 		}
-				
+
+		// then repair dropship
+		if (repairTarget->getType() != UnitTypes::Terran_Dropship && !repairList(Dropship).empty())
+		{
+			continue;
+		}
+
 		for each(Unit* repairWorker in repairGroup)
 		{
 			if (!repairTarget->getType().isBuilding())
@@ -1235,6 +1241,18 @@ void WorkerManager::autoTrainSCV()
 	if (buildOrderManager->getPlannedCount(UnitTypes::Terran_SCV,this->autoBuildPriority+30) < need)
 	{
 		this->buildOrderManager->build(need,UnitTypes::Terran_SCV,this->autoBuildPriority+30);
+	}
+
+	if (Broodwar->self()->allUnitCount(UnitTypes::Terran_SCV) < need && Broodwar->getFrameCount()%24 == 0)
+	{
+		for each (Unit* u in Broodwar->self()->getUnits())
+		{
+			if (u->getType() == UnitTypes::Terran_Command_Center && u->isCompleted() && !u->isTraining() && !u->isConstructing())
+			{
+				u->train(UnitTypes::Terran_SCV);
+				//Broodwar->printf("Auto train SCV");
+			}
+		}
 	}
 }
 

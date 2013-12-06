@@ -40,7 +40,7 @@ public:
 	void TTonFrame();
 	
 	//_T_
-
+	bool debug;
 	void onFrameTP();
 	void onFrameTZ();
 	void onFrameTT();

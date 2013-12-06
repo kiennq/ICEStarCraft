@@ -103,6 +103,7 @@ private:
 	UnitGroup vessels;
 
 	BWAPI::Position setPoint;
+	BWAPI::Position setPoint2;
 	BWAPI::Position siegePoint;
 	BWAPI::Position gatherPoint;
 

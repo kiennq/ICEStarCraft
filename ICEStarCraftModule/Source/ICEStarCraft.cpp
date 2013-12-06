@@ -111,6 +111,7 @@ void ICEStarCraftModule::onStart()
 
 	/********autobuild worker********/
 
+
 	workerManager->setArbitrator(&this->arbitrator);
 	workerManager->enableAutoBuild();
 	workerManager->setAutoBuildPriority(70);
@@ -172,14 +173,18 @@ void ICEStarCraftModule::onEnd(bool isWinner)
 		//log win to file
 	}
 
-#ifdef _LOG_TO_FILE
+//#ifdef _LOG_TO_FILE
 	ofstream fout("result.csv", ios::app);
-	if (fout.is_open()) {
+	if (fout.is_open())
+	{
 		fout << Broodwar->self()->getRace().c_str() << "(" << Broodwar->self()->getName() << ")"  << ",";
 		fout << Broodwar->enemy()->getRace().c_str() << "(" << Broodwar->enemy()->getName() << ")"  << ",";
-		fout << isWinner << endl;
-	} else cout << "FU";
-#endif
+		fout << Broodwar->mapFileName().c_str() << ",";
+		fout << isWinner << ",";
+		fout << Broodwar->getFrameCount() << endl;
+		fout.close();
+	}
+//#endif
 }
 
 void ICEStarCraftModule::onFrame()
@@ -201,13 +206,7 @@ void ICEStarCraftModule::onFrame()
 	this->gameFlow->onFrame();
 
 
-	this->mental->setEnemyPlanFlag();
-	this->mental->counterMeasure();
-	this->mental->updateSightRange();
-	this->mental->attackTimingCheck();
-	if (Broodwar->getFrameCount()%24 == 0)
-		this->mental->baseUnderAttack();
-	this->tpTiming->CheckTiming();
+  this->mental->onFrame();
 
 	this->macroManager->onFrame();
 
@@ -228,16 +227,17 @@ void ICEStarCraftModule::onFrame()
 	this->arbitrator.update();
 	this->upgradeManager->update();
 	this->techManager->update();
-
-	if (Broodwar->enemy()->getRace() == Races::Protoss && ((SelectAll()(Supply_Depot).size() > 1 && SelectAll()(Bunker).size() > 0) || Broodwar->getFrameCount() > 24*60*4))
+	if (Broodwar->enemy()->getRace() == Races::Protoss)
 	{
-		this->buildManager->setBuildDistance(1);
+		if ((SelectAll()(Supply_Depot).size() > 1 && SelectAll()(Bunker).size() > 0) ||	Broodwar->getFrameCount() > 24*60*4)
+		{
+			this->buildManager->setBuildDistance(1);
+		}
 	}
-
 #ifdef _BATTLE_DEBUG
 	showDebugInfo();
 #endif // _BATTLE_DEBUG
-#endif
+#endif //_TIME_DEBUG
 
 
 #ifdef _TIME_DEBUG
@@ -338,9 +338,9 @@ void ICEStarCraftModule::onFrame()
 	CalculationTime["DrawInfo"] = (float)(1000*(clock()-t))/CLOCKS_PER_SEC;
 #endif // _BATTLE_DEBUG
 
-	Broodwar->drawTextScreen(180,350,"\x07 Frame: %d",Broodwar->getFrameCount());
-	Broodwar->drawTextScreen(260,350,"\x07 FPS: %d",Broodwar->getFPS());
-	Broodwar->drawTextScreen(320,350,"\x07 Last frame: %.0f ms",(float)(1000*(clock()-t_start))/CLOCKS_PER_SEC);
+	Broodwar->drawTextScreen(190,335,"\x07 Frame: %d",Broodwar->getFrameCount());
+	Broodwar->drawTextScreen(270,335,"\x07 FPS: %d",Broodwar->getFPS());
+	Broodwar->drawTextScreen(330,335,"\x07 Last frame: %.0f ms",(float)(1000*(clock()-t_start))/CLOCKS_PER_SEC);
 
 	int x = 200;
 	int line = 1;
@@ -481,10 +481,18 @@ void ICEStarCraftModule::onSendText(std::string text)
 	{
 		this->buildOrderManager->setDebugMode(true);
 	}
-	
 	if (text == "/bom off")
 	{
 		this->buildOrderManager->setDebugMode(false);
+	}
+
+	if (text == "/plan on")
+	{
+		this->gameFlow->debug = true;
+	}
+	if (text == "/plan off")
+	{
+		this->gameFlow->debug = false;
 	}
 
 	if (text=="/show bullets")

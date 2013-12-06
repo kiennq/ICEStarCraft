@@ -131,7 +131,7 @@ EnemyInfoManager::EnemyInfoManager()
 	this->showBuildingToPosition=false;
 	this->showBaseToData=false;
 	this->drRangeUpgradeFlag = false;
-	this->mInfor = MyInfoManager::create();
+	this->mInfo = MyInfoManager::create();
 	this->scm = ScoutManager::create();
 	this->eMainBaseCheck = false;
 	//_T_
@@ -617,21 +617,6 @@ void EnemyInfoManager::onFrame()
 	
 	if (Broodwar->getFrameCount()%24 == 0)
 	{
-		// delete destroyed enemy buildings on frame
-		/*for(map<Unit*,std::pair<UnitType,Position>>::iterator i = eBuildingPositionMap.begin(); i != eBuildingPositionMap.end();)
-		{
-			UnitGroup myUnit = SelectAll()(isCompleted).not(Vulture_Spider_Mine).inRadius(32*4,i->second.second);
-			UnitGroup eBuild = SelectAllEnemy()(isBuilding,isAddon).inRadius(32*4,i->second.second);
-			if (myUnit.size()>0 && (!i->first->exists() || eBuild.size()<1))
-			{
-				i = eBuildingPositionMap.erase(i);
-			}
-			else
-			{
-				i++;
-			}
-		}*/
-		
 		// for protoss dragoon rush confirm
 		UnitGroup researchingCC = SelectAllEnemy()(isVisible,isBuilding,isCompleted,isResearching)(Cybernetics_Core);
 		if (!researchingCC.empty())
@@ -665,135 +650,12 @@ void EnemyInfoManager::destroy()
 
 std::pair<double,double> EnemyInfoManager::enemyFightingValue()
 {
-	//enemy movable army
-	double eFV = 0;
-	//enemy defend value
-	double eDV = 0;
-	double towerWeight=0;
-	double flyerWeight=0;
-	//for defend tower weight
-	if (this->mInfor->countUnitNum(UnitTypes::Terran_Siege_Tank_Tank_Mode,1) > 0 && Broodwar->self()->hasResearched(TechTypes::Tank_Siege_Mode))
-		towerWeight = 0.3;
-	else
-		towerWeight = 0.6;
-
-	//for defend tower weight
-	if (Broodwar->self()->getUpgradeLevel(UpgradeTypes::Charon_Boosters) > 0)
-	{
-		flyerWeight = pow(0.9,this->mInfor->countUnitNum(UnitTypes::Terran_Goliath,1));	
-	}
-	else
-		flyerWeight = 1;
-
-	//calculate enemy defend value
-	for(std::map<Unit*,UnitType>::iterator i=this->allenemyFighter.begin(); i!= this->allenemyFighter.end();i++)
-	{
-		//if the unit type is defend tower, then fighting value * weight
-		if (i->second.groundWeapon()==WeaponTypes::None || i->second.groundWeapon().damageCooldown()==0){
-			if (i->second==UnitTypes::Protoss_Carrier){
-				eDV+=i->first->getInterceptorCount()*UnitTypes::Protoss_Interceptor.groundWeapon().damageAmount()/UnitTypes::Protoss_Interceptor.groundWeapon().damageCooldown()*(i->second.maxHitPoints()+i->second.maxShields()-1)*flyerWeight;
-				//eDV+=UnitTypes::Protoss_Interceptor.groundWeapon().damageAmount()/UnitTypes::Protoss_Interceptor.groundWeapon().damageCooldown()*(i->second.maxHitPoints()+i->second.maxShields()-1)*flyerWeight;
-			}
-			else if (i->second == UnitTypes::Zerg_Mutalisk)
-			{
-				eDV+= i->second.groundWeapon().damageAmount()/i->second.groundWeapon().damageCooldown()*i->second.maxHitPoints()*flyerWeight;
-			}
-			
-			else
-				continue;
-		}
-		else if (i->second==UnitTypes::Zerg_Sunken_Colony || i->second==UnitTypes::Protoss_Photon_Cannon)
-			eDV+=(i->second.groundWeapon().damageAmount()*1.0/i->second.groundWeapon().damageCooldown()*(i->second.maxHitPoints()+i->second.maxShields()-1))*towerWeight;
-		else if (i->second.groundWeapon().damageAmount()<2||!i->second.canAttack())
-			continue;
-		else if (i->second.isFlyer()&&i->second.groundWeapon()!=WeaponTypes::None)
-			eDV+=i->second.groundWeapon().damageAmount()*1.0/i->second.groundWeapon().damageCooldown()*(i->second.maxHitPoints()+i->second.maxShields()-1)*flyerWeight;
-			//eFV+=UnitTypes::Zerg_Sunken_Colony.groundWeapon().damageAmount()*1.0/UnitTypes::Zerg_Sunken_Colony.groundWeapon().damageCooldown()*(UnitTypes::Zerg_Sunken_Colony.maxHitPoints()-1)*towerWeight;
-		else
-			eDV+=i->second.groundWeapon().damageAmount()*1.0/i->second.groundWeapon().damageCooldown()*(i->second.maxHitPoints()+i->second.maxShields()-1);
-	}
-
-	//calculate enemy fighting value
-	for(std::map<Unit*,UnitType>::iterator i=this->allenemyFighter.begin(); i!= this->allenemyFighter.end();i++){
-		//if the unit type is defend tower, then fighting value * weight
-		if (i->second==UnitTypes::Zerg_Sunken_Colony || i->second==UnitTypes::Protoss_Photon_Cannon)
-			continue;
-		else if (i->second.groundWeapon() == WeaponTypes::None || i->second.groundWeapon().damageCooldown() == 0)
-		{
-			if (i->second == UnitTypes::Protoss_Carrier)
-			{
-				eFV+=i->first->getInterceptorCount()*UnitTypes::Protoss_Interceptor.groundWeapon().damageAmount()/UnitTypes::Protoss_Interceptor.groundWeapon().damageCooldown()*(i->second.maxHitPoints()+i->second.maxShields()-1)*flyerWeight;
-				//eDV+=UnitTypes::Protoss_Interceptor.groundWeapon().damageAmount()/UnitTypes::Protoss_Interceptor.groundWeapon().damageCooldown()*(i->second.maxHitPoints()+i->second.maxShields()-1)*flyerWeight;
-			}
-			else if (i->second == UnitTypes::Zerg_Mutalisk)
-			{
-				eFV+= i->second.groundWeapon().damageAmount()/i->second.groundWeapon().damageCooldown()*i->second.maxHitPoints()*flyerWeight;
-			}
-			else
-				continue;
-		}
-		else if (i->second.isFlyer()&&i->second.groundWeapon()!=WeaponTypes::None)
-			eFV+=i->second.groundWeapon().damageAmount()*1.0/i->second.groundWeapon().damageCooldown()*(i->second.maxHitPoints()+i->second.maxShields()-1)*flyerWeight;
-		else
-			eFV+=i->second.groundWeapon().damageAmount()*1.0/i->second.groundWeapon().damageCooldown()*(i->second.maxHitPoints()+i->second.maxShields()-1);
-	}
-	if (this->killedEnemyNum>0)
-		return std::make_pair(eFV/killedEnemyNum,eDV/killedEnemyNum);
-	else
-		return std::make_pair(eFV,eDV);	
+	return make_pair(attackValue()/(1+getDeadUnitCount()),defenseValue()/(1+getDeadUnitCount()));
 }
 
 std::pair<double,double> MyInfoManager::myFightingValue()
 {
-	if (!this->allMyFighter.empty())
-	{
-		UnitGroup bunkerGroup = SelectAll()(isCompleted)(Bunker);
-		double mFV = 0;
-		double mDV = 0;
-		for each(Unit* u in this->allMyFighter)
-		{
-			int atkBonus = 0;
-			if (u->getType().groundWeapon() != WeaponTypes::None)
-			{
-				atkBonus = u->getType().groundWeapon().damageFactor()*Broodwar->self()->getUpgradeLevel(u->getType().groundWeapon().upgradeType());
-			}
-			else if (u->getType().airWeapon() != WeaponTypes::None)
-			{
-				atkBonus = u->getType().airWeapon().damageFactor()*Broodwar->self()->getUpgradeLevel(u->getType().airWeapon().upgradeType());
-			}
-			
-			//int atkBonus =u->getType().groundWeapon().damageFactor()*Broodwar->self()->getUpgradeLevel(u->getType().groundWeapon().upgradeType());
-			int defBonus = Broodwar->self()->getUpgradeLevel(u->getType().armorUpgrade());
-			if(!u->getType().canAttack()||!u->isCompleted())
-				continue;
-			else if (u->getType()==UnitTypes::Terran_Vulture_Spider_Mine || u->isLoaded())
-				continue;
-			else
-			{
-				if (u->getType().groundWeapon() != WeaponTypes::None)
-				{
-					mFV+=(u->getType().groundWeapon().damageAmount()+atkBonus)*1.0/u->getType().groundWeapon().damageCooldown()*(u->getHitPoints()+u->getShields()-1+defBonus);
-					mDV+=(u->getType().groundWeapon().damageAmount()+atkBonus)*1.0/u->getType().groundWeapon().damageCooldown()*(u->getHitPoints()+u->getShields()-1+defBonus);
-				}
-				else if (u->getType().airWeapon() != WeaponTypes::None)
-				{
-					mFV+=(u->getType().airWeapon().damageAmount()+atkBonus)*1.0/u->getType().airWeapon().damageCooldown()*(u->getHitPoints()+u->getShields()-1+defBonus);
-					mDV+=(u->getType().airWeapon().damageAmount()+atkBonus)*1.0/u->getType().airWeapon().damageCooldown()*(u->getHitPoints()+u->getShields()-1+defBonus);
-				}
-			}				
-		}
-		for each(Unit* u in bunkerGroup)
-		{
-			//we only produce marine into bunker
-			mDV+=u->getLoadedUnits().size()*6.0/UnitTypes::Terran_Marine.groundWeapon().damageCooldown()*(u->getHitPoints()-1);		
-		}
-		if(this->myDeadArmy+this->myDeadWorker>0)
-			return std::make_pair(mFV/((double)1.3*(this->myDeadArmy+this->myDeadWorker)),mDV/((double)1.3*(this->myDeadArmy+this->myDeadWorker)));
-		else
-			return std::make_pair(mFV,mDV);
-	}
-	else
-		return std::make_pair(0,0);
+	return make_pair(attackValue()/(1+getDeadUnitCount()),defenseValue()/(1+getDeadUnitCount()));
 }
 
 void MyInfoManager::onUnitDestroy(Unit* u)
@@ -833,26 +695,6 @@ void EnemyInfoManager::enemyMainBaseConfirm()
 
 int MyInfoManager::getDeadUnitCount()
 {
-	/*
-	int count = 0;
-
-	count += Broodwar->self()->deadUnitCount(UnitTypes::Terran_SCV);
-	count += Broodwar->self()->deadUnitCount(UnitTypes::Terran_Marine);
-	count += Broodwar->self()->deadUnitCount(UnitTypes::Terran_Firebat);
-	count += Broodwar->self()->deadUnitCount(UnitTypes::Terran_Ghost);
-	count += Broodwar->self()->deadUnitCount(UnitTypes::Terran_Medic);
-	count += Broodwar->self()->deadUnitCount(UnitTypes::Terran_Vulture);
-	count += Broodwar->self()->deadUnitCount(UnitTypes::Terran_Siege_Tank_Tank_Mode);
-	count += Broodwar->self()->deadUnitCount(UnitTypes::Terran_Siege_Tank_Siege_Mode);
-	count += Broodwar->self()->deadUnitCount(UnitTypes::Terran_Goliath);
-	count += Broodwar->self()->deadUnitCount(UnitTypes::Terran_Wraith);
-	count += Broodwar->self()->deadUnitCount(UnitTypes::Terran_Dropship);
-	count += Broodwar->self()->deadUnitCount(UnitTypes::Terran_Valkyrie);
-	count += Broodwar->self()->deadUnitCount(UnitTypes::Terran_Battlecruiser);
-
-	return count;
-	*/
-
 	int count = 0;
 
 	set<UnitType> types;
@@ -888,19 +730,13 @@ double MyInfoManager::attackValue()
 	double groundAV = 0;
 	double airAV = 0;
 
-	for each (Unit* u in SelectAll())
+	for each (Unit* u in Broodwar->self()->getUnits())
 	{
-		int damage = 0;
-		int cooldown = 0;
-		int hp = 0;
-
 		if (!u->isCompleted()
 			  ||
-		  	u->getType().isBuilding()
+			  u->getType().isBuilding()
 			  ||
 			  u->getType().isWorker()
-			  ||
-			  !u->getType().canAttack()
 			  ||
 			  u->getType() == UnitTypes::Terran_Vulture_Spider_Mine
 			  ||
@@ -909,24 +745,9 @@ double MyInfoManager::attackValue()
 			continue;
 		}
 
-		UnitType type = u->getType();
-		hp = u->getHitPoints() + u->getShields();
-
-		if (u->getType().groundWeapon() != WeaponTypes::None)
-		{
-			WeaponType weapon = type.groundWeapon();
-			cooldown = Broodwar->self()->groundWeaponDamageCooldown(type);
-			damage = type.maxGroundHits() * (weapon.damageAmount() + Broodwar->self()->getUpgradeLevel(weapon.upgradeType()) * weapon.damageFactor() * weapon.damageBonus());
-			groundAV = groundAV + 1.0 * hp * damage / cooldown;
-		}
-
-		if (u->getType().airWeapon() != WeaponTypes::None)
-		{
-			WeaponType weapon = type.airWeapon();
-			cooldown = weapon.damageCooldown();
-			damage = type.maxAirHits() * (weapon.damageAmount() + Broodwar->self()->getUpgradeLevel(weapon.upgradeType()) * weapon.damageFactor() * weapon.damageBonus());
-			airAV = airAV + 1.0 * hp * damage / cooldown;
-		}
+		int hp = u->getHitPoints() + u->getShields();
+		groundAV += hp * MicroUnitControl::getGroundDPF(u);
+		airAV += hp * MicroUnitControl::getAirDPF(u);
 	}
 
 	return groundAV > airAV ? groundAV : airAV;
@@ -934,12 +755,33 @@ double MyInfoManager::attackValue()
 
 double MyInfoManager::defenseValue()
 {
+	double groundAV = 0;
+	double airAV = 0;
 
+	for each (Unit* u in Broodwar->self()->getUnits())
+	{
+		if (!u->isCompleted()
+			  ||
+				u->getType().isWorker()
+				||
+			  u->getType() == UnitTypes::Terran_Vulture_Spider_Mine
+			  ||
+			  u->getType() == UnitTypes::Terran_Nuclear_Missile)
+		{
+			continue;
+		}
+
+		int hp = u->getHitPoints() + u->getShields();
+		groundAV += hp * MicroUnitControl::getGroundDPF(u);
+		airAV += hp * MicroUnitControl::getAirDPF(u);
+	}
+
+	return groundAV > airAV ? groundAV : airAV;
 }
 
 void MyInfoManager::showDebugInfo()
 {
-	Broodwar->drawTextScreen(180,325,"\x07 mAV: %.2f | %.2f - deadUnits: %d - deadWorkers: %d",attackValue(),attackValue()/(1+getDeadUnitCount()),getDeadUnitCount(),getDeadWorkerCount());
+	Broodwar->drawTextScreen(180,325,"\x07 mAV: %.2f | %.2f - mDV: %.2f | %.2f - dead: %d",attackValue(),attackValue()/(1+getDeadUnitCount()),defenseValue(),defenseValue()/(1+getDeadUnitCount()),getDeadUnitCount());
 }
 
 set<EnemyUnit*>& EnemyInfoManager::getAllEnemyUnits()
@@ -1016,11 +858,21 @@ int EnemyInfoManager::countDangerToAir(BWAPI::Position p, int radius)
 			continue;
 		}
 
-		if (type != UnitTypes::Terran_Bunker && (!type.canAttack() || type.airWeapon() == WeaponTypes::None))
+		if (type.airWeapon() != WeaponTypes::None)
 		{
-			continue;
+			if (type == UnitTypes::Protoss_Interceptor)
+			{
+				continue;
+			}
 		}
-		
+		else
+		{
+			if (type != UnitTypes::Protoss_Carrier && type != UnitTypes::Terran_Bunker)
+			{
+				continue;
+			}
+		}
+
 		for each (EnemyUnit* e in allEnemyUnits)
 		{
 			if (e->getType() == type && e->getPosition() != Positions::Unknown && e->getPosition().getApproxDistance(p) <= radius)
@@ -1049,6 +901,27 @@ int EnemyInfoManager::countDangerToGround(BWAPI::Position p, int radius)
 			continue;
 		}
 
+		if (type.groundWeapon() != WeaponTypes::None)
+		{
+			if (type.isWorker() ||
+				  type == UnitTypes::Protoss_Scarab ||
+				  type == UnitTypes::Protoss_Interceptor ||
+				  type == UnitTypes::Terran_Vulture_Spider_Mine ||
+				  type == UnitTypes::Terran_Nuclear_Missile)
+			{
+				continue;
+			}
+		}
+		else
+		{
+			if (type != UnitTypes::Protoss_Carrier &&
+				  type != UnitTypes::Protoss_Reaver &&
+				  type != UnitTypes::Terran_Bunker)
+			{
+				continue;
+			}
+		}
+
 		for each (EnemyUnit* e in allEnemyUnits)
 		{
 			if (e->getType() == type && e->getPosition() != Positions::Unknown && e->getPosition().getApproxDistance(p) <= radius)
@@ -1072,9 +945,25 @@ int EnemyInfoManager::countDangerTotal(BWAPI::Position p, int radius)
 			continue;
 		}
 
-		if (type != UnitTypes::Terran_Bunker && (!type.canAttack() || type.isWorker()))
+		if (type.canAttack())
 		{
-			continue;
+			if (type.isWorker() ||
+				  type == UnitTypes::Protoss_Scarab ||
+				  type == UnitTypes::Protoss_Interceptor ||
+				  type == UnitTypes::Terran_Vulture_Spider_Mine ||
+				  type == UnitTypes::Terran_Nuclear_Missile)
+			{
+				continue;
+			}
+		}
+		else
+		{
+			if (type != UnitTypes::Protoss_Carrier &&
+				  type != UnitTypes::Protoss_Reaver &&
+				  type != UnitTypes::Terran_Bunker)
+			{
+				continue;
+			}
 		}
 
 		for each (EnemyUnit* e in allEnemyUnits)
@@ -1091,8 +980,7 @@ int EnemyInfoManager::countDangerTotal(BWAPI::Position p, int radius)
 
 int EnemyInfoManager::getDeadUnitCount()
 {
-	//return deadUnitCount;
-	return deadUnitCount/2; //supply
+	return deadUnitCount/2;
 }
 
 int EnemyInfoManager::getDeadWorkerCount()
@@ -1107,10 +995,6 @@ double EnemyInfoManager::attackValue()
 
 	for each (EnemyUnit* e in allEnemyUnits)
 	{
-		int damage = 0;
-		int cooldown = 0;
-		int hp = 0;
-
 		if (e->getUnit() && e->getUnit()->exists() && !e->getUnit()->isCompleted())
 		{
 			continue;
@@ -1131,57 +1015,10 @@ double EnemyInfoManager::attackValue()
 			continue;
 		}
 
-		if (!e->getType().canAttack() && e->getType() != UnitTypes::Protoss_Reaver && e->getType() != UnitTypes::Protoss_Carrier)
-		{
-			continue;
-		}
+		int hp = e->getHitPoints() + e->getShields();
 
-		if (e->getType() == UnitTypes::Protoss_Reaver)
-		{
-			hp = e->getHitPoints() + e->getShields();
-			UnitType scarab = UnitTypes::Protoss_Scarab;
-
-			WeaponType weapon = scarab.groundWeapon();	
-			cooldown = 60; // reavers launch scarabs every 60 frames
-			damage = scarab.maxGroundHits() * (weapon.damageAmount() + Broodwar->enemy()->getUpgradeLevel(weapon.upgradeType()) * weapon.damageFactor() * weapon.damageBonus());
-			groundAV = groundAV + 1.0 * hp * damage / cooldown;
-		}
-		else if (e->getType() == UnitTypes::Protoss_Carrier)
-		{
-			hp = e->getHitPoints() + e->getShields();
-			UnitType interceptor = UnitTypes::Protoss_Interceptor;
-
-			WeaponType weapon = interceptor.groundWeapon();
-			cooldown = Broodwar->enemy()->groundWeaponDamageCooldown(interceptor);
-			damage = e->getInterceptorCount() * interceptor.maxGroundHits() * (weapon.damageAmount() + Broodwar->enemy()->getUpgradeLevel(weapon.upgradeType()) * weapon.damageFactor() * weapon.damageBonus());
-			groundAV = groundAV + 1.0 * hp * damage / cooldown;
-
-			weapon = interceptor.airWeapon();
-			cooldown = weapon.damageCooldown();
-			damage = e->getInterceptorCount() * interceptor.maxAirHits() * (weapon.damageAmount() + Broodwar->enemy()->getUpgradeLevel(weapon.upgradeType()) * weapon.damageFactor() * weapon.damageBonus());
-			airAV = airAV + 1.0 * hp * damage / cooldown;
-		}
-		else
-		{
-			UnitType type = e->getType();
-			hp = e->getHitPoints() + e->getShields();
-
-			if (e->getType().groundWeapon() != WeaponTypes::None)
-			{
-				WeaponType weapon = type.groundWeapon();
-				cooldown = Broodwar->enemy()->groundWeaponDamageCooldown(type);
-				damage = type.maxGroundHits() * (weapon.damageAmount() + Broodwar->enemy()->getUpgradeLevel(weapon.upgradeType()) * weapon.damageFactor() * weapon.damageBonus());
-				groundAV = groundAV + 1.0 * hp * damage / cooldown;
-			}
-			
-			if (e->getType().airWeapon() != WeaponTypes::None)
-			{
-				WeaponType weapon = type.airWeapon();
-				cooldown = weapon.damageCooldown();
-				damage = type.maxAirHits() * (weapon.damageAmount() + Broodwar->enemy()->getUpgradeLevel(weapon.upgradeType()) * weapon.damageFactor() * weapon.damageBonus());
-				airAV = airAV + 1.0 * hp * damage / cooldown;
-			}
-		}
+		groundAV += hp * MicroUnitControl::getGroundDPF(e->getType(),e->getPlayer());
+		airAV += hp * MicroUnitControl::getAirDPF(e->getType(),e->getPlayer());
 	}
 
 	return groundAV > airAV ? groundAV : airAV;
@@ -1189,13 +1026,46 @@ double EnemyInfoManager::attackValue()
 
 double EnemyInfoManager::defenseValue()
 {
+	double groundAV = 0;
+	double airAV = 0;
 
+	for each (EnemyUnit* e in allEnemyUnits)
+	{
+		if (e->getUnit() && e->getUnit()->exists() && !e->getUnit()->isCompleted())
+		{
+			continue;
+		}
+
+		if (e->getType().isWorker()
+			  ||
+			  e->getType() == UnitTypes::Terran_Vulture_Spider_Mine
+			  ||
+			  e->getType() == UnitTypes::Terran_Nuclear_Missile
+			  ||
+			  e->getType() == UnitTypes::Protoss_Interceptor
+			  ||
+			  e->getType() == UnitTypes::Protoss_Scarab)
+		{
+			continue;
+		}
+
+		int hp = e->getHitPoints() + e->getShields();
+		double weight = e->getType().isBuilding() &&
+			              Broodwar->self()->completedUnitCount(UnitTypes::Terran_Siege_Tank_Tank_Mode) + Broodwar->self()->completedUnitCount(UnitTypes::Terran_Siege_Tank_Siege_Mode) > 0 &&
+										Broodwar->self()->hasResearched(TechTypes::Tank_Siege_Mode)
+                    ?  0.6
+                    : 1.0;
+
+		groundAV += hp * MicroUnitControl::getGroundDPF(e->getType(),e->getPlayer()) * weight;
+		airAV += hp * MicroUnitControl::getAirDPF(e->getType(),e->getPlayer()) * weight;
+	}
+
+	return groundAV > airAV ? groundAV : airAV;
 }
 
 void EnemyInfoManager::showDebugInfo()
 {
-	Broodwar->drawTextScreen(180,335,"\x08 eAV: %.2f | %.2f - deadUnits: %d - deadWorkers: %d",attackValue(),attackValue()/(1+getDeadUnitCount()),getDeadUnitCount(),getDeadWorkerCount());
-
+	//Broodwar->drawTextScreen(180,335,"\x08 eAV: %.2f | %.2f - eDV: %.2f | %.2f - dead: %d",attackValue(),attackValue()/(1+getDeadUnitCount()),defenseValue(),defenseValue()/(1+getDeadUnitCount()),getDeadUnitCount());
 
 	// allEnemyUnits info
 	map<UnitType,int> list;
@@ -1245,7 +1115,6 @@ void EnemyInfoManager::showDebugInfo()
 		Broodwar->drawTextScreen(x,line*10," %d %s",(*i).second,(*i).first.getName().c_str());
 		line++;
 	}
-
 
 	// enemy bases
 	for each(BWTA::BaseLocation* b in BWTA::getBaseLocations())

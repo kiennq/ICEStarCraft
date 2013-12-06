@@ -468,20 +468,12 @@ public:
 	bool useTech(BWAPI::TechType tech, BWAPI::Position position) const;
 	bool useTech(BWAPI::TechType tech, BWAPI::Unit* target) const;
 
-	void initMining(BWAPI::TilePosition s, BWAPI::TilePosition e);
-	void doMining(double skip = 3);
-	bool isMining();
-
 	BWAPI::Unit* leadingUnit();
 
 	//_T_
 	BWAPI::Position getTargetPosition();
 
 private:
-	std::vector<BWAPI::TilePosition> miningPath;
-	double current;
-	int dir;
-	std::map<BWAPI::Unit*,int> vultureMines;
 	
 	// for control attack move
 	int timeLap;

@@ -22,6 +22,20 @@ public:
 	static bool isFiring(BWAPI::Unit*);
 
 	// consider unit state, unit type, upgrades and number of hits per attack
+	static WeaponType getAirWeapon(BWAPI::UnitType);
+	static WeaponType getGroundWeapon(BWAPI::UnitType);
+	static int getAirCooldown(BWAPI::UnitType);
+	static int getGroundCooldown(BWAPI::UnitType);
+	static int getAirHits(BWAPI::UnitType);
+	static int getGroundHits(BWAPI::UnitType);
+	static int getDamage(BWAPI::UnitType, BWAPI::Player* player = NULL);
+	static int getAirDamage(BWAPI::UnitType, BWAPI::Player* player = NULL);
+	static int getGroundDamage(BWAPI::UnitType, BWAPI::Player* player = NULL);
+
+	static double getDPF(BWAPI::UnitType, BWAPI::Player* player = NULL);
+	static double getAirDPF(BWAPI::UnitType, BWAPI::Player* player = NULL);
+	static double getGroundDPF(BWAPI::UnitType, BWAPI::Player* player = NULL);
+
 	static WeaponType getAirWeapon(BWAPI::Unit*);
 	static WeaponType getGroundWeapon(BWAPI::Unit*);
 	static int getAirCooldown(BWAPI::Unit*);
@@ -31,10 +45,10 @@ public:
 	static int getDamage(BWAPI::Unit*);
 	static int getAirDamage(BWAPI::Unit*);
 	static int getGroundDamage(BWAPI::Unit*);
+
 	static double getDamage(BWAPI::Unit*,BWAPI::Unit*);
 	static bool canKillTarget(BWAPI::Unit*,BWAPI::Unit*);
 
-	// damage per frame
 	static double getDPF(BWAPI::Unit*);
 	static double getAirDPF(BWAPI::Unit*);
 	static double getGroundDPF(BWAPI::Unit*);
@@ -42,6 +56,7 @@ public:
 
 	static BWAPI::Unit* getBestAttackTartget(BWAPI::Unit*, UnitGroup&);
 
+	// unit command
 	static bool attack(BWAPI::Unit*,BWAPI::Unit*);
 	static bool attack(BWAPI::Unit*,BWAPI::Position);
 	static bool move(BWAPI::Unit*,BWAPI::Position);

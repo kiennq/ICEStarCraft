@@ -267,6 +267,195 @@ bool MicroUnitControl::isFiring(Unit* u)
 	return false;
 }
 
+/**********************************************************************************/
+
+WeaponType MicroUnitControl::getAirWeapon(UnitType type)
+{
+	if (type == UnitTypes::Protoss_Carrier)
+	{
+		return UnitTypes::Protoss_Interceptor.airWeapon();
+	}
+
+	if (type == UnitTypes::Terran_Bunker)
+	{
+		return UnitTypes::Terran_Marine.airWeapon();
+	}
+
+	return type.airWeapon();
+}
+
+WeaponType MicroUnitControl::getGroundWeapon(UnitType type)
+{
+	if (type == UnitTypes::Protoss_Carrier)
+	{
+		return UnitTypes::Protoss_Interceptor.groundWeapon();
+	}
+
+	if (type == UnitTypes::Protoss_Reaver)
+	{
+		return UnitTypes::Protoss_Scarab.groundWeapon();
+	}
+
+	if (type == UnitTypes::Terran_Bunker)
+	{
+		return UnitTypes::Terran_Marine.groundWeapon();
+	}
+
+	return type.groundWeapon();
+}
+
+int MicroUnitControl::getAirCooldown(UnitType type)
+{
+	if (type == UnitTypes::Protoss_Carrier)
+	{
+		return 30;
+	}
+
+	return getAirWeapon(type).damageCooldown();
+}
+
+int MicroUnitControl::getGroundCooldown(UnitType type)
+{
+	if (type == UnitTypes::Protoss_Reaver)
+	{
+		// reavers launch scarabs every 60 frames
+		return 60;
+	}
+
+	return getGroundWeapon(type).damageCooldown();
+}
+
+int MicroUnitControl::getAirHits(UnitType type)
+{
+	if (type == UnitTypes::Protoss_Carrier)
+	{
+		return UnitTypes::Protoss_Interceptor.maxAirHits();
+	}
+
+	if (type == UnitTypes::Terran_Bunker)
+	{
+		return UnitTypes::Terran_Marine.maxAirHits();
+	}
+
+	if (type == UnitTypes::Terran_Goliath)
+	{
+		// BWAPI returns 1
+		return 2;
+	}
+
+	return type.maxAirHits();
+}
+
+int MicroUnitControl::getGroundHits(UnitType type)
+{
+	if (type == UnitTypes::Protoss_Carrier)
+	{
+		return UnitTypes::Protoss_Interceptor.maxGroundHits();
+	}
+
+	if (type == UnitTypes::Protoss_Reaver)
+	{
+		return UnitTypes::Protoss_Scarab.maxGroundHits();
+	}
+
+	if (type == UnitTypes::Terran_Bunker)
+	{
+		return UnitTypes::Terran_Marine.maxGroundHits();
+	}
+
+	return type.maxGroundHits();
+}
+
+int MicroUnitControl::getDamage(UnitType type, Player* player)
+{
+	return max(getAirDamage(type,player),getGroundDamage(type,player));
+}
+
+int MicroUnitControl::getAirDamage(UnitType type, Player* player)
+{
+	WeaponType weapon = getAirWeapon(type);
+
+	if (weapon == WeaponTypes::None)
+	{
+		return 0;
+	}
+	
+	int upgradeLevel = player == NULL ? 0 : player->getUpgradeLevel(weapon.upgradeType());
+
+	int damage = getAirHits(type) * (weapon.damageAmount() + upgradeLevel * weapon.damageFactor() * weapon.damageBonus());
+
+	if (type == UnitTypes::Terran_Goliath)
+	{
+		// damage bonus = 1 but BWAPI returns 2
+		damage = getAirHits(type) * (weapon.damageAmount() + upgradeLevel * weapon.damageFactor());
+	}
+
+	if (type == UnitTypes::Protoss_Carrier)
+	{
+		damage *= 8;
+	}
+
+	if (type == UnitTypes::Terran_Bunker)
+	{
+		damage *= 4;
+	}
+
+	return damage;
+}
+
+int MicroUnitControl::getGroundDamage(UnitType type, Player* player)
+{
+	WeaponType weapon = getGroundWeapon(type);
+
+	if (weapon == WeaponTypes::None)
+	{
+		return 0;
+	}
+	
+	int upgradeLevel = player == NULL ? 0 : player->getUpgradeLevel(weapon.upgradeType());
+
+	int damage = getGroundHits(type) * (weapon.damageAmount() + upgradeLevel * weapon.damageFactor() * weapon.damageBonus());
+
+	if (type == UnitTypes::Protoss_Carrier)
+	{
+		damage *= 8;
+	}
+
+	if (type == UnitTypes::Terran_Bunker)
+	{
+		damage *= 4;
+	}
+
+	return damage;
+}
+
+double MicroUnitControl::getDPF(UnitType type, Player* player)
+{
+	return max(getAirDPF(type,player),getGroundDPF(type,player));
+}
+
+double MicroUnitControl::getAirDPF(UnitType type, Player* player)
+{
+	if (getAirCooldown(type) == 0)
+	{
+		return 0;
+	}
+
+	return 1.0 * getAirDamage(type,player) / getAirCooldown(type);
+}
+
+double MicroUnitControl::getGroundDPF(UnitType type, Player* player)
+{
+	if (getGroundCooldown(type) == 0)
+	{
+		return 0;
+	}
+
+	return 1.0 * getGroundDamage(type,player) / getGroundCooldown(type);
+}
+
+/**********************************************************************************/
+
 WeaponType MicroUnitControl::getAirWeapon(Unit* unit)
 {
 	if (!unit || !unit->exists())
@@ -274,17 +463,7 @@ WeaponType MicroUnitControl::getAirWeapon(Unit* unit)
 		return WeaponTypes::None;
 	}
 	
-	if (unit->getType() == UnitTypes::Protoss_Carrier)
-	{
-		return UnitTypes::Protoss_Interceptor.airWeapon();
-	}
-
-	if (unit->getType() == UnitTypes::Terran_Bunker)
-	{
-		return UnitTypes::Terran_Marine.airWeapon();
-	}
-
-	return unit->getType().airWeapon();
+	return getAirWeapon(unit->getType());
 }
 
 WeaponType MicroUnitControl::getGroundWeapon(Unit* unit)
@@ -294,26 +473,16 @@ WeaponType MicroUnitControl::getGroundWeapon(Unit* unit)
 		return WeaponTypes::None;
 	}
 
-	if (unit->getType() == UnitTypes::Protoss_Carrier)
-	{
-		return UnitTypes::Protoss_Interceptor.groundWeapon();
-	}
-
-	if (unit->getType() == UnitTypes::Protoss_Reaver)
-	{
-		return UnitTypes::Protoss_Scarab.groundWeapon();
-	}
-
-	if (unit->getType() == UnitTypes::Terran_Bunker)
-	{
-		return UnitTypes::Terran_Marine.groundWeapon();
-	}
-
-	return unit->getType().groundWeapon();
+	return getGroundWeapon(unit->getType());
 }
 
 int MicroUnitControl::getAirCooldown(Unit* unit)
 {
+	if (unit->getType() == UnitTypes::Protoss_Carrier)
+	{
+		return 30;
+	}
+
 	return getAirWeapon(unit).damageCooldown();
 }
 
@@ -335,23 +504,7 @@ int MicroUnitControl::getAirHits(Unit* unit)
 		return 0;
 	}
 
-	if (unit->getType() == UnitTypes::Protoss_Carrier)
-	{
-		return UnitTypes::Protoss_Interceptor.maxAirHits();
-	}
-
-	if (unit->getType() == UnitTypes::Terran_Bunker)
-	{
-		return UnitTypes::Terran_Marine.maxAirHits();
-	}
-
-	// BWAPI returns 1
-	if (unit->getType() == UnitTypes::Terran_Goliath)
-	{
-		return 2;
-	}
-
-	return unit->getType().maxAirHits();
+	return getAirHits(unit->getType());
 }
 
 int MicroUnitControl::getGroundHits(Unit* unit)
@@ -361,22 +514,7 @@ int MicroUnitControl::getGroundHits(Unit* unit)
 		return 0;
 	}
 
-	if (unit->getType() == UnitTypes::Protoss_Carrier)
-	{
-		return UnitTypes::Protoss_Interceptor.maxGroundHits();
-	}
-
-	if (unit->getType() == UnitTypes::Protoss_Reaver)
-	{
-		return UnitTypes::Protoss_Scarab.maxGroundHits();
-	}
-
-	if (unit->getType() == UnitTypes::Terran_Bunker)
-	{
-		return UnitTypes::Terran_Marine.maxGroundHits();
-	}
-
-	return unit->getType().maxGroundHits();
+	return getGroundHits(unit->getType());
 }
 
 int MicroUnitControl::getDamage(Unit* unit)
@@ -407,7 +545,7 @@ int MicroUnitControl::getAirDamage(Unit* unit)
 	
 	if (unit->getType() == UnitTypes::Terran_Goliath)
 	{
-		// damage bonus = 1, BWAPI returns 2
+		// damage bonus = 1 but BWAPI returns 2
 		damage = getAirHits(unit) * (weapon.damageAmount() + unit->getPlayer()->getUpgradeLevel(weapon.upgradeType()) * weapon.damageFactor());
 	}
 
@@ -850,7 +988,7 @@ Unit* MicroUnitControl::getBestAttackTartget(Unit* unit, UnitGroup& targets)
 	{
 		for each (Unit* e in targets)
 		{
-			int maxRange = unit->getType() == UnitTypes::Terran_Siege_Tank_Siege_Mode ? unit->getType().groundWeapon().maxRange() : unit->getType().sightRange();
+			int maxRange = unit->getType() == UnitTypes::Terran_Siege_Tank_Siege_Mode ? unit->getType().groundWeapon().maxRange() : unit->getType().sightRange()*3/2;
 
 			if (e->getType().isFlyer()
 				  ||
@@ -1155,6 +1293,28 @@ void MicroUnitControl::tankAttack(BWAPI::Unit* u, BWAPI::Position p, int reachRa
 
 		if (enemyInRange.empty())
 		{
+			// destroy buildings that block its way
+			Unit* bs = NULL;
+			if (Broodwar->getFrameCount() > 24*60*10 &&
+				  TerrainManager::create()->bsPos != TilePositions::None &&
+				  TerrainManager::create()->bsPos.getDistance(u->getTilePosition()) < 8)
+			{
+				for each (Unit* i in Broodwar->self()->getUnits())
+				{
+					if (i->getType() == UnitTypes::Terran_Supply_Depot && i->getTilePosition().getDistance(TerrainManager::create()->bsPos) < 2)
+					{
+						bs = i;
+						break;
+					}
+				}
+			}
+
+			if (bs)
+			{
+				attack(u,bs);
+				return;
+			}
+
 			if (u->getPosition().getDistance(p) > reachRange)
 			{
 				// move
@@ -1367,7 +1527,7 @@ void MicroUnitControl::tankAttack(BWAPI::Unit* u, BWAPI::Position p, int reachRa
 			}
 			else
 			{
-				Broodwar->printf("SiegeTank no target, enemyInRange %d",enemyInRange.size());
+				//Broodwar->printf("SiegeTank no target, enemyInRange %d",enemyInRange.size());
 			}
 		}
 	}

@@ -243,6 +243,9 @@ void ScoutManager::ScannerScout(ScoutPurpose purpose,int reserveTimes)
             this->essentialPostions.insert(this->enemyStartLocation->getPosition());
             this->essentialPostions.insert(this->enemyStartLocation->getRegion()->getCenter());
             this->essentialPostions.insert(this->terrainManager->eNearestBase->getPosition());
+						this->essentialPostions.insert(this->terrainManager->eSecondChokepoint->getCenter());
+						this->essentialPostions.insert(this->terrainManager->eThirdChokepoint->getCenter());
+						this->essentialPostions.insert(this->terrainManager->eFirstChokepoint->getCenter());
           }		
         }
         else
@@ -616,7 +619,7 @@ void ScoutManager::scoutEnemyExpansion(Unit* u)
 {		
 	for each (BWTA::BaseLocation* base in this->baseLocationNeedToScout)
 	{
-		Broodwar->drawCircleMap(base->getPosition().x(),base->getPosition().y(),30,Colors::Yellow,true);
+		Broodwar->drawCircleMap(base->getPosition().x(),base->getPosition().y(),30,Colors::Yellow);
 	}
 	//Broodwar->drawTextScreen(5,60,"BaseLocationNeedToScout: %d | %d",this->baseLocationNeedToScout.size(),Broodwar->getFrameCount());
 	//Broodwar->drawTextScreen(5,70,"BaseLocationExplored: %d",this->baseLocationsExplored.size());
@@ -704,7 +707,7 @@ void ScoutManager::scoutEnemyExpansion(Unit* u)
 		// this may happen on Electric Circuit
 		else if (Broodwar->getFrameCount() - this->currentStartFrame > 24*30)
 		{
-			Broodwar->printf("skip scouting Base(%d,%d)",this->currentLocationTarget->getTilePosition().x(),this->currentLocationTarget->getTilePosition().y());
+			//Broodwar->printf("skip scouting Base(%d,%d)",this->currentLocationTarget->getTilePosition().x(),this->currentLocationTarget->getTilePosition().y());
 			this->baseLocationsExplored.insert(this->currentLocationTarget);
 			this->currentFinish = true;
 		}
@@ -742,7 +745,7 @@ void ScoutManager::scoutMyMainBase(Unit* u)
 	static int current = 0;
 	static int lastOrderFrame = 0;
 
-	if (Broodwar->getFrameCount() >= 24*60*4
+	if (Broodwar->getFrameCount() >= 24*60*5
 			||
 			!SelectAllEnemy().inRegion(BWTA::getRegion(Broodwar->self()->getStartLocation())).empty()
 			||
@@ -1072,7 +1075,7 @@ void ScoutManager::onFrame()
 			&&
 			MentalClass::create()->STflag == MentalClass::NotSure
 			&&
-		  Broodwar->getFrameCount() >= 24*60*2 && Broodwar->getFrameCount() <= 24*60*4 && Broodwar->getFrameCount()%(24*10) == 0)
+		  Broodwar->getFrameCount() >= 24*60*2 && Broodwar->getFrameCount() <= 24*60*5 && Broodwar->getFrameCount()%(24*10) == 0)
 	{
 		this->setScoutNum(2);
 		SCVScout(MyMainBase);

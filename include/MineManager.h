@@ -74,12 +74,10 @@ public:
 	void removeMinePlacer(BWAPI::Unit*);
 	int getMinePlacerCount(ICEStarCraft::MinePurpose);
 
-	//std::set<BWTA::BaseLocation*> getBaseTargets();
 	std::map<BWTA::BaseLocation*,BWAPI::Unit*> getBaseTargets();
 	void updateBaseTarget(BWTA::BaseLocation*,BWAPI::Unit*);
 	void removeBaseTarget(BWTA::BaseLocation*);
 
-	//std::set<BWAPI::TilePosition> getTileTargets();
 	std::map<BWAPI::TilePosition,BWAPI::Unit*> getTileTargets();
 	void updateTileTarget(BWAPI::TilePosition,BWAPI::Unit*);
 	void removeTileTarget(BWAPI::TilePosition);
@@ -107,8 +105,6 @@ private:
 	Arbitrator::Arbitrator<BWAPI::Unit*,double>* arbitrator;
 	
 	std::set<MinePlacer*> minePlacers;
-	//std::set<BWTA::BaseLocation*> baseTargets;
-	//std::set<BWAPI::TilePosition> tileTargets;
 	std::map<BWTA::BaseLocation*,BWAPI::Unit*> baseTargets;
 	std::map<BWAPI::TilePosition,BWAPI::Unit*> tileTargets;
 	std::vector<BWAPI::TilePosition> path;
@@ -116,7 +112,8 @@ private:
 	BWAPI::TilePosition lastStartTP;
 	BWAPI::TilePosition endTP;
 	BWAPI::TilePosition lastEndTP;
-	int step;
+	int pathStep;
+	int tileStep;
 	int lastUpdateBaseFrame;
 	int lastUpdateTileFrame;
 	int lastUpdatePathFrame;

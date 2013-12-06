@@ -18,91 +18,100 @@ void TPTiming::destroy(){
 
 TPTiming::TPTiming()
 {
-	this->attackTimingMap.clear();
+	attackTimingMap.clear();
 	//three timing 
 	//first is 3tanks,8 vultures + marine
-	this->attackTimingMap[1]=false;
+	attackTimingMap[1]=false;
 	//second is 6 factories, supply used>100
-	this->attackTimingMap[2]=false;
+	attackTimingMap[2]=false;
 	//last is supply > 170
-	this->attackTimingMap[3]=false;
-	this->mInfo = MyInfoManager::create();
-	this->eInfo = EnemyInfoManager::create();
+	attackTimingMap[3]=false;
+	mInfo = MyInfoManager::create();
+	eInfo = EnemyInfoManager::create();
 }
 
 void TPTiming::CheckTiming()
 {
 	if (Broodwar->getFrameCount()%24 == 0)
 	{
-		int preAtkTime = (this->eInfo->killedEnemyNum - this->mInfo->myDeadArmy)*2*24;
+		int preAtkTime = (eInfo->killedEnemyNum - mInfo->myDeadArmy)*2*24;
 		preAtkTime = preAtkTime > 0? preAtkTime : 0;
 		int population = Broodwar->self()->supplyUsed()/2;
 		int tank = Broodwar->self()->completedUnitCount(UnitTypes::Terran_Siege_Tank_Tank_Mode) + Broodwar->self()->completedUnitCount(UnitTypes::Terran_Siege_Tank_Siege_Mode);
 		int vulture = Broodwar->self()->completedUnitCount(UnitTypes::Terran_Vulture);
 		int factory = Broodwar->self()->completedUnitCount(UnitTypes::Terran_Factory);
-		double mFV = this->mInfo->myFightingValue().first;
-		double mDV = this->mInfo->myFightingValue().second;
-		double eFV = this->eInfo->enemyFightingValue().first;
-		double eDV = this->eInfo->enemyFightingValue().second;
-		bool eHasDK = (this->eInfo->EnemyhasBuilt(UnitTypes::Protoss_Dark_Templar,2)||this->eInfo->EnemyhasBuilt(UnitTypes::Protoss_Templar_Archives,2));
+		double mFV = mInfo->myFightingValue().first;
+		double mDV = mInfo->myFightingValue().second;
+		double eFV = eInfo->enemyFightingValue().first;
+		double eDV = eInfo->enemyFightingValue().second;
+		bool eHasDK = (eInfo->EnemyhasBuilt(UnitTypes::Protoss_Dark_Templar,2) || eInfo->EnemyhasBuilt(UnitTypes::Protoss_Templar_Archives,2));
 		bool mHasDetector = Broodwar->self()->completedUnitCount(UnitTypes::Terran_Comsat_Station) + Broodwar->self()->completedUnitCount(UnitTypes::Terran_Science_Vessel) > 0;
-		//first timing slot
+		
+		// 1st timing slot
 		if ((Broodwar->getFrameCount()>24*60*7-preAtkTime) && Broodwar->getFrameCount()<24*60*11+preAtkTime)
 		{
 			if (tank >= 3 && vulture >= 7 && mFV > eDV * 1.2)
 			{
-				if (eHasDK && mHasDetector)
+				if ((eHasDK && mHasDetector) || !eHasDK)
 				{
-					this->attackTimingMap[1] = true;
-				}
-				else if (!eHasDK)
-				{
-					this->attackTimingMap[1] = true;
+					attackTimingMap[1] = true;
 				}
 			}
 		}
 
 		//times out
-		if (this->attackTimingMap[1] == true && (Broodwar->getFrameCount() > 24*60*11 || mFV < eFV))
+		if (attackTimingMap[1] == true && (Broodwar->getFrameCount() > 24*60*11 || mFV < eFV))
 		{
-			this->attackTimingMap[1] = false;
+			attackTimingMap[1] = false;
 		}
 
 		//_T_
-		this->attackTimingMap[1] = false;
+		attackTimingMap[1] = false;
 
-		//second timing slot
-		if (Broodwar->getFrameCount() > 24*60*10 && Broodwar->getFrameCount()<24*60*14)
+		// 2nd timing slot
+		if (Broodwar->getFrameCount() > 24*60*10 && Broodwar->getFrameCount() < 24*60*14)
 		{
 			if (population >= 120 && factory >= 4 && mFV > 1.3 * eFV)
 			{
-				if (eHasDK && mHasDetector)
+				if ((eHasDK && mHasDetector) || !eHasDK)
 				{
-					this->attackTimingMap[2] = true;
-				}
-				else if (!eHasDK)
-				{
-					this->attackTimingMap[2] = true;
+					attackTimingMap[2] = true;
 				}
 			}
 		}
 
 		//times out
-		if (this->attackTimingMap[2] == true && mFV < eFV)
+		if (attackTimingMap[2] == true && mFV < eFV)
 		{
-			this->attackTimingMap[2] = false;
+			attackTimingMap[2] = false;
+		}
+		
+		//_T_
+		// 3rd timing slot
+		if (Broodwar->getFrameCount() > 24*60*15 && Broodwar->getFrameCount() < 24*60*18)
+		{
+			if (population >= 160 && factory >= 5 && mFV > 1.3 * eFV)
+			{
+				attackTimingMap[3] = true;
+			}
 		}
 
-		//third timing slot
+		//times out
+		if (attackTimingMap[3] == true && mFV < eFV)
+		{
+			attackTimingMap[3] = false;
+		}
+
+		// 4th timing slot
 		if (population >= 180 || Broodwar->getFrameCount() > 24*60*45)
 		{
-			this->attackTimingMap[3] = true;
+			attackTimingMap[4] = true;
 		}
 		
 		//times out
-		if (this->attackTimingMap[3] && mFV < eFV && population <= 150)
+		if (attackTimingMap[4] && mFV < eFV && population <= 150)
 		{
-			this->attackTimingMap[3] = false;
+			attackTimingMap[4] = false;
 		}
 	}
 }

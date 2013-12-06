@@ -7,6 +7,7 @@
 #include "UnitGroupManager.h"
 #include "ScoutManager.h"
 #include "EnemyUnit.h"
+#include "MicroUnitControl.h"
 
 using namespace BWAPI;
 using namespace BWTA;
@@ -105,7 +106,7 @@ public:
 	map<Unit*,UnitType> allenemyFighter;
 	map<Unit*,std::pair<UnitType,Position>> eBuildingPositionMap;
 	map<Unit*,eBaseData> enemyBaseMap;
-	MyInfoManager* mInfor;
+	MyInfoManager* mInfo;
 
 	//_T_
 	std::set<EnemyUnit*>& getAllEnemyUnits();

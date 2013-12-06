@@ -38,6 +38,7 @@ ArmyManager::ArmyManager()
 	attackers.clear();
 	vessels.clear();
 	setPoint = Positions::None;
+	setPoint2 = Positions::None;
 	siegePoint = Positions::None;
 	gatherPoint = Positions::None;
 	lastAttackFrame = 0;
@@ -237,6 +238,9 @@ void ArmyManager::updateSetPoint()
 		return;
 	}
 
+	Position lastSetPoint  = setPoint;
+	Position lastSetPoint2 = setPoint2;
+
 	/************************************************************************/
 	/* VS Terran                                                            */
 	/************************************************************************/
@@ -335,7 +339,7 @@ void ArmyManager::updateSetPoint()
 		{
 			setPoint = terrainManager->mSecondChokepoint->getCenter();
 		}
-		else /*if (Broodwar->self()->supplyUsed()/2 > 90)*/
+		else /*if (Broodwar->self()->supplyUsed()/2 > 90*/
 		{
 			Position mSecondChoke = terrainManager->mSecondChokepoint->getCenter();
 			Position mThirdChoke  = terrainManager->mThirdChokepoint->getCenter();
@@ -368,6 +372,32 @@ void ArmyManager::updateSetPoint()
 		setPoint = Position(terrainManager->getConnectedTilePositionNear(TilePosition(setPoint)));
 	}
 	Broodwar->drawCircleMap(setPoint.x(),setPoint.y(),12,Colors::Red,true);
+
+	if (setPoint == lastSetPoint)
+	{
+		setPoint2 = lastSetPoint2;
+	}
+	else if (Broodwar->enemy()->getRace() == Races::Terran ||
+			     terrainManager->getGroundDistance(TilePosition(setPoint),Broodwar->self()->getStartLocation()) < 0 ||
+			     !terrainManager->eSecondChokepoint)
+	{
+		setPoint2 = setPoint;
+	}
+	else
+	{
+		clock_t t = clock();
+		vector<TilePosition> path = BWTA::getShortestPath(TilePosition(setPoint),TilePosition(terrainManager->eSecondChokepoint->getCenter()));
+		//Broodwar->printf("getShortestPath %.0f",(float)(1000*(clock()-t)/CLOCKS_PER_SEC));
+		if (path.empty() || path.size() < 5)
+		{
+			setPoint2 = setPoint;
+		}
+		else
+		{
+			setPoint2 = Position(path[4]);
+		}
+	}
+	Broodwar->drawCircleMap(setPoint2.x(),setPoint2.y(),8,Colors::Green,true);
 }
 
 void ArmyManager::updateSiegePoint()
@@ -696,14 +726,14 @@ void ArmyManager::ArmyGuard()
 			}
 			else if (u->getPosition().getApproxDistance(setPoint) > 32*4)
 			{
-				u->attack(setPoint);
+				u->attack(setPoint2);
 			}
 		}
 		else
 		{
 			if (u->getPosition().getApproxDistance(setPoint) > 32*4)
 			{
-				u->attack(setPoint);
+				u->attack(setPoint2);
 			}
 		}
 	}

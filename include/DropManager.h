@@ -1,19 +1,17 @@
 #pragma once
-#include <map>
-#include <vector>
 #include <math.h>
 #include <BWTA.h>
 #include <BWAPI.h>
-#include "UnitGroup.h"
-#include "UnitGroupManager.h"
-#include "TerrainManager.h"
 #include "BuildOrderManager.h"
-#include "ScoutManager.h"
-#include "MentalState.h"
-#include "Helper.h"
-#include "Vector2.h"
-#include "PFFunctions.h"
+#include "Common.h"
 #include "EnemyUnit.h"
+#include "Helper.h"
+#include "MentalState.h"
+#include "PFFunctions.h"
+#include "ScoutManager.h"
+#include "TerrainManager.h"
+#include "UnitGroupManager.h"
+#include "Vector2.h"
 
 namespace ICEStarCraft
 {
@@ -97,7 +95,7 @@ public:
 	UnitGroup allUnitsToLoad;
 	UnitGroup unitsToControl;
 	std::set<Dropper*> droppers;
-	int dropperNumMax;
+	int dropperMaxNum;
 	std::set<DropTarget*> dropTargets;
 	bool isDropTarget(BWTA::BaseLocation*);
 	void selectUnitsForDropper(Dropper*);

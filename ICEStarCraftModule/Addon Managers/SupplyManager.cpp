@@ -49,9 +49,9 @@ void SupplyManager::update()
 			{
 				double s=j->supplyRequired();  // original one is int
 				if (j->isTwoUnitsInOneEgg())
-					s*= 1.8;//1.35
+					s*= 1.6;//1.35
 				if (j->buildTime()<supplyBuildTime && (*i)->getType().getRace()!=BWAPI::Races::Zerg)
-					s*= 1.8;//1.2
+					s*= 1.6;//1.2
 				if (s > max)
 					max=s;
 			}
@@ -103,7 +103,7 @@ int SupplyManager::getSupplyTime(int supplyCount) const
 
 	int supply=BWAPI::Broodwar->self()->supplyTotal();
 	int time = BWAPI::Broodwar->getFrameCount();
-	std::set<BWAPI::Unit*> units = SelectAll()(-isCompleted);
+	std::set<BWAPI::Unit*> units = SelectAll()(isCompleted);
 	std::map<int, int> supplyAdditions;
 	for(std::set<BWAPI::Unit*>::iterator i = units.begin(); i != units.end(); i++)
 	{

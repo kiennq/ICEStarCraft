@@ -432,7 +432,8 @@ MineManager::MineManager()
 	endTP   = TilePositions::None;
 	lastStartTP = TilePositions::None;
 	lastEndTP   = TilePositions::None;
-	step = 3;
+	pathStep = 3;
+	tileStep = 4;
 	lastUpdateBaseFrame = 0;
 	lastUpdateTileFrame = 0;
 	lastUpdatePathFrame = 0;
@@ -638,9 +639,9 @@ void MineManager::updateTileTargets()
 
 	lastUpdateTileFrame = Broodwar->getFrameCount();
 
-	for (int i = 0; i < Broodwar->mapWidth(); i += 5)
+	for (int i = 0; i < Broodwar->mapWidth(); i += tileStep)
 	{
-		for (int j = 0; j < Broodwar->mapHeight(); j += 5)
+		for (int j = 0; j < Broodwar->mapHeight(); j += tileStep)
 		{
 			TilePosition tile = TilePosition(i,j);
 			Position pos = Position(32*i+16,32*j+16);
@@ -716,7 +717,7 @@ void MineManager::clearMinePath()
 
 int MineManager::getMineStep() 
 {
-	return step;
+	return pathStep;
 }
 
 void MineManager::updateMinePath()
@@ -832,18 +833,18 @@ void MineManager::update()
 		{
 			m->purpose = MineBase;
 		}
-		/*else if (!tileTargets.empty() && getMinePlacerCount(MineMap) < min(5,(int)tileTargets.size()))
+		else if (!tileTargets.empty() && getMinePlacerCount(MineMap) < min(5,(int)tileTargets.size()))
 		{
 			m->purpose = MineMap;
-		}*/
+		}
 		else if (!path.empty() && getMinePlacerCount(MinePath) < 1)
 		{
 			m->purpose = MinePath;
 		}
-		else if (!tileTargets.empty() && getMinePlacerCount(MineMap) < (int)tileTargets.size())
+		/*else if (!tileTargets.empty() && getMinePlacerCount(MineMap) < (int)tileTargets.size())
 		{
 			m->purpose = MineMap;
-		}
+		}*/
 	}
 }
 

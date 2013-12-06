@@ -129,10 +129,17 @@ void Dropper::update()
 					}
 				}
 			}
-			else
+			else if (!workerManager->isInRepairList(dropship))
 			{
 				state = Moving;
 				current = 0;
+			}
+			else
+			{
+				if (dropship->getTilePosition().getDistance(Broodwar->self()->getStartLocation()) > 2)
+				{
+					dropship->move(Position(Broodwar->self()->getStartLocation()));
+				}
 			}
 		}
 		break;
@@ -348,7 +355,7 @@ DropManager::DropManager()
 	allUnitsToLoad.clear();
 	unitsToControl.clear();
 	droppers.clear();
-	dropperNumMax = 0;
+	dropperMaxNum = 0;
 	dropTargets.clear();
 }
 
@@ -463,26 +470,18 @@ void DropManager::update()
 	}
 
 	int minPopulation = Broodwar->enemy()->getRace() == Races::Protoss ? 120 : 100;
-	/*if (mInfo->myFightingValue().first > eInfo->enemyFightingValue().first * 4)
-	{
-		minPopulation -= 20;
-	}
-	else if (mInfo->myFightingValue().first > eInfo->enemyFightingValue().first)
-	{
-		minPopulation -= 10;
-	}*/
 
 	if (Broodwar->self()->supplyUsed()/2 > minPopulation)
 	{
-		dropperNumMax = Broodwar->self()->supplyUsed()/2 > minPopulation + 20 ? 2 : 1;
+		dropperMaxNum = Broodwar->self()->supplyUsed()/2 > minPopulation + 20 ? 2 : 1;
 	}
 	else
 	{
-		dropperNumMax = 0;
+		dropperMaxNum = 0;
 	}
 
 	// build drop ship
-	if (dropperNumMax > 0 &&
+	if (dropperMaxNum > 0 &&
 		  Broodwar->self()->deadUnitCount(UnitTypes::Terran_Dropship) < 3 &&
 			mental->enemyInSight.size() < 5)
 	{
@@ -493,15 +492,18 @@ void DropManager::update()
 		}
 		else if (mInfo->countUnitNum(UnitTypes::Terran_Starport,1) >= 1)
 		{
-			if (mInfo->countUnitNum(UnitTypes::Terran_Dropship,2) < dropperNumMax)
+			if (buildOrderManager->getPlannedCount(UnitTypes::Terran_Valkyrie,85) > 0 && Broodwar->self()->allUnitCount(UnitTypes::Terran_Valkyrie) < 4)
 			{
-				if (buildOrderManager->getPlannedCount(UnitTypes::Terran_Valkyrie,85) > 0 && Broodwar->self()->allUnitCount(UnitTypes::Terran_Valkyrie) < 4)
+				if (buildOrderManager->getPlannedCount(UnitTypes::Terran_Dropship,84) < dropperMaxNum)
 				{
-					buildOrderManager->build(dropperNumMax,UnitTypes::Terran_Dropship,84);
-				}
-				else
+					buildOrderManager->build(dropperMaxNum,UnitTypes::Terran_Dropship,84);
+				}		
+			}
+			else
+			{
+				if (buildOrderManager->getPlannedCount(UnitTypes::Terran_Dropship,100) < dropperMaxNum)
 				{
-					buildOrderManager->build(dropperNumMax,UnitTypes::Terran_Dropship,105);
+					buildOrderManager->build(dropperMaxNum,UnitTypes::Terran_Dropship,100);
 				}
 			}
 		}
@@ -576,7 +578,7 @@ void DropManager::update()
 	// first enemy expansion that our tank can attack from high ground
 	for (map<Unit*,EnemyInfoManager::eBaseData>::iterator i = eInfo->enemyBaseMap.begin(); i != eInfo->enemyBaseMap.end(); i++)
 	{
-		if (dropTargets.size() >= dropperNumMax)
+		if (dropTargets.size() >= dropperMaxNum)
 		{
 			break;
 		}
@@ -623,12 +625,12 @@ void DropManager::update()
 	}
 
 	// then add enemy start location to drop targets
-	if (dropTargets.size() < dropperNumMax &&
+	/*if (dropTargets.size() < dropperMaxNum &&
 		  scoutManager->enemyStartLocation &&
 			eInfo->isEnemyBase(scoutManager->enemyStartLocation) &&
 			!isDropTarget(scoutManager->enemyStartLocation) &&
 			eInfo->countUnitNum(Broodwar->enemy()->getRace().getWorker(),scoutManager->enemyStartLocation->getPosition()) >= 5 &&
-			eInfo->countDangerTotal(scoutManager->enemyStartLocation->getPosition()) < 4)
+			eInfo->countDangerTotal(scoutManager->enemyStartLocation->getPosition()) < 3)
 	{
 		Position start = terrainManager->mSecondChokepoint->getCenter();
 		Position end = scoutManager->enemyStartLocation->getPosition();
@@ -641,16 +643,20 @@ void DropManager::update()
 		{
 			dropTargets.insert(new DropTarget(scoutManager->enemyStartLocation,scoutManager->enemyStartLocation->getPosition(),Harrass,path));
 		}
-	}
+	}*/
 
 	// add other expansions if still possible
 	for (map<Unit*,EnemyInfoManager::eBaseData>::iterator i = eInfo->enemyBaseMap.begin(); i != eInfo->enemyBaseMap.end(); i++)
 	{
-		if (dropTargets.size() < dropperNumMax &&
+		if (dropTargets.size() < dropperMaxNum &&
 			  !isDropTarget(i->second.base) &&
 				eInfo->countUnitNum(Broodwar->enemy()->getRace().getWorker(),i->second.base->getPosition()) >= 4 &&
-				eInfo->countDangerTotal(i->second.base->getPosition()) < 4)
+				eInfo->countDangerTotal(i->second.base->getPosition()) < 3)
 		{
+			if (scoutManager && i->second.base == scoutManager->enemyStartLocation && Broodwar->getFrameCount() > 24*60*15)
+			{
+				continue;
+			}
 			Position start = terrainManager->mSecondChokepoint->getCenter();
 			Position end = i->second.base->getPosition();
 			vector<Position> path = getBestFlightPath(start,end,EnemyInfoManager::create()->getAllEnemyUnits());
@@ -1056,6 +1062,32 @@ vector<Position> DropManager::getBestFlightPath(Position start, Position end, se
 		g.addEdge(startYY,BR);
 	}
 
+	// remove edge near enemy second choke point
+	
+	for each (Position B in g.getNeighbors(start))
+	{
+		if (!TerrainManager::create()->eSecondChokepoint)
+		{
+			break;
+		}
+
+		Position A = start;
+		Position I = TerrainManager::create()->eSecondChokepoint->getCenter();
+		int ab = (int)A.getDistance(B);
+		Vector2 AI = Vector2(I) - Vector2(A);
+		Vector2 AB = Vector2(B) - Vector2(A);
+
+		int D = (int)(std::abs(AI ^ AB) / ab);
+
+		if (D > 32*15 || (AI * AB) / ab < 0 || (AI * AB) / ab > ab)
+		{
+			continue;
+		}
+
+		g.removeEdge(start,B);
+		//Broodwar->printf("remove edge (%d,%d) (%d,%d)",start.x()/32,start.y()/32,B.x()/32,B.y()/32);
+	}
+
 	// set weights for edges
 	// weight is the damage that the dropship will take while flying along this edge
 	for each (Edge* e in g.edges)
@@ -1064,7 +1096,7 @@ vector<Position> DropManager::getBestFlightPath(Position start, Position end, se
 		Position A = e->first;
 		Position B = e->second;
 		int ab = (int)A.getDistance(B);
-
+		
 		for each (EnemyUnit* u in allEnemyUnits)
 		{
 			if (u->getPosition() == Positions::Unknown)
@@ -1140,6 +1172,7 @@ vector<Position> DropManager::getBestFlightPath(Position start, Position end, se
 			int eDamage = weapon.damageAmount() + Broodwar->enemy()->getUpgradeLevel(weapon.upgradeType()) * weapon.damageBonus() * weapon.damageFactor();
 			if (u->getType() == UnitTypes::Protoss_Carrier)
 			{
+				hits = time / 30 + 1;
 				eDamage *= u->getInterceptorCount();
 				damage += eDamage * UnitTypes::Protoss_Interceptor.maxAirHits() * hits;
 			}
@@ -1220,7 +1253,7 @@ void DropManager::showDebugInfo()
 
 		for each (Unit* u in d->unitsToLoad)
 		{
-			Broodwar->drawLineMap(p.x(),p.y(),u->getPosition().x(),u->getPosition().y(),Colors::Purple);
+			//Broodwar->drawLineMap(p.x(),p.y(),u->getPosition().x(),u->getPosition().y(),Colors::Purple);
 		}
 	}
 }
