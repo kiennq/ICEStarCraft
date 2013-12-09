@@ -61,8 +61,7 @@ void ICEStarCraftModule::onStart()
 	BWTA::readMap();
 	BWTA::analyze();
 	analyzed=true;
-	Broodwar->printf("Hi, This is ICEbot!");
-	Broodwar->printf("GL && HF");
+	
 	Broodwar->printf("%s", Broodwar->mapName().c_str());
 
 	Broodwar->enableFlag(Flag::UserInput);
@@ -78,6 +77,7 @@ void ICEStarCraftModule::onStart()
 	this->macroManager = MacroManager::create();
 
 	this->buildOrderManager  = new BuildOrderManager(this->buildManager,this->techManager,this->upgradeManager,workerManager,this->supplyManager);
+	//this->buildOrderManager->setDebugMode(false);
 	if (Broodwar->enemy()->getRace() == Races::Protoss)
 	{
 		this->buildManager->setBuildDistance(0);
@@ -173,7 +173,7 @@ void ICEStarCraftModule::onEnd(bool isWinner)
 		//log win to file
 	}
 
-//#ifdef _LOG_TO_FILE
+#ifdef _LOG_TO_FILE
 	ofstream fout("result.csv", ios::app);
 	if (fout.is_open())
 	{
@@ -184,15 +184,21 @@ void ICEStarCraftModule::onEnd(bool isWinner)
 		fout << Broodwar->getFrameCount() << endl;
 		fout.close();
 	}
-//#endif
+#endif
 }
 
 void ICEStarCraftModule::onFrame()
 {
 	if (Broodwar->isReplay()) return;
 
+	if (Broodwar->getFrameCount() == 24*5)
+	{
+		Broodwar->sendText("gl hf");
+	}
+
 #ifndef _TIME_DEBUG
-	if (this->drawObjects){
+	if (this->drawObjects)
+	{
 		enhancedUI->update();
 		enhancedUI->drawUnitsAttackRange();
 		terrainGraph->draw();
@@ -202,23 +208,16 @@ void ICEStarCraftModule::onFrame()
 	if (draw_self_targets) enhancedUI->drawUnitTargets(Broodwar->self());
 
 	this->terrainManager->onFrame();
-
 	this->gameFlow->onFrame();
-
-
-  this->mental->onFrame();
-
+	this->mental->onFrame();
 	this->macroManager->onFrame();
-
 	this->eInfo->showTypeToTimeMap();
 	this->eInfo->showUnitToTypeMap();
 	this->eInfo->showBuildingToPositionMap();
 	this->eInfo->showBaseToDataMap();
 	this->eInfo->onFrame();
 	this->mInfo->onFrame();
-
 	this->scoutManager->onFrame();
-
 	workerManager->onFrame();
 	baseManager->update();
 	this->buildManager->update();
@@ -782,14 +781,6 @@ void ICEStarCraftModule::showDebugInfo()
 	MineManager::create()->showDebugInfo();
 	MyInfoManager::create()->showDebugInfo();
 	TerrainManager::create()->showDebugInfo();
-
-  for each (Unit* u in Broodwar->getAllUnits())
-  {
-    if (u->isSelected())
-    {
-      Broodwar->drawTextMap(u->getPosition().x(), u->getPosition().y()-u->getType().dimensionUp(), "%ld %d", (int)u, u->getID());
-    }
-  }
 
 	for each (Unit* u in Broodwar->self()->getUnits())
 	{

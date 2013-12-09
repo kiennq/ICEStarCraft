@@ -205,7 +205,7 @@ Position MicroUnitControl::getDestinationNearChokepoint(Unit*u, UnitGroup& myUni
 
 	UnitGroup insideUnits = myUnits.inRegion(targetReg);
 	double radius = 32*4*(1.5-0.8*insideUnits.size()/myUnits.size());
-	Broodwar->drawCircleMap(theChokePoint->getCenter().x(),theChokePoint->getCenter().y(),(int)radius,Colors::Red);
+	//Broodwar->drawCircleMap(theChokePoint->getCenter().x(),theChokePoint->getCenter().y(),(int)radius,Colors::Red);
 	if (reg == targetReg && p.getDistance(theChokePoint->getCenter()) > radius)
 	{
 		return Positions::None;
@@ -230,7 +230,7 @@ Position MicroUnitControl::getDestinationNearChokepoint(Unit*u, UnitGroup& myUni
 		Broodwar->drawCircleMap((*i).x(),(*i).y(),2,Colors::Yellow);
 		if (!ICEStarCraft::Helper::isChokePointCenter(*i) && p.getDistance(*i) <= 64)
 		{
-			Broodwar->drawLineMap((*i).x(),(*i).y(),p.x(),p.y(),Colors::Yellow);
+			//Broodwar->drawLineMap((*i).x(),(*i).y(),p.x(),p.y(),Colors::Yellow);
 			b_tmp = PFFunctions::getVelocityVortex(*i,p)*1000;
 
 			v1 = (*i) - regcen;
@@ -1250,7 +1250,6 @@ void MicroUnitControl::tankAttack(BWAPI::Unit* u, BWAPI::Position p, int reachRa
 			}
 		}
 
-		//Broodwar->printf("count 3 %d",count);
 		if (count > 4)
 		{
 			reachRange = 32*6;
@@ -1271,7 +1270,7 @@ void MicroUnitControl::tankAttack(BWAPI::Unit* u, BWAPI::Position p, int reachRa
 					count++;
 				}
 			}
-			//Broodwar->printf("count 6 %d",count);
+			
 			if (count > 8)
 			{
 				p = ArmyManager::create()->getSetPoint();
@@ -1631,6 +1630,19 @@ void MicroUnitControl::scienceVesselMicro(Unit* u)
 
 	if (v != Vector2(0,0))
 	{
+		for each (Unit* i in Broodwar->self()->getUnits())
+		{
+			if (!i->isCompleted())
+			{
+				continue;
+			}
+			
+			if (i->getType().airWeapon() != WeaponTypes::None || (i->getType() == UnitTypes::Terran_Bunker && !i->getLoadedUnits().empty()))
+			{
+				v += PFFunctions::getVelocitySource(i->getPosition(),u->getPosition()) * (-1000);
+			}
+		}
+
 		v = v * (128.0 / v.approxLen());
 		Position p = (v + u->getPosition()).makeValid();
 		move(u,p);

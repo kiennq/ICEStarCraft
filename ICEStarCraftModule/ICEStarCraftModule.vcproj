@@ -115,12 +115,10 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions="/MP"
-				Optimization="2"
+				Optimization="3"
 				EnableIntrinsicFunctions="true"
 				AdditionalIncludeDirectories="../include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;EXAMPLEAIMODULE_EXPORTS;_SECURE_SCL 0"
-				MinimalRebuild="false"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
@@ -452,14 +450,6 @@
 				</File>
 				<File
 					RelativePath="..\include\BattleManager.h"
-					>
-				</File>
-				<File
-					RelativePath=".\Addon Managers\CommandRewrite.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\include\CommandRewrite.h"
 					>
 				</File>
 				<File

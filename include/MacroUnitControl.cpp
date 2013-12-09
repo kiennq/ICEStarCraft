@@ -118,43 +118,16 @@ void MacroManager::update()
 
 void MacroManager::onFrame()
 {
-	clock_t t = clock();
 	ArmyManager::create()->update();
-	float time1 = (float)(1000*(clock()-t)/CLOCKS_PER_SEC);
-
-	t = clock();
 	BaseDefenseManager::create()->update();
-	float time2 = (float)(1000*(clock()-t)/CLOCKS_PER_SEC);
-
-	t = clock();
 	BattleManager::create()->update();
-	float time3 = (float)(1000*(clock()-t)/CLOCKS_PER_SEC);
-
-	t = clock();
 	DropManager::create()->update();
-	float time4 = (float)(1000*(clock()-t)/CLOCKS_PER_SEC);
-
-	t = clock();
 	MineManager::create()->update();
-	float time5 = (float)(1000*(clock()-t)/CLOCKS_PER_SEC);
-
-	t = clock();
 	scanInvisibleEnemies();
 	controlLiftedBuildings();
 	setRallyPoint(getSetPoint());
 	liftBuildingsNearChokepoints();
 	removeBlockingMinerals();
-	float time6 = (float)(1000*(clock()-t)/CLOCKS_PER_SEC);
-	
-	Broodwar->drawTextScreen(433,290,"MacroManager: %.0f %.0f %.0f %.0f %.0f %.0f",time1,time2,time3,time4,time5,time6);
-
-	for each (Unit* u in SelectAll())
-	{
-		if (u->isSelected() && !arbitrator->getAllBidders(u).empty() && arbitrator->getHighestBidder(u).first)
-		{
-			Broodwar->drawTextMap(u->getPosition().x(),u->getPosition().y()-10,"%s %d",arbitrator->getHighestBidder(u).first->getName().c_str(),(int)arbitrator->getHighestBidder(u).second);
-		}
-	}
 }
 
 void MacroManager::scanInvisibleEnemies()
@@ -197,8 +170,13 @@ void MacroManager::scanInvisibleEnemies()
 			continue;
 		}
 
-		if (e->getType().canAttack() || e->getType() == UnitTypes::Protoss_Carrier || e->getType() == UnitTypes::Protoss_Reaver)
+		if (e->getType().canAttack() || e->getType() == UnitTypes::Protoss_Carrier || e->getType() == UnitTypes::Protoss_Reaver || e->getType() == UnitTypes::Protoss_Observer)
 		{
+			if (e->getType() == UnitTypes::Protoss_Observer && scanners.size() < 2)
+			{
+				continue;
+			}
+
 			for each (Unit* u in myArmy)
 			{
 				int range = 0;
@@ -245,7 +223,6 @@ void MacroManager::controlLiftedBuildings()
 	for each (Unit* u in liftedBuildings)
 	{
 		Vector2 v = Vector2(0,0);
-    // Runaway from enemy anti-air to our tanks
 		for each (EnemyUnit* e in eInfo->getAllEnemyUnits())
 		{
 			if (e->getType() != UnitTypes::Terran_Bunker && e->getType().airWeapon() == WeaponTypes::None)
@@ -260,64 +237,54 @@ void MacroManager::controlLiftedBuildings()
 		}
 		if (v != Vector2(0,0))
 		{
-      for each (Unit* m in SelectAll()(isCompleted)(Siege_Tank))
-      {
-        if (m->getPosition().getApproxDistance(u->getPosition()) <= 32*50)
-        {
-          v += PFFunctions::getVelocitySource(m->getPosition(),u->getPosition())*(-1000);
-        }
-      }
+			for each (Unit* m in SelectAll()(isCompleted)(Siege_Tank))
+			{
+				if (m->getPosition().getApproxDistance(u->getPosition()) <= 32*50)
+				{
+					v += PFFunctions::getVelocitySource(m->getPosition(),u->getPosition())*(-1000);
+				}
+			}
 			v = v * (128.0 / v.approxLen());
 			u->move((v + u->getPosition()).makeValid());
 			continue;
 		}
 
-    // Change to eInfo
-		//UnitGroup enemy = SelectAllEnemy()(isCompleted)(canAttack,Bunker).not(isFlyer,isWorker).inRadius(u->getType().sightRange() + 32*6, u->getPosition());
-    // Just follow tank
-    set<EnemyUnit*> enemy;
-    Position enTankPos = Positions::None;
-    int td = 99999;
-    for each (EnemyUnit* eU in eInfo->getAllEnemyUnits())
-    {
-      UnitType et = eU->getType();
-      Position ep = eU->getPosition();
-      if (et == UnitTypes::Terran_Siege_Tank_Siege_Mode || et == UnitTypes::Terran_Siege_Tank_Tank_Mode) 
-      {
-        if (td > ep.getApproxDistance(terrainManager->mSecondChokepoint->getCenter()))
-        {
-          td = ep.getApproxDistance(terrainManager->mSecondChokepoint->getCenter());
-          enTankPos = ep;
-        }
-        enemy.insert(eU);
-        //enTankPos += eU->getPosition();
-      }
-    }
+		// follow enemy tank
+		set<EnemyUnit*> enemy;
+		Position enTankPos = Positions::None;
+		int td = 99999;
+		for each (EnemyUnit* eU in eInfo->getAllEnemyUnits())
+		{
+			UnitType et = eU->getType();
+			Position ep = eU->getPosition();
+			if (et == UnitTypes::Terran_Siege_Tank_Siege_Mode || et == UnitTypes::Terran_Siege_Tank_Tank_Mode) 
+			{
+				if (td > ep.getApproxDistance(terrainManager->mSecondChokepoint->getCenter()))
+				{
+					td = ep.getApproxDistance(terrainManager->mSecondChokepoint->getCenter());
+					enTankPos = ep;
+				}
+				enemy.insert(eU);
+			}
+		}
 
-		if (enemy.empty() || 
-        enTankPos == Positions::None ||
-        enTankPos == Positions::Unknown ||
-        enTankPos == Positions::Invalid)
+		if (enemy.empty() || enTankPos == Positions::None || enTankPos == Positions::Unknown ||	enTankPos == Positions::Invalid)
 		{
 			if (terrainManager->eSecondChokepoint && u->getPosition().getApproxDistance(terrainManager->eSecondChokepoint->getCenter()) > 32)
 			{
 				u->move(terrainManager->eSecondChokepoint->getCenter());
-        Position ckp2 = terrainManager->eSecondChokepoint->getCenter();
-        Broodwar->drawCircleMap(ckp2.x(), ckp2.y(), 5, Colors::Green, true);
-        Broodwar->drawLineMap(u->getPosition().x(), u->getPosition().y(), ckp2.x(), ckp2.y(), Colors::Green);
+				Position ckp2 = terrainManager->eSecondChokepoint->getCenter();
+				Broodwar->drawCircleMap(ckp2.x(), ckp2.y(), 5, Colors::Green, true);
+				Broodwar->drawLineMap(u->getPosition().x(), u->getPosition().y(), ckp2.x(), ckp2.y(), Colors::Green);
 			}							
 		}
 		// follow the enemy center
 		else
 		{
-			//UnitGroup eTank = enemy(Siege_Tank);
-			//Position pos = eTank.empty() ? enemy.getCenter() : eTank.getCenter();
-			//u->move(pos);
-      u->move(Position(enTankPos.x(), enTankPos.y()));
-      Broodwar->drawCircleMap(enTankPos.x(), enTankPos.y(), 5, Colors::Green, true);
-      Broodwar->drawLineMap(u->getPosition().x(), u->getPosition().y(), enTankPos.x(), enTankPos.y(), Colors::Green);
+			u->move(Position(enTankPos.x(), enTankPos.y()));
+			Broodwar->drawCircleMap(enTankPos.x(), enTankPos.y(), 5, Colors::Green, true);
+			Broodwar->drawLineMap(u->getPosition().x(), u->getPosition().y(), enTankPos.x(), enTankPos.y(), Colors::Green);
 		}
-    Broodwar->drawTextMap(u->getPosition().x(), u->getPosition().y()-u->getType().dimensionUp(), "(%d %d)", u->getTargetPosition().x(), u->getTargetPosition().y());
 	}
 
 	if (Broodwar->getFrameCount() > 24*60*5.5)

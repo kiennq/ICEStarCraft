@@ -310,7 +310,7 @@ void ScoutController::detectUnseenUnitInsideBunker()
             }
 
 #ifdef _SCOUT_DEBUG
-            //Broodwar->printf("Inside Bunker is : %s", _enBunker[u].c_str());
+            Broodwar->printf("Inside Bunker is : %s", _enBunker[u].c_str());
 #endif
 
           }
@@ -361,7 +361,7 @@ void ScoutController::_fadeUnits()
 
 list<Position>& ScoutController::getBorder(BWTA::Region* r)
 {
-	map<BWTA::Region*, list<Position>>::iterator bor = _border.find(r);
+  map<BWTA::Region*, list<Position>>::iterator bor = _border.find(r);
   if (bor != _border.end()) return bor->second;
   bor = _border.insert(bor, make_pair(r, list<Position>()));
 
@@ -593,13 +593,7 @@ Vector2 ScoutController::regionPVal(BWTA::Region* r, BWAPI::Unit* s)
 Vector2 ScoutController::borderPVal( BWTA::Region* r, BWAPI::Unit* s)
 {
   const BWTA::Polygon border = r->getPolygon();
-  const list<Position> detailBorder = getBorder(r);
-	/*list<Position> detailBorder;
-	for each (Position p in TerrainManager::create()->regionVertices[r])
-	{
-		detailBorder.push_back(p);
-	}*/
-
+  const list<Position> detailBorder =  getBorder(r);
 	Position p = s->getPosition();
 	int numBorder = 0;
 	Vector2 b;

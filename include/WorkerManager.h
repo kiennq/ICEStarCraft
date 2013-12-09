@@ -8,7 +8,6 @@
 #include "MentalState.h"
 #include "GameFlow.h"
 #include "InformationManager.h"
-#include "CommandRewrite.h"
 
 class BuildOrderManager;
 class BaseClass;

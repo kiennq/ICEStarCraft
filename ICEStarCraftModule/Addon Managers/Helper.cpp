@@ -119,7 +119,6 @@ bool ICEStarCraft::Helper::isChokePointCenter(Position p)
 
 bool ICEStarCraft::Helper::isDirectlyConnected(BWTA::Region* r1, BWTA::Region* r2)
 {
-  // TODO: should be done by scanning r1 || r2 chokepoints
 	if (r1 == NULL || r2 == NULL)
 	{
 		return false;

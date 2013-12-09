@@ -10,71 +10,71 @@
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
     </Filter>
     <Filter Include="Addon Managers">
-      <UniqueIdentifier>{da00345f-baad-4e12-abe2-c2cd4d8b2320}</UniqueIdentifier>
+      <UniqueIdentifier>{75fa3248-3296-4091-a49f-c42c7c9afd2a}</UniqueIdentifier>
     </Filter>
     <Filter Include="Addon Managers\UnitGroup Manager">
-      <UniqueIdentifier>{3f897ff3-6b92-4c5b-a4f6-4684e4d07b5b}</UniqueIdentifier>
+      <UniqueIdentifier>{37df545d-8ed5-4482-b5fc-07ee20dc3e13}</UniqueIdentifier>
     </Filter>
     <Filter Include="Addon Managers\Worker Manager">
-      <UniqueIdentifier>{1adf0ba7-7366-4019-80ef-519532defea2}</UniqueIdentifier>
+      <UniqueIdentifier>{d31d17d9-530e-4536-8577-cb8da6a01533}</UniqueIdentifier>
     </Filter>
     <Filter Include="Addon Managers\Information Manager">
-      <UniqueIdentifier>{a55c9edc-8302-4431-b83c-f7cf401f1d03}</UniqueIdentifier>
+      <UniqueIdentifier>{e1c33c1c-b505-4d64-be02-4f53db976393}</UniqueIdentifier>
     </Filter>
     <Filter Include="Addon Managers\Build Manager">
-      <UniqueIdentifier>{2711792c-8b2e-4274-b919-bed53a2cae5c}</UniqueIdentifier>
+      <UniqueIdentifier>{10453370-122d-4168-a75b-d861d177b266}</UniqueIdentifier>
     </Filter>
     <Filter Include="Addon Managers\Base Manager">
-      <UniqueIdentifier>{b300765f-fe81-4ae7-9e9c-a1283a973592}</UniqueIdentifier>
+      <UniqueIdentifier>{a2a6de4e-2788-4174-b529-254d23fefd29}</UniqueIdentifier>
     </Filter>
     <Filter Include="Addon Managers\Supply Manager">
-      <UniqueIdentifier>{4b03f19d-5f31-46e6-bc5b-c7accf2bf5c3}</UniqueIdentifier>
+      <UniqueIdentifier>{0253164a-bbd1-411d-a03d-e3404a5b1e4a}</UniqueIdentifier>
     </Filter>
     <Filter Include="Addon Managers\Building Placer">
-      <UniqueIdentifier>{12ed9029-12b4-4e97-ac7e-a35d18b6ef5d}</UniqueIdentifier>
+      <UniqueIdentifier>{a8ddd78c-2438-4016-aef4-076b7f4acc6d}</UniqueIdentifier>
     </Filter>
     <Filter Include="Addon Managers\Arbitrator">
-      <UniqueIdentifier>{6a3911cc-6d17-4238-8dad-e13a33b437bc}</UniqueIdentifier>
+      <UniqueIdentifier>{826d4d6a-2cbd-4ca8-8194-94d87bff115a}</UniqueIdentifier>
     </Filter>
     <Filter Include="Addon Managers\TechManager">
-      <UniqueIdentifier>{20ed46a7-ef1e-4e07-b10e-8a86fb340ac2}</UniqueIdentifier>
+      <UniqueIdentifier>{1ccdcc79-ccb8-4d4f-9597-c3e8f0aa63d6}</UniqueIdentifier>
     </Filter>
     <Filter Include="Addon Managers\UpgradeManager">
-      <UniqueIdentifier>{5c6a747f-e45c-4f90-8772-11acd514ae04}</UniqueIdentifier>
+      <UniqueIdentifier>{23e321a4-bc1f-48d5-8104-eafc8d4e66c7}</UniqueIdentifier>
     </Filter>
     <Filter Include="Addon Managers\BuildOrderManager">
-      <UniqueIdentifier>{4917ce65-68e0-49da-b6ed-331742f96b32}</UniqueIdentifier>
+      <UniqueIdentifier>{2fa089c5-1c96-4487-812d-c6d4bd28108a}</UniqueIdentifier>
     </Filter>
     <Filter Include="Addon Managers\Terrain Manager">
-      <UniqueIdentifier>{0759b27c-ef47-4e48-af4b-6110484290d2}</UniqueIdentifier>
+      <UniqueIdentifier>{34c7f0e4-1c99-4204-8a53-2f9454aeb0f8}</UniqueIdentifier>
     </Filter>
     <Filter Include="Addon Managers\MacroManager">
-      <UniqueIdentifier>{4babc11a-5839-46e1-8bec-5553382a1aed}</UniqueIdentifier>
+      <UniqueIdentifier>{18575691-d6cc-4fd3-a6fa-40541068e5f1}</UniqueIdentifier>
     </Filter>
     <Filter Include="Addon Managers\Simulator">
-      <UniqueIdentifier>{d2fad0f3-cb12-4384-a430-968a43595a86}</UniqueIdentifier>
+      <UniqueIdentifier>{e9ca1b19-baff-4ef2-9f08-5f56c88a5f04}</UniqueIdentifier>
     </Filter>
     <Filter Include="Addon Managers\Scout Manager">
-      <UniqueIdentifier>{7b0b8fd9-3dfb-43fb-948b-29a6e05de13f}</UniqueIdentifier>
+      <UniqueIdentifier>{4e14db9b-2645-498f-a962-88c905513db9}</UniqueIdentifier>
     </Filter>
     <Filter Include="Addon Managers\Scout Manager\ScoutController-PF">
-      <UniqueIdentifier>{beb71ce5-5c93-480c-8385-ee552760fb06}</UniqueIdentifier>
+      <UniqueIdentifier>{b2723280-dc6f-4ab8-8273-40fb940599ec}</UniqueIdentifier>
     </Filter>
     <Filter Include="Addon Managers\Game Rules">
-      <UniqueIdentifier>{d6bca91e-3a3d-41ec-91e0-cb7ff37739cd}</UniqueIdentifier>
+      <UniqueIdentifier>{ba1f46f7-2b78-4a18-8f4c-e32be46b03db}</UniqueIdentifier>
     </Filter>
     <Filter Include="Addon Managers\Terrain Graph">
-      <UniqueIdentifier>{0ab10b8d-0ee0-4f71-bbb8-b80ed8e6c670}</UniqueIdentifier>
+      <UniqueIdentifier>{8be69581-00ca-4679-9317-8de8ff2ee680}</UniqueIdentifier>
     </Filter>
     <Filter Include="Addon Managers\Helper">
-      <UniqueIdentifier>{7db1ef46-8d2a-4c4a-97e7-4b234e45be26}</UniqueIdentifier>
+      <UniqueIdentifier>{fed901ba-f23b-4582-80df-7ebcbc36cc3c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Addon Managers\Helper\json">
+      <UniqueIdentifier>{52bc9e04-861b-4ab4-8a49-88267602f844}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
-    </Filter>
-    <Filter Include="Addon Managers\Helper\json">
-      <UniqueIdentifier>{ab150581-bdcc-4f67-8fc0-fd5128c89247}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -159,9 +159,6 @@
     <ClCompile Include="Addon Managers\BattleManager.cpp">
       <Filter>Addon Managers\MacroManager</Filter>
     </ClCompile>
-    <ClCompile Include="Addon Managers\CommandRewrite.cpp">
-      <Filter>Addon Managers\MacroManager</Filter>
-    </ClCompile>
     <ClCompile Include="Addon Managers\DropManager.cpp">
       <Filter>Addon Managers\MacroManager</Filter>
     </ClCompile>
@@ -195,6 +192,9 @@
     <ClCompile Include="Addon Managers\TerrainGraph.cpp">
       <Filter>Addon Managers\Terrain Graph</Filter>
     </ClCompile>
+    <ClCompile Include="Addon Managers\Config.cpp">
+      <Filter>Addon Managers\Helper</Filter>
+    </ClCompile>
     <ClCompile Include="Addon Managers\Helper.cpp">
       <Filter>Addon Managers\Helper</Filter>
     </ClCompile>
@@ -202,9 +202,6 @@
       <Filter>Addon Managers\Helper</Filter>
     </ClCompile>
     <ClCompile Include="Addon Managers\Vector2.cpp">
-      <Filter>Addon Managers\Helper</Filter>
-    </ClCompile>
-    <ClCompile Include="Addon Managers\Config.cpp">
       <Filter>Addon Managers\Helper</Filter>
     </ClCompile>
     <ClCompile Include="..\include\json\jsoncpp.cpp">
@@ -293,9 +290,6 @@
     <ClInclude Include="..\include\BattleManager.h">
       <Filter>Addon Managers\MacroManager</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\CommandRewrite.h">
-      <Filter>Addon Managers\MacroManager</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\DropManager.h">
       <Filter>Addon Managers\MacroManager</Filter>
     </ClInclude>
@@ -332,6 +326,9 @@
     <ClInclude Include="..\include\TerrainGraph.h">
       <Filter>Addon Managers\Terrain Graph</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\Config.h">
+      <Filter>Addon Managers\Helper</Filter>
+    </ClInclude>
     <ClInclude Include="..\include\Helper.h">
       <Filter>Addon Managers\Helper</Filter>
     </ClInclude>
@@ -341,6 +338,12 @@
     <ClInclude Include="..\include\Vector2.h">
       <Filter>Addon Managers\Helper</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\json\json-forwards.h">
+      <Filter>Addon Managers\Helper\json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\json\json.h">
+      <Filter>Addon Managers\Helper\json</Filter>
+    </ClInclude>
     <ClInclude Include="..\include\Common.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -349,15 +352,6 @@
     </ClInclude>
     <ClInclude Include="..\include\RectangleArray.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\Config.h">
-      <Filter>Addon Managers\Helper</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\json\json-forwards.h">
-      <Filter>Addon Managers\Helper\json</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\json\json.h">
-      <Filter>Addon Managers\Helper\json</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

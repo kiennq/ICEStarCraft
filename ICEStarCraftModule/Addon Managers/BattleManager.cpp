@@ -119,7 +119,7 @@ void BattleManager::update()
 	}
 
 	// CONTROL UNITS
-	//UnitGroup targets = eUnits;
+
 	BWTA::Chokepoint* chokepoint = getNarrowChokepointInBattle(mUnits,ArmyManager::create()->getAttackTarget());
 	Position eTarget = eUnits.getTargetPosition();
 	Position attackPosition;

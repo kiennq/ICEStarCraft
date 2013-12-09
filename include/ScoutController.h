@@ -10,7 +10,7 @@
 
 
 #ifndef _SCOUT_DEBUG
-#define _SCOUT_DEBUG
+//#define _SCOUT_DEBUG
 #endif
 
 #ifndef _LOG_TO_FILE

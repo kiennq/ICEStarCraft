@@ -87,7 +87,7 @@ void TerrainManager::analyzeMyChokepoints()
 			mThirdChokepoint  = BWTA::getNearestChokepoint(chokepoints[2]);
 			
 			mChokepointsAnalyzed = true;
-			Broodwar->printf("Chokepoints analyzed | Known map | %s",gameMap.getName().c_str());
+			//Broodwar->printf("Chokepoints analyzed | Known map | %s",gameMap.getName().c_str());
 			return;
 		}
 	}
@@ -106,7 +106,7 @@ void TerrainManager::analyzeMyChokepoints()
 	}
 
 	mChokepointsAnalyzed = true;
-	Broodwar->printf("Chokepoints analyzed | Unknown map");
+	//Broodwar->printf("Chokepoints analyzed | Unknown map");
 }
 
 void TerrainManager::analyzeEnemyChokepoints()
@@ -128,7 +128,7 @@ void TerrainManager::analyzeEnemyChokepoints()
 		eSecondChokepoint = BWTA::getNearestChokepoint(chokepoints[1]);
 		eThirdChokepoint  = BWTA::getNearestChokepoint(chokepoints[2]);
 
-		Broodwar->printf("Enemy chokepoints analyzed | Known map | %s",gameMap.getName().c_str());
+		//Broodwar->printf("Enemy chokepoints analyzed | Known map | %s",gameMap.getName().c_str());
 		return;
 	}
 
@@ -145,7 +145,7 @@ void TerrainManager::analyzeEnemyChokepoints()
 		// should never happen
 	}
 
-	Broodwar->printf("Enemy chokepoints analyzed | Unknown map");
+	//Broodwar->printf("Enemy chokepoints analyzed | Unknown map");
 }
 
 void TerrainManager::analyzeRegionVertices()
@@ -257,9 +257,6 @@ BWTA::BaseLocation* TerrainManager::getNearestBase(BWTA::BaseLocation* base, boo
 vector<BWTA::Chokepoint*> TerrainManager::getUsefulChokepoints(BWTA::BaseLocation* base)
 {
 	// return 3 useful choke points for this start location
-  // 1st: the chokepoint of nearest base that closest to this start location
-  // 2nd: the chokepoint of nearest base that closest to map center 
-  // 3rd: the chokepoint of 3rd region that closest to map center and tend toward center
 
 	vector<BWTA::Chokepoint*> chokepoints;
 
@@ -442,7 +439,7 @@ void TerrainManager::analyzeSiegePoint()
 
 	if (siegePoint != Positions::None)
 	{
-		Broodwar->printf("Set siege point on high ground");
+		//Broodwar->printf("Set siege point on high ground");
 		return;
 	}
 
@@ -502,11 +499,11 @@ void TerrainManager::analyzeSiegePoint()
 
 	if (siegePoint != Positions::None)
 	{
-		Broodwar->printf("Set siege point on low ground");
+		//Broodwar->printf("Set siege point on low ground");
 	}
 	else
 	{
-		Broodwar->printf("No siege point");
+		//Broodwar->printf("No siege point");
 	}
 }
 
@@ -661,11 +658,11 @@ void TerrainManager::analyzeTankDropPositions()
 
 		if (!TankDropPositions.empty())
 		{
-			Broodwar->printf("Tank drop positions available | Known map | %s",gameMap.getName().c_str());
+			//Broodwar->printf("Tank drop positions available | Known map | %s",gameMap.getName().c_str());
 		}
 		else
 		{
-			Broodwar->printf("Tank drop positions NOT available | Known map | %s",gameMap.getName().c_str());
+			//Broodwar->printf("Tank drop positions NOT available | Known map | %s",gameMap.getName().c_str());
 		}
 		return;
 	}

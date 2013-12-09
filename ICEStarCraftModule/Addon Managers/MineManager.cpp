@@ -52,7 +52,7 @@ void MinePlacer::placeMine()
 	UnitGroup enemies = SelectAllEnemy()(isCompleted).not(isBuilding).inRadius(vulture->getType().sightRange(),vulture->getPosition());
 	if (vulture->isUnderAttack()
 		  ||
-		  !enemies(isFlyer)(maxAirHits,">",0).empty()
+		  !enemies(isFlyer)(maxGroundHits,">",0).empty()
 		  ||
 			!enemies(Carrier).empty()
 			||

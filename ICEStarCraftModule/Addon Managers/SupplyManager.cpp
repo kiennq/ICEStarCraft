@@ -103,7 +103,7 @@ int SupplyManager::getSupplyTime(int supplyCount) const
 
 	int supply=BWAPI::Broodwar->self()->supplyTotal();
 	int time = BWAPI::Broodwar->getFrameCount();
-	std::set<BWAPI::Unit*> units = SelectAll()(isCompleted);
+	std::set<BWAPI::Unit*> units = SelectAll()(-isCompleted);
 	std::map<int, int> supplyAdditions;
 	for(std::set<BWAPI::Unit*>::iterator i = units.begin(); i != units.end(); i++)
 	{

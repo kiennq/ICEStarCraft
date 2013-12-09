@@ -7,7 +7,6 @@ using namespace BWAPI;
 using namespace BWTA;
 using namespace ICEStarCraft;
 
-
 ScoutManager* theScoutManager = NULL;
 
 ScoutManager* ScoutManager::create()
@@ -54,7 +53,6 @@ ScoutManager::ScoutManager()
   this->mental = NULL;
   this->currentFinish=true;
 	this->currentStartFrame = 0;
-  this->onceCommand = new issueOnce();
   this->bestPrewarningpo = Positions::None;
   this->startLocationsExplored.clear();
   this->essentialPostions.clear();
@@ -64,12 +62,13 @@ ScoutManager::ScoutManager()
 
 	_fSwitchRegion = false;
 	_nextTargetBase = NULL;
-
+	
 	this->deadScoutUnitCount = 0;
 };
 
 
-void ScoutManager::setManagers(){
+void ScoutManager::setManagers()
+{
   this->workerMG = WorkerManager::create();
   this->bmc = BaseManager::create();
   this->terrainManager = TerrainManager::create();
@@ -479,140 +478,104 @@ void ScoutManager::scoutEnemyLocation(Unit* u)
 
 void ScoutManager::scoutEnemyOpening(Unit* u)
 {
-  if(this->enemyStartLocation==NULL)
+  if (this->enemyStartLocation == NULL)
     return;
-  //for each(Unit* u in this->scoutGroup)
+ 
+	if (u->getType() == UnitTypes::Terran_SCV ||u->getType() == UnitTypes::Terran_Vulture)
 	{
-    // for scv and vulture
-    if(u->getType()==UnitTypes::Terran_SCV ||u->getType()==UnitTypes::Terran_Vulture){
-      if (u->isConstructing()){
-        return;
-      }
-      if(this->ScoutUnitPurposeMap[u]==EnemyOpening)
-			{       
-        Chokepoint* chkPoint = BWTA::getNearestChokepoint(u->getPosition());
-				if (!_fSwitchRegion &&
-            BWTA::getRegion(u->getPosition()) == enemyStartLocation->getRegion() && 
-            chkPoint &&
-            u->getPosition().getApproxDistance(chkPoint->getCenter()) > 120)
+		if (u->isConstructing())
+		{
+			return;
+		}
+
+		if (this->ScoutUnitPurposeMap[u] == EnemyOpening)
+		{       
+			Chokepoint* chkPoint = BWTA::getNearestChokepoint(u->getPosition());
+			if (!_fSwitchRegion &&
+				  BWTA::getRegion(u->getPosition()) == enemyStartLocation->getRegion() &&
+				  chkPoint &&
+				  u->getPosition().getApproxDistance(chkPoint->getCenter()) > 120)
+			{
+				if (Broodwar->getFrameCount() % (24*60) == 0)
 				{
-					if (Broodwar->getFrameCount() % (24*60) == 0)
+					if (!_nextTargetBase)
 					{
-						if (!_nextTargetBase)
-						{
-              double dis = 9999;
-              for each (BaseLocation *b in BWTA::getBaseLocations()){
-                if (b!=enemyStartLocation)
+						double dis = 9999;
+						for each (BaseLocation *b in BWTA::getBaseLocations()){
+							if (b!=enemyStartLocation)
+							{
+								double tdis = BWTA::getGroundDistance(b->getTilePosition(),enemyStartLocation->getTilePosition());
+								if (dis > tdis && 
+									!(BWTA::getShortestPath(b->getTilePosition(), enemyStartLocation->getTilePosition()).empty()) && 
+									!b->getGeysers().empty())
 								{
-                  double tdis = BWTA::getGroundDistance(b->getTilePosition(),enemyStartLocation->getTilePosition());
-                  if (dis > tdis && 
-                      !(BWTA::getShortestPath(b->getTilePosition(), enemyStartLocation->getTilePosition()).empty()) && 
-                      !b->getGeysers().empty())
-                  {
-                    dis = tdis;
-                    _nextTargetBase = b;
-                  } 
-                }
-              }
+									dis = tdis;
+									_nextTargetBase = b;
+								} 
+							}
 						}
-						ScoutController::create()->removeFromScoutSet(u);
-						_fSwitchRegion = true;
-						u->move(_nextTargetBase->getPosition());
-						// Broodwar->printf("Go to next base");
 					}
-					else
-					{
-						ScoutController::create()->addToScoutSet(u);
-						ScoutController::create()->onFrame();
-					}
+					ScoutController::create()->removeFromScoutSet(u);
+					_fSwitchRegion = true;
+					u->move(_nextTargetBase->getPosition());
+					// Broodwar->printf("Go to next base");
 				}
-				else if (_nextTargetBase && 
-                 _fSwitchRegion &&
-                 BWTA::getRegion(u->getPosition()) == _nextTargetBase->getRegion() &&
-                 chkPoint &&
-                 u->getPosition().getApproxDistance(chkPoint->getCenter()) > 120)
-				{
-					if (Broodwar->getFrameCount() % (24*10) == 0)
-					{
-						ScoutController::create()->removeFromScoutSet(u);
-						_fSwitchRegion = false;
-						u->move(enemyStartLocation->getPosition());
-						// Broodwar->printf("Go to enemy base");
-					}
-					else
-					{
-						ScoutController::create()->addToScoutSet(u);
-						ScoutController::create()->onFrame();
-					}
-				}
-				else if (!_fSwitchRegion)
-				{
-					u->move(enemyStartLocation->getPosition());
-        }
 				else
 				{
-					u->move(_nextTargetBase->getPosition());
-        }
-        
-        if (!_nextTargetBase)
+					ScoutController::create()->addToScoutSet(u);
+					ScoutController::create()->onFrame();
+				}
+			}
+			else if (_nextTargetBase && 
+				       _fSwitchRegion &&
+				       BWTA::getRegion(u->getPosition()) == _nextTargetBase->getRegion() &&
+				       chkPoint &&
+				       u->getPosition().getApproxDistance(chkPoint->getCenter()) > 120)
+			{
+				if (Broodwar->getFrameCount() % (24*10) == 0)
 				{
-          double dis = 9999;
-          for each (BaseLocation *b in BWTA::getBaseLocations()){
-            if (b!=enemyStartLocation){
-              double tdis = BWTA::getGroundDistance(b->getTilePosition(),enemyStartLocation->getTilePosition());
-              if (dis>tdis && !(BWTA::getShortestPath(b->getTilePosition(), enemyStartLocation->getTilePosition()).empty()) && !b->getGeysers().empty()) {
-                dis = tdis;
-                _nextTargetBase = b;
-              } 
-            }
-          }
-        }
+					ScoutController::create()->removeFromScoutSet(u);
+					_fSwitchRegion = false;
+					u->move(enemyStartLocation->getPosition());
+					// Broodwar->printf("Go to enemy base");
+				}
+				else
+				{
+					ScoutController::create()->addToScoutSet(u);
+					ScoutController::create()->onFrame();
+				}
+			}
+			else if (!_fSwitchRegion)
+			{
+				u->move(enemyStartLocation->getPosition());
+			}
+			else
+			{
+				u->move(_nextTargetBase->getPosition());
+			}
 
-        if (_nextTargetBase) Broodwar->drawCircleMap(_nextTargetBase->getPosition().x(), _nextTargetBase->getPosition().x(), 5, Colors::Orange, true);
-       
-        //if(!enemyInSCVSightRange(u)/*unitInDanger(u)==false*/){
-        //  explorEnemyBase(u);										
-        //}
-        //else if(enemyInSCVSightRange(u)/*unitInDanger(u)*/){
-        //  testScoutRun(u);
-        //}
+			if (!_nextTargetBase)
+			{
+				double dis = 9999;
+				for each (BaseLocation *b in BWTA::getBaseLocations())
+				{
+					if (b != enemyStartLocation)
+					{
+						double tdis = BWTA::getGroundDistance(b->getTilePosition(),enemyStartLocation->getTilePosition());
+						if (dis > tdis &&
+							  !(BWTA::getShortestPath(b->getTilePosition(), enemyStartLocation->getTilePosition()).empty()) &&
+								!b->getGeysers().empty())
+						{
+							dis = tdis;
+							_nextTargetBase = b;
+						} 
+					}
+				}
+			}
 
-      }
-    }
-
-
-    //else if (u->getType()==UnitTypes::Spell_Scanner_Sweep && this->ScoutUnitPuporseMap[u]==EnemyOpening){
-    //	//for scanner
-    //	std::set<Position> placeToScan;
-    //	placeToScan.clear();
-    //	placeToScan.insert(this->enemyStartLocation->getPosition());
-    //	placeToScan.insert(this->terrainManager->eBaseCenter);
-    //	placeToScan.insert(this->terrainManager->efirstChokepoint->getCenter());
-    //	for each(Position p in placeToScan){
-    //		if(this->needMoreScan){
-    //			if(Broodwar->getFrameCount()-this->lastScanTime>=24*30)
-    //				this->scannedPositions.clear();
-    //			if(u->getEnergy()>=50){
-    //				if(this->scannedPositions.find(p)!=this->scannedPositions.end())
-    //					continue;
-    //				else{
-    //					u->useTech(TechTypes::Scanner_Sweep,p);
-    //					this->scannedPositions.insert(p);
-    //					this->lastScanTime = Broodwar->getFrameCount();
-    //					continue;
-    //				}
-
-    //			}
-    //			else
-    //				break;
-    //		}	
-    //	}	
-    //	if(this->scannedPositions.size()>=placeToScan.size())
-    //		this->needMoreScan=false;
-    //	else
-    //		continue;
-    //}
-  }
+			if (_nextTargetBase) Broodwar->drawCircleMap(_nextTargetBase->getPosition().x(), _nextTargetBase->getPosition().x(), 5, Colors::Orange, true);
+		}
+	}
 }
 
 void ScoutManager::scoutEnemyExpansion(Unit* u)
@@ -656,7 +619,6 @@ void ScoutManager::scoutEnemyExpansion(Unit* u)
 	{
 		this->scoutGroup.erase(u);
 		this->ScoutUnitPurposeMap.erase(u);
-		Broodwar->printf("Finish scouting");
 		return;
 	}
 
@@ -682,9 +644,9 @@ void ScoutManager::scoutEnemyExpansion(Unit* u)
 		Broodwar->drawLineMap(u->getPosition().x(),u->getPosition().y(),tar.x(),tar.y(),Colors::White);
 	}
 
-	if (unitInDanger(u) == false)
+	if (!unitInDanger(u))
 	{
-		if(Broodwar->getFrameCount()%(24*3)==0)
+		if (Broodwar->getFrameCount()%(24*3)==0)
 			u->move(this->currentLocationTarget->getPosition());
 
 		//_T_
@@ -762,7 +724,7 @@ void ScoutManager::scoutMyMainBase(Unit* u)
 		return;
 	}
 	
-	Broodwar->drawLineMap(u->getPosition().x(),u->getPosition().y(),vertices[current].x(),vertices[current].y(),Colors::Green);
+	//Broodwar->drawLineMap(u->getPosition().x(),u->getPosition().y(),vertices[current].x(),vertices[current].y(),Colors::Green);
 		
 	if (Broodwar->isVisible(TilePosition(vertices[current]))
 		  ||
@@ -780,244 +742,9 @@ void ScoutManager::scoutMyMainBase(Unit* u)
 
 void ScoutManager::AsPreWarning(Unit* u)
 {
-  if(this->PreWarningPositionSet.size()==0){
-    if(this->terrainManager->eNearestBase!=NULL)
-      this->PreWarningPositionSet.insert(this->terrainManager->eNearestBase->getPosition());		
-
-    Position mapcenter = Position(Broodwar->mapWidth()/2*32,Broodwar->mapHeight()/2*32);
-    std::set<Position> pset;
-    pset.clear();
-
-    for (int x=1;x<Broodwar->mapWidth();x++){
-      for(int y=1;y<Broodwar->mapHeight();y++){
-        Position newposition = Position(x*32,y*32);
-        if(newposition.getApproxDistance(this->terrainManager->eThirdChokepoint->getCenter())>32*13
-          &&newposition.getApproxDistance(this->terrainManager->eThirdChokepoint->getCenter())<32*15
-          &&newposition.getApproxDistance(this->enemyStartLocation->getPosition())>32*32
-          &&newposition.getApproxDistance(mapcenter)<mapcenter.getApproxDistance(this->terrainManager->eThirdChokepoint->getCenter())
-          &&isTileWalkable((TilePosition)newposition)){
-            pset.insert(newposition);
-        }		
-      }
-    }
-    int sdis=0;
-
-    for each(Position p in pset){
-      if((sdis==0 || p.getApproxDistance(this->terrainManager->mThirdChokepoint->getCenter())<sdis)&&isSurroundingWalkable(p.x(),p.y())){
-        sdis = p.getApproxDistance(this->terrainManager->mThirdChokepoint->getCenter());
-        this->bestPrewarningpo = p;
-      }
-    }
-
-    this->PreWarningPositionSet.insert(this->bestPrewarningpo);
-    this->PreWarningPositionSet.insert(mapcenter);
-  }
-
-  //for each(Unit* u in this->scoutGroup)
-	{
-    if (u->getType()==UnitTypes::Terran_SCV || u->getType()==UnitTypes::Terran_Vulture ){
-      if(this->ScoutUnitPurposeMap[u]==PreWarning){
-        if (Broodwar->getFrameCount()<24*60*5 && Broodwar->getFrameCount()%24*25==0){
-          this->ScoutUnitPurposeMap[u]=EnemyOpening;
-          return;
-        }
-        if(unitInDanger(u)==false){
-          //if (this->lastExplorPosition!=NULL)					
-          //	Broodwar->drawCircleMap(this->lastExplorPosition.x(),this->lastExplorPosition.y(),16,Colors::Red,true);
-          if (this->LocationsHasEnemy.size()<2||Broodwar->getFrameCount()<24*60*6){
-            for each(Position p in this->PreWarningPositionSet){
-              if (this->lastExplorPosition!=this->terrainManager->eNearestBase->getPosition()){
-                this->lastExplorPosition = this->terrainManager->eNearestBase->getPosition();
-              }
-            }
-
-            if(u->getPosition().getApproxDistance(this->lastExplorPosition)>32*4){
-              if (Broodwar->getFrameCount()%24==0)
-                u->move(this->lastExplorPosition);						
-            }
-
-            else{
-              if (u->getLastCommand().getType()==UnitCommandTypes::Patrol && Broodwar->getFrameCount()%24!=0)
-                return;
-              else
-                this->onceCommand->patrolOnce(u,this->lastExplorPosition);									
-            }
-
-          }
-          else if(this->LocationsHasEnemy.size()>2||(Broodwar->getFrameCount()>24*60*5&&Broodwar->getFrameCount()<24*60*10)){
-
-            this->lastExplorPosition = this->bestPrewarningpo;	
-            if (Broodwar->getFrameCount()<6 && Broodwar->getFrameCount()%24*30==0){
-              this->lastExplorPosition = this->terrainManager->eNearestBase->getPosition();
-              return;
-            }
-
-            if(u->getPosition().getApproxDistance(this->lastExplorPosition)>32*4){
-              if (Broodwar->getFrameCount()%24==0)
-                u->move(this->lastExplorPosition);
-            }
-
-            else{
-              if (u->getLastCommand().getType()==UnitCommandTypes::Patrol && Broodwar->getFrameCount()%24!=0)
-                return;
-              else
-                this->onceCommand->patrolOnce(u,this->lastExplorPosition);									
-            }
-          }
-          else if (Broodwar->getFrameCount()>24*60*10||this->PreWarningPositionSet.size()==1){
-
-            if (Broodwar->getFrameCount()<9 && Broodwar->getFrameCount()%24*30==0){
-              this->lastExplorPosition = this->bestPrewarningpo;
-              return;
-            }
-            this->lastExplorPosition = Position(Broodwar->mapWidth()/2*32,Broodwar->mapHeight()/2*32);			
-
-            if(u->getPosition().getApproxDistance(this->lastExplorPosition)>32*4){
-              if (Broodwar->getFrameCount()%24==0)
-                u->move(this->lastExplorPosition);
-            }
-
-            else{
-              if (u->getLastCommand().getType()==UnitCommandTypes::Patrol && Broodwar->getFrameCount()%24!=0)
-                return;
-              else
-                this->onceCommand->patrolOnce(u,this->lastExplorPosition);									
-            }
-          }
-        }
-
-        else if(unitInDanger(u)){
-
-          if (Broodwar->getFrameCount()%12==0)
-            unitNextRunningPosition(u);
-
-          if (this->lastExplorPosition==this->terrainManager->eNearestBase->getPosition()){
-            if(hasArmyKeep(u,this->terrainManager->eNearestBase,u->getType().sightRange()*2,2)||seeResourceDepot(u,this->terrainManager->eNearestBase)){
-              this->lastExplorPosition=this->bestPrewarningpo;
-              this->LocationsHasEnemy.insert(this->terrainManager->eNearestBase);
-              if(Broodwar->getFrameCount()>=24*60*6){
-                this->PreWarningPositionSet.erase(this->terrainManager->eNearestBase->getPosition());
-                return;
-              }							
-            }				
-          }
-          else if(this->lastExplorPosition==this->bestPrewarningpo){
-            if(hasArmyKeep(u)){
-              this->lastExplorPosition=Position(Broodwar->mapWidth()/2*32,Broodwar->mapHeight()/2*32);
-              if(Broodwar->getFrameCount()>=24*60*8){
-                this->PreWarningPositionSet.erase(this->bestPrewarningpo);
-                return;
-              }
-
-            }
-          }
-          //if(this->ScoutUnitLastPuporseMap.size()==0 || this->ScoutUnitLastPuporseMap.find(u)==this->ScoutUnitLastPuporseMap.end()){
-          //	if (this->ScoutUnitPuporseMap[u]!=Running){
-          //		this->ScoutUnitLastPuporseMap[u]=this->ScoutUnitPuporseMap[u];
-          //	}						
-          //}
-          //this->ScoutUnitPuporseMap[u]=Running;
-          //return;	
-        }
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        //			for each(Position p in this->PreWarningPositionSet){
-        //				//give first position
-        //				if (this->lastExplorPosition!=this->terrainManager->eNearestBase->getPosition()){
-        //						this->lastExplorPosition = this->terrainManager->esecondChokepoint->getCenter();
-        //				}
-        //				// check whether reach 2nd terrainManager
-        //				else if(this->lastExplorPosition == this->terrainManager->esecondChokepoint->getCenter()){
-        //					if(this->lastExplorPosition==this->terrainManager->esecondChokepoint->getCenter() && u->getPosition().getApproxDistance(this->lastExplorPosition)<2*32+16){
-        //						this->lastExplorPosition = this->terrainManager->eThirdChokepoint->getCenter();
-        //						break;
-        //					}
-        //					else
-        //						fixMovingStuck(u);					
-        //				}
-        //				// check whether reach 3rd terrainManager
-        //				else if(this->lastExplorPosition == this->terrainManager->eThirdChokepoint->getCenter()){
-        //					if(this->lastExplorPosition==this->terrainManager->eThirdChokepoint->getCenter() && u->getPosition().getApproxDistance(this->lastExplorPosition)<2*32+16){
-        //						this->lastExplorPosition = Position(Broodwar->mapHeight()/2*32,Broodwar->mapWidth()/2*32);
-        //						break;
-        //					}
-        //					else
-        //						fixMovingStuck(u);
-        //				}
-
-        //				//check whether reach map center
-        //				else if(this->lastExplorPosition == Position(Broodwar->mapHeight()/2*32,Broodwar->mapWidth()/2*32)){
-        //					if(this->lastExplorPosition==Position(Broodwar->mapHeight()/2*32,Broodwar->mapWidth()/2*32) && u->getPosition().getApproxDistance(this->lastExplorPosition)<2*32+16){
-        //						this->lastExplorPosition = this->terrainManager->esecondChokepoint->getCenter();
-        //						break;
-        //					}						
-        //					else
-        //						fixMovingStuck(u);
-        //				}
-        //			}		
-        //		}
-        //	
-        //		else if(unitInDanger(u)){
-        //			if(this->ScoutUnitLastPuporseMap.size()==0 || this->ScoutUnitLastPuporseMap.find(u)==this->ScoutUnitLastPuporseMap.end()){
-        //				if (this->ScoutUnitPuporseMap[u]!=Running){
-        //					this->ScoutUnitLastPuporseMap[u]=this->ScoutUnitPuporseMap[u];
-        //				}						
-        //			}
-        //			this->ScoutUnitPuporseMap[u]=Running;
-        //			return;	
-        //		}
-        //	}
-        //	//if time > 5 min
-        //	else if(Broodwar->getFrameCount()>24*60*5 && this->ScoutUnitPuporseMap[u]==PreWarning){
-        //		if(unitInDanger(u)==false){
-        //			for each(Position p in this->PreWarningPositionSet){
-        //				//give first position
-        //				if (this->lastExplorPosition!=this->terrainManager->eThirdChokepoint->getCenter()&&
-        //					this->lastExplorPosition!=Position(Broodwar->mapHeight()/2*32,Broodwar->mapWidth()/2*32)){
-        //						this->lastExplorPosition = this->terrainManager->eThirdChokepoint->getCenter();
-        //				}
-        //				// check whether reach 2nd terrainManager
-        //				else if(this->lastExplorPosition == this->terrainManager->esecondChokepoint->getCenter()){
-        //					this->lastExplorPosition = this->terrainManager->eThirdChokepoint->getCenter();
-        //				}			
-        //				// check whether reach 3rd terrainManager
-        //				else if(this->lastExplorPosition == this->terrainManager->eThirdChokepoint->getCenter()){
-        //					if(this->lastExplorPosition==this->terrainManager->eThirdChokepoint->getCenter() && u->getPosition().getApproxDistance(this->lastExplorPosition)<3*32+16){
-        //						this->lastExplorPosition = Position(Broodwar->mapHeight()/2*32,Broodwar->mapWidth()/2*32);
-        //						break;
-        //					}
-        //					else
-        //						fixMovingStuck(u);
-        //				}
-
-        //				//check whether reach map center
-        //				else if(this->lastExplorPosition == Position(Broodwar->mapHeight()/2*32,Broodwar->mapWidth()/2*32)){
-        //					if(this->lastExplorPosition==Position(Broodwar->mapHeight()/2*32,Broodwar->mapWidth()/2*32) && u->getPosition().getApproxDistance(this->lastExplorPosition)<3*32+16){
-        //						this->lastExplorPosition = this->terrainManager->eThirdChokepoint->getCenter();
-        //						break;
-        //					}						
-        //					else
-        //						fixMovingStuck(u);
-        //				}
-        //			}		
-        //		}
-        //		else if(unitInDanger(u)){
-        //			if(this->ScoutUnitLastPuporseMap.size()==0 || this->ScoutUnitLastPuporseMap.find(u)==this->ScoutUnitLastPuporseMap.end()){
-        //				if (this->ScoutUnitPuporseMap[u]!=Running){
-        //					this->ScoutUnitLastPuporseMap[u]=this->ScoutUnitPuporseMap[u];
-        //				}						
-        //			}
-        //			this->ScoutUnitPuporseMap[u]=Running;
-        //			return;	
-        //		}
-        //	}
-        //	else{
-        //		return;
-        //	}
-      }
-    }
-  }
+	
 }
+
 void ScoutManager::onFrame()
 {
   if(Broodwar->getFrameCount()>=24*60*3 && (Broodwar->enemy()->getRace()==Races::Zerg))
@@ -1102,10 +829,10 @@ void ScoutManager::onFrame()
   if ((this->LocationsHasEnemy.find(this->enemyStartLocation)==this->LocationsHasEnemy.end()) && this->enemyStartLocation!=NULL)
     this->LocationsHasEnemy.insert(this->enemyStartLocation);
 
-	for(std::map<Unit*,ScoutPurpose>::iterator j=this->ScoutUnitPurposeMap.begin();j!=this->ScoutUnitPurposeMap.end();)
+	for (std::map<Unit*,ScoutPurpose>::iterator j = this->ScoutUnitPurposeMap.begin(); j != this->ScoutUnitPurposeMap.end();)
 	{
-    std::map<Unit*, ScoutPurpose>::iterator i = j++;
-		switch ((*i).second)
+		std::map<Unit*, ScoutPurpose>::iterator i = j++;
+		switch (i->second)
 		{
 		case EnemyStartLocation:
 			//Broodwar->printf("Current state:EnemyStartLocation");
@@ -1135,7 +862,7 @@ void ScoutManager::onFrame()
 			break;
 		case Running:
 			//Broodwar->printf("Current state:Running, Previous state: %d",this->ScoutUnitLastPuporseMap[(*i).first]);
-			unitFlee((*i).first);
+			unitFlee(i->first);
 			break;				
     }
   }
@@ -1289,38 +1016,7 @@ void ScoutManager::explorEnemyBase(Unit* u)
 
 void ScoutManager::unitFlee(Unit* u)
 {
-  if (this->ScoutUnitPurposeMap[u]==Running && unitInDanger(u))
-	{
-    if(this->ScoutUnitLastPurposeMap.find(u)!=this->ScoutUnitLastPurposeMap.end()){
-      //if(this->ScoutUnitLastPuporseMap[u]==EnemyOpening){
-      //	if(scoutFinish(u,this->enemyStartLocation)){
-      //		this->ScoutUnitLastPuporseMap[u]=PreWarning;
-      //		(u)->rightClick(unitNextRunningPosition(u));
-      //		return;
-      //	}
-      //	else if(Broodwar->getFrameCount()%12==0 && u->getPosition().getApproxDistance(this->enemyStartLocation->getPosition())>32*3+16){
-      //		(u)->rightClick(avoidEnemyAttackMove(u,this->enemyStartLocation->getPosition()));
-      //		return;
-      //	}
-      //	else{
-      //		(u)->rightClick(unitNextRunningPosition(u));
-      //		return;
-      //	}	
-      //}	
-
-      //else{
-      if(Broodwar->getFrameCount()%12==0)
-        (u)->rightClick(unitNextRunningPosition(u));
-      return;
-      //}					
-    }		
-  }
-
-  else{
-    this->ScoutUnitPurposeMap[u] = this->ScoutUnitLastPurposeMap[u];
-    this->ScoutUnitLastPurposeMap.erase(u);
-    return;
-  }
+  
 }
 
 void ScoutManager::setExpansionToScout()
@@ -1461,5 +1157,49 @@ bool isWalkTileWalkable(Position pos)
 void ScoutManager::destroy()
 {
   if (theScoutManager) delete theScoutManager;
+}
 
+bool ScoutManager::unitInDanger(Unit* u)
+{
+	if (u->isUnderAttack())
+	{
+		return true;
+	}
+
+	for each (Unit* e in Broodwar->enemy()->getUnits())
+	{
+		if (!e->isCompleted() || e->getPosition().getApproxDistance(u->getPosition()) > u->getType().sightRange())
+		{
+			continue;
+		}
+
+		UnitType type = e->getType();
+
+		if (type.isBuilding())
+		{
+			if (type != UnitTypes::Protoss_Photon_Cannon && type != UnitTypes::Zerg_Sunken_Colony)
+			{
+				continue;
+			}
+		}
+		
+		if (type.canAttack())
+		{
+			if (type == UnitTypes::Terran_Vulture_Spider_Mine || type == UnitTypes::Protoss_Scarab)
+			{
+				continue;
+			}
+		}
+		else
+		{
+			if (type != UnitTypes::Protoss_Reaver && type != UnitTypes::Protoss_Carrier)
+			{
+				continue;
+			}
+		}
+
+		return true;
+	}
+
+	return false;
 }

@@ -58,13 +58,13 @@ void MentalClass::onFrame()
 	updateSightRange();
 	attackTimingCheck();
 	baseUnderAttack();
-	this->tpTiming->CheckTiming();
+	tpTiming->CheckTiming();
 }
 
 void MentalClass::setEnemyPlanFlag()
 {
-	//if(this->STflag != NotSure)
-	if(this->STflag != NotSure && this->STflag != PrushDragoon)
+	//if(STflag != NotSure)
+	if(STflag != NotSure && STflag != PrushDragoon)
 		//if(Broodwar->getFrameCount()>24*60*5)
 		openCheckFlag = true;
 
@@ -826,7 +826,7 @@ void MentalClass::destroy()
 
 void MentalClass::updateSightRange()
 {
-	this->baseSightRangeLimitation = 30 + Broodwar->self()->supplyUsed()/4;
+	baseSightRangeLimitation = 30 + Broodwar->self()->supplyUsed()/4;
 }
 
 void MentalClass::attackTimingCheck()

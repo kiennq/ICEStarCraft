@@ -4,11 +4,9 @@
 #include "UnitGroup.h"
 #include "UnitGroupManager.h"
 #include "WorkerManager.h"
-#include "CommandRewrite.h"
 #include "Base.h"
 #include "BaseManager.h"
 #include "TerrainManager.h"
-#include "CommandRewrite.h"
 #include "InformationManager.h"
 #include "ScoutController.h"
 using namespace BWAPI;
@@ -19,7 +17,6 @@ class EnemyInfoManager;
 class WorkerManager;
 class BaseManager;
 class TerrainManager;
-class issueOnce;
 class MentalClass;
 
 //TODO: Add an Arbitrator::Controller here, best scout should be close to target
@@ -75,6 +72,7 @@ public:
 	bool scoutFinish(Unit* u ,BaseLocation* bl);
 	bool seeResourceDepot(Unit* u ,BaseLocation* bl);
 	void setScoutNum(int num);
+	bool unitInDanger(Unit* u);
 
 	//important positions for scanner to scan, such as enemy startPostion, chokepoint etc.
 	std::set<Position>essentialPostions;
@@ -108,7 +106,6 @@ private:
 	bool needMoreScan;
 	std::set<Position> previousPositionSet;
 	std::set<Position> PreWarningPositionSet;
-	issueOnce* onceCommand;
 	Position bestPrewarningpo;//best position for prewarning
 	Position ScoutUpPosition;
 	Position ScoutDownPosition;

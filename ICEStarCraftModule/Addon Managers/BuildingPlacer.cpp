@@ -89,13 +89,13 @@ bool BuildingPlacer::canBuildHereWithSpace(BWAPI::TilePosition position, BWAPI::
 				std::set<BWAPI::Unit*> units = BWAPI::Broodwar->getUnitsOnTile(x, y);
 				for(std::set<BWAPI::Unit*>::iterator i = units.begin(); i != units.end(); i++)
 				{
-					if (!(*i)->isLifted())
+					if ((*i)->getType().isBuilding() && !(*i)->isLifted())
 					{
 						BWAPI::UnitType type=(*i)->getType();
 						if (type==BWAPI::UnitTypes::Terran_Command_Center ||
-							type==BWAPI::UnitTypes::Terran_Factory || 
-							type==BWAPI::UnitTypes::Terran_Starport ||
-							type==BWAPI::UnitTypes::Terran_Science_Facility)
+							  type==BWAPI::UnitTypes::Terran_Factory || 
+							  type==BWAPI::UnitTypes::Terran_Starport ||
+							  type==BWAPI::UnitTypes::Terran_Science_Facility)
 						{
 							return false;
 						}

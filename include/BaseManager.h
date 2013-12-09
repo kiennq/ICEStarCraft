@@ -22,7 +22,7 @@ public:
 	std::set<BWAPI::Unit*>& getAllGeyserSet();
 	std::set<BWAPI::Unit*>& getMyMineralSet();
 	std::set<BaseClass*>& getBaseSet();
-  std::set<BaseClass*> getEffectiveBaseSet();
+	std::set<BaseClass*> getEffectiveBaseSet();
 	std::map<BWTA::BaseLocation*,BWAPI::Unit*>& getBLtoCCMap();
 	std::map<BWTA::BaseLocation*,BaseClass*>& getBLtoBCMap();
 	bool getAllMineOutFlag();

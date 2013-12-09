@@ -128,7 +128,6 @@
     <ClCompile Include="Addon Managers\ArmyManager.cpp" />
     <ClCompile Include="Addon Managers\BaseDefenseManager.cpp" />
     <ClCompile Include="Addon Managers\BattleManager.cpp" />
-    <ClCompile Include="Addon Managers\CommandRewrite.cpp" />
     <ClCompile Include="Addon Managers\DropManager.cpp" />
     <ClCompile Include="..\include\MacroUnitControl.cpp" />
     <ClCompile Include="Addon Managers\MicroUnitControl.cpp" />
@@ -175,7 +174,6 @@
     <ClInclude Include="..\include\ArmyManager.h" />
     <ClInclude Include="..\include\BaseDefenseManager.h" />
     <ClInclude Include="..\include\BattleManager.h" />
-    <ClInclude Include="..\include\CommandRewrite.h" />
     <ClInclude Include="..\include\DropManager.h" />
     <ClInclude Include="..\include\MacroUnitControl.h" />
     <ClInclude Include="..\include\MicroUnitControl.h" />

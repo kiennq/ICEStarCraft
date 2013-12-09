@@ -781,7 +781,7 @@ double MyInfoManager::defenseValue()
 
 void MyInfoManager::showDebugInfo()
 {
-	Broodwar->drawTextScreen(180,325,"\x07 mAV: %.2f | %.2f - mDV: %.2f | %.2f - dead: %d",attackValue(),attackValue()/(1+getDeadUnitCount()),defenseValue(),defenseValue()/(1+getDeadUnitCount()),getDeadUnitCount());
+	//Broodwar->drawTextScreen(180,325,"\x07 mAV: %.2f | %.2f - mDV: %.2f | %.2f - dead: %d",attackValue(),attackValue()/(1+getDeadUnitCount()),defenseValue(),defenseValue()/(1+getDeadUnitCount()),getDeadUnitCount());
 }
 
 set<EnemyUnit*>& EnemyInfoManager::getAllEnemyUnits()
@@ -1003,13 +1003,13 @@ double EnemyInfoManager::attackValue()
 		if (e->getType().isBuilding()
 			  ||
 			  e->getType().isWorker()
-				||
+			  ||
 			  e->getType() == UnitTypes::Terran_Vulture_Spider_Mine
-				||
-				e->getType() == UnitTypes::Terran_Nuclear_Missile
-				||
+			  ||
+			  e->getType() == UnitTypes::Terran_Nuclear_Missile
+			  ||
 			  e->getType() == UnitTypes::Protoss_Interceptor
-				||
+			  ||
 			  e->getType() == UnitTypes::Protoss_Scarab)
 		{
 			continue;
@@ -1052,9 +1052,9 @@ double EnemyInfoManager::defenseValue()
 		int hp = e->getHitPoints() + e->getShields();
 		double weight = e->getType().isBuilding() &&
 			              Broodwar->self()->completedUnitCount(UnitTypes::Terran_Siege_Tank_Tank_Mode) + Broodwar->self()->completedUnitCount(UnitTypes::Terran_Siege_Tank_Siege_Mode) > 0 &&
-										Broodwar->self()->hasResearched(TechTypes::Tank_Siege_Mode)
-                    ?  0.6
-                    : 1.0;
+										Broodwar->self()->hasResearched(TechTypes::Tank_Siege_Mode) ?
+										0.6 :
+		                1.0;
 
 		groundAV += hp * MicroUnitControl::getGroundDPF(e->getType(),e->getPlayer()) * weight;
 		airAV += hp * MicroUnitControl::getAirDPF(e->getType(),e->getPlayer()) * weight;

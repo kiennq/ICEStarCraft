@@ -1,4 +1,4 @@
-﻿#include <algorithm>
+#include <algorithm>
 #include "WorkerManager.h"
 #include "BaseManager.h"
 #include <BWTA.h>
@@ -26,10 +26,10 @@ void WorkerManager::destroy()
 }
 
 WorkerManager::WorkerManager()
-  :_mineralPS(0)
-  ,_mineralPM(0)
-  ,_averageMineralPS(0)
-  ,_averageMineralPM(0)
+	:_mineralPS(0)
+	,_mineralPM(0)
+	,_averageMineralPS(0)
+	,_averageMineralPM(0)
 {
 	arbitrator = NULL;
 
@@ -486,7 +486,7 @@ void WorkerManager::onFrame()
 {
 	//each base at least should have 10 workers, this is to prevent worker endless repair
 	//ex: all workers dead for going to repair unit in dangerous place
-	if (SelectAll()(isCompleted)(SCV).size() >= 10*this->bmc->getBLtoCCMap().size())
+	if (SelectAll()(isCompleted)(SCV).size() >= 10)
 		workerRepair();
 
 	if (Broodwar->getFrameCount()%12 == 0)

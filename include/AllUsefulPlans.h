@@ -1,5 +1,6 @@
-#include <BWAPI.h>
 #pragma once;
+#include <BWAPI.h>
+
 enum gameStage
 {
 	unknown,

@@ -2,6 +2,7 @@
 #include <BWAPI.h>
 #include <BWTA.h>
 #include <windows.h>
+#include <boost/shared_ptr.hpp>
 #include "EnhancedUI.h"
 #include "UnitGroupManager.h"
 #include "UnitGroup.h"
@@ -24,11 +25,9 @@
 #include "TerrainGraph.h"
 #include "vsProtossRules.h"
 #include "DropManager.h"
-#include <Helper.h>
+#include "Helper.h"
 #include "PFFunctions.h"
-#include <boost/shared_ptr.hpp>
 #include "Config.h"
-
 
 #define _BATTLE_DEBUG
 //#define _LOG_TO_FILE

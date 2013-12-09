@@ -7,7 +7,7 @@ public:
 	TechItem(BWAPI::UpgradeType upgradeType, int level) : techType(BWAPI::TechTypes::None), upgradeType(upgradeType), level(level) {}
 	BWAPI::TechType techType;
 	BWAPI::UpgradeType upgradeType;
+	bool operator ==(const TechItem& other) const {return other.techType.getID() == techType.getID();}
+	bool operator <(const TechItem& other) const {return other.techType.getID() < techType.getID();}
 	int level;
-  bool operator ==(const TechItem& other) const {return other.techType.getID() == techType.getID();}
-  bool operator <(const TechItem& other) const {return other.techType.getID() < techType.getID();}
 };
