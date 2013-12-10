@@ -371,7 +371,7 @@ void ArmyManager::updateSetPoint()
 	{
 		setPoint = Position(terrainManager->getConnectedTilePositionNear(TilePosition(setPoint)));
 	}
-	Broodwar->drawCircleMap(setPoint.x(),setPoint.y(),12,Colors::Red,true);
+	//Broodwar->drawCircleMap(setPoint.x(),setPoint.y(),12,Colors::Red,true);
 
 	if (setPoint == lastSetPoint)
 	{
@@ -397,7 +397,7 @@ void ArmyManager::updateSetPoint()
 			setPoint2 = Position(path[4]);
 		}
 	}
-	Broodwar->drawCircleMap(setPoint2.x(),setPoint2.y(),8,Colors::Green,true);
+	//Broodwar->drawCircleMap(setPoint2.x(),setPoint2.y(),8,Colors::Green,true);
 }
 
 void ArmyManager::updateSiegePoint()
@@ -505,7 +505,7 @@ bool ArmyManager::allUnitsGather(Position p, bool needTank)
 			int py = (atkReg->getCenter().y()/32 + Broodwar->mapHeight()/2)/2;
 			gatherPoint = Position(terrainManager->getConnectedTilePositionNear(TilePosition(px,py)));
 
-			Broodwar->drawCircleMap(gatherPoint.x(),gatherPoint.y(),20,Colors::Purple,true);
+			//Broodwar->drawCircleMap(gatherPoint.x(),gatherPoint.y(),20,Colors::Purple,true);
 		}
 		else
 		{

@@ -1361,8 +1361,8 @@ void MicroUnitControl::tankAttack(BWAPI::Unit* u, BWAPI::Position p, int reachRa
 				if (!invisibleEnemy.empty())
 				{
 					//Broodwar->printf("be careful !!!");
-					Broodwar->drawBoxMap(u->getPosition().x()-15,u->getPosition().y()-15,u->getPosition().x()+15,u->getPosition().y()+15,Colors::Orange);
-					Broodwar->drawBoxMap(u->getPosition().x()-20,u->getPosition().y()-20,u->getPosition().x()+20,u->getPosition().y()+20,Colors::Orange);
+					//Broodwar->drawBoxMap(u->getPosition().x()-15,u->getPosition().y()-15,u->getPosition().x()+15,u->getPosition().y()+15,Colors::Orange);
+					//Broodwar->drawBoxMap(u->getPosition().x()-20,u->getPosition().y()-20,u->getPosition().x()+20,u->getPosition().y()+20,Colors::Orange);
 					u->siege(); // or move back ?
 				}
 				else
@@ -1493,8 +1493,8 @@ void MicroUnitControl::tankAttack(BWAPI::Unit* u, BWAPI::Position p, int reachRa
 			}
 			if (!invisibleEnemy.empty())
 			{
-				Broodwar->drawBoxMap(u->getPosition().x()-15,u->getPosition().y()-15,u->getPosition().x()+15,u->getPosition().y()+15,Colors::Orange);
-				Broodwar->drawBoxMap(u->getPosition().x()-20,u->getPosition().y()-20,u->getPosition().x()+20,u->getPosition().y()+20,Colors::Orange);
+				//Broodwar->drawBoxMap(u->getPosition().x()-15,u->getPosition().y()-15,u->getPosition().x()+15,u->getPosition().y()+15,Colors::Orange);
+				//Broodwar->drawBoxMap(u->getPosition().x()-20,u->getPosition().y()-20,u->getPosition().x()+20,u->getPosition().y()+20,Colors::Orange);
 			}
 			else
 			{

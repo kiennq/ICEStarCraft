@@ -274,16 +274,16 @@ void MacroManager::controlLiftedBuildings()
 			{
 				u->move(terrainManager->eSecondChokepoint->getCenter());
 				Position ckp2 = terrainManager->eSecondChokepoint->getCenter();
-				Broodwar->drawCircleMap(ckp2.x(), ckp2.y(), 5, Colors::Green, true);
-				Broodwar->drawLineMap(u->getPosition().x(), u->getPosition().y(), ckp2.x(), ckp2.y(), Colors::Green);
+				//Broodwar->drawCircleMap(ckp2.x(), ckp2.y(), 5, Colors::Green, true);
+				//Broodwar->drawLineMap(u->getPosition().x(), u->getPosition().y(), ckp2.x(), ckp2.y(), Colors::Green);
 			}							
 		}
 		// follow the enemy center
 		else
 		{
 			u->move(Position(enTankPos.x(), enTankPos.y()));
-			Broodwar->drawCircleMap(enTankPos.x(), enTankPos.y(), 5, Colors::Green, true);
-			Broodwar->drawLineMap(u->getPosition().x(), u->getPosition().y(), enTankPos.x(), enTankPos.y(), Colors::Green);
+			//Broodwar->drawCircleMap(enTankPos.x(), enTankPos.y(), 5, Colors::Green, true);
+			//Broodwar->drawLineMap(u->getPosition().x(), u->getPosition().y(), enTankPos.x(), enTankPos.y(), Colors::Green);
 		}
 	}
 

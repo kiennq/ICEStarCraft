@@ -954,7 +954,7 @@ void WorkerManager::workerRepair()
 	{
 		Position p = u->getPosition();
 		UnitType ut = u->getType();
-		Broodwar->drawBoxMap(p.x()-ut.dimensionLeft()/2,p.y()-ut.dimensionUp()/2,p.x()+ut.dimensionRight()/2,p.y()+ut.dimensionDown()/2,Colors::Green,true);
+		//Broodwar->drawBoxMap(p.x()-ut.dimensionLeft()/2,p.y()-ut.dimensionUp()/2,p.x()+ut.dimensionRight()/2,p.y()+ut.dimensionDown()/2,Colors::Green,true);
 	}
 
 	for each (Unit* u in this->_repairList)

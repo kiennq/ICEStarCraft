@@ -30,6 +30,7 @@ namespace ICEStarCraft
     // Debug flag
     bool DEBUG_BUILD_ORDER_MANAGER();
     bool DEBUG_GAME_FLOW();
+    bool DEBUG_ALL();
 
     // General function for getting other value
     Json::Value& operator()();

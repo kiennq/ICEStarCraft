@@ -64,7 +64,7 @@ void ICEStarCraftModule::onStart()
 	
 	Broodwar->printf("%s", Broodwar->mapName().c_str());
 
-	Broodwar->enableFlag(Flag::UserInput);
+	//Broodwar->enableFlag(Flag::UserInput);
 	Broodwar->setLocalSpeed(0);
 
 	unitGroupManager = UnitGroupManager::create();
@@ -131,6 +131,7 @@ void ICEStarCraftModule::onStart()
 	this->drawObjects = false;
 	draw_self_targets = false;
 	draw_enemy_targets = false;
+  _showAllDebug = Config::i().DEBUG_ALL();
 
 	//_T_
 #ifdef _TIME_DEBUG
@@ -772,6 +773,7 @@ void ICEStarCraftModule::onUnitComplete(BWAPI::Unit *unit)
 
 void ICEStarCraftModule::showDebugInfo()
 {
+  if (!_showAllDebug) return;
 	ArmyManager::create()->showDebugInfo();
 	BattleManager::create()->showDebugInfo();
 	DropManager::create()->showDebugInfo();

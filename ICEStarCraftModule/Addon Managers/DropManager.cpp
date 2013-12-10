@@ -1,4 +1,5 @@
 #include "DropManager.h"
+#include "Config.h"
 
 using namespace std;
 using namespace BWAPI;
@@ -11,7 +12,7 @@ using namespace ICEStarCraft;
 
 Dropper::Dropper(Unit* unit): dropship(unit)
 {
-	debug = true;
+	debug = Config::i().DEBUG_ALL();
 
 	unitsToLoad.clear();
 	purpose = DropNone;
@@ -343,7 +344,7 @@ DropManager* theDropManager = NULL;
 
 DropManager::DropManager()
 {
-	debug = true;
+	debug = Config::i().DEBUG_ALL();
 
 	terrainManager = TerrainManager::create();
 	mental         = MentalClass::create();

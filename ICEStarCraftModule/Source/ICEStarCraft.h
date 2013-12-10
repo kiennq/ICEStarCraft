@@ -104,6 +104,7 @@ public:
 private:
 	bool draw_enemy_targets;
 	bool draw_self_targets;
+  bool _showAllDebug;
 
 #ifdef _TIME_DEBUG
 	std::map<std::string,float> CalculationTime;

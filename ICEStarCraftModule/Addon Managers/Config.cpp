@@ -61,3 +61,8 @@ bool ICEStarCraft::Config::DEBUG_GAME_FLOW()
 {
   _GET_JSON2(_root, "Debug", "Game Flow", false).asBool();
 }
+
+bool ICEStarCraft::Config::DEBUG_ALL()
+{
+  _GET_JSON2(_root, "Debug", "All", false).asBool();
+}
