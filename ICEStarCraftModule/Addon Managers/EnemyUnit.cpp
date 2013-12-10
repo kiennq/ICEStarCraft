@@ -63,23 +63,74 @@ int EnemyUnit::getLastUpdatedFrame() const
 	return _LastUpdatedFrame;
 }
 
+bool EnemyUnit::isBeingConstructed() const
+{
+  return _isBeingConstructed;
+}
+
 void EnemyUnit::update(bool hasGone /*= false*/)
 {
 	if (!hasGone && _Unit->exists())
 	{
-		_ID               = _Unit->getID();
-		_UnitType         = _Unit->getType();
-		_Player           = _Unit->getPlayer();
-		_Position         = _Unit->getPosition();
-		_HitPoints        = _Unit->getHitPoints();
-		_Shields          = _Unit->getShields();
-		_InterceptorCount = _Unit->getInterceptorCount();
-		_ScarabCount      = _Unit->getScarabCount();
-		_LastUpdatedFrame = Broodwar->getFrameCount();
+		_ID                 = _Unit->getID();
+		_UnitType           = _Unit->getType();
+		_Player             = _Unit->getPlayer();
+		_Position           = _Unit->getPosition();
+		_HitPoints          = _Unit->getHitPoints();
+		_Shields            = _Unit->getShields();
+		_InterceptorCount   = _Unit->getInterceptorCount();
+		_ScarabCount        = _Unit->getScarabCount();
+		_LastUpdatedFrame   = Broodwar->getFrameCount();
+    _isBeingConstructed = _Unit->isBeingConstructed();
+    _isInvincible       = _Unit->isInvincible();
+    _isLifted           = _Unit->isLifted();
+    _isBurrowed         = _Unit->isBurrowed();
+    _target             = _Unit->getTarget() ? _Unit->getTarget() 
+                                             : _Unit->getOrderTarget();
 	}
 	else
 	{
 		_Position         = Positions::Unknown;
 		_LastUpdatedFrame = Broodwar->getFrameCount();
 	}
+}
+
+bool EnemyUnit::operator==(const EnemyUnit& other) const
+{
+  return _Unit == other._Unit;
+}
+
+bool EnemyUnit::operator<(const EnemyUnit& other) const
+{
+  return _Unit < other._Unit;
+}
+
+int EnemyUnit::getFadeTime() const
+{
+  return _fadeTime;
+}
+
+bool EnemyUnit::isInvincible() const
+{
+  return _isInvincible;
+}
+
+bool EnemyUnit::isBurrowed() const
+{
+  return _isBurrowed;
+}
+
+bool EnemyUnit::isLifted() const
+{
+  return _isLifted;
+}
+
+BWAPI::Unit* EnemyUnit::getTarget() const
+{
+  return _target;
+}
+
+EnemyUnit* EnemyUnit::operator->()
+{
+  return this;
 }

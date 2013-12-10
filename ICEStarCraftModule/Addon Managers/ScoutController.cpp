@@ -332,10 +332,10 @@ void ScoutController::_registerEnUnitPosition()
 		{
       for each (Unit* inBunker in u->getLoadedUnits()) 
 			{
-        _eUnitPos[inBunker] =  _UnitInfo(u->getPosition(), Broodwar->getFrameCount(), fadeTime);
+        _eUnitPos[inBunker] =  EnemyUnit(inBunker, fadeTime);
       }
     }
-    _eUnitPos[u] =  _UnitInfo(u->getPosition(), Broodwar->getFrameCount(), fadeTime);
+    _eUnitPos[u] =  EnemyUnit(u, fadeTime);
   }
 }
 
@@ -346,15 +346,13 @@ void ScoutController::_fadeUnit(Unit* u)
 
 void ScoutController::_fadeUnits()
 {
-  for (map<Unit*, _UnitInfo>::iterator i = _eUnitPos.begin(); i != _eUnitPos.end();)
+  for (map<Unit*, EnemyUnit>::iterator i = _eUnitPos.begin(); i != _eUnitPos.end();)
   {
-    if (Broodwar->getFrameCount()-i->second.iFrame > i->second.ctFadeThres)
+    map<Unit*, EnemyUnit>::iterator j = i++;
+    if (Broodwar->getFrameCount() - j->second.getLastUpdatedFrame() > j->second.getFadeTime() ||
+        (!j->first->exists() && Broodwar->isVisible(TilePosition(j->second.getPosition()))))
     {
-      _eUnitPos.erase(i++);
-    }
-    else
-    {
-      i++;
+      _eUnitPos.erase(j);
     }
   }
 }
@@ -423,27 +421,26 @@ Vector2 ScoutController::calculatePVal( Unit* scout )
 
 
 	// Calculate unitPVal
-  for (map<Unit*, _UnitInfo>::iterator im = _eUnitPos.begin(); im != _eUnitPos.end(); im++) 
+  for (map<Unit*, EnemyUnit>::iterator im = _eUnitPos.begin(); im != _eUnitPos.end(); im++) 
 	{
-    Unit* u = im->first;
-    if (u->isBeingConstructed() && u->getRemainingBuildTime() > 40)
+    EnemyUnit& u = im->second;
+    if (u.isBeingConstructed() && u.getHitPoints()*1.0/u.getType().maxHitPoints() < .7)
     {
       continue;
     }
-		Vector2 _dir = vortexPotential(curReg->getCenter(), (u)->getPosition())*_p[0];
+		Vector2 _dir = vortexPotential(curReg->getCenter(), im->second.getPosition())*_p[0];
 
 		Vector2 u_tmp = unitPVal(u, scout);
-		UnitType ut = (u)->getType();
-    if (Broodwar->self()->isEnemy((u)->getPlayer()) &&
-        ut.canAttack() &&
-        (!ut.isWorker() || (u)->getTarget()==scout || (u)->getOrderTarget()==scout)) 
+		UnitType ut = u.getType();
+    if (ut.canAttack() &&
+        (!ut.isWorker() || u.getTarget()==scout)) 
 		{
 				en_dir += u_tmp;	
 				enNum++;
 				s += u_tmp;
 #ifdef _SCOUT_DEBUG
 				_list_o.push_back(make_pair((u)->getPosition(), ut.groundWeapon().maxRange()));
-        _screenPos += (u)->getPosition();
+        _screenPos += u.getPosition();
 #endif
 		} else {
 			// obstacle
@@ -500,12 +497,17 @@ Vector2 ScoutController::calculatePVal( Unit* scout )
 * Unit's (building and enemy) emitted potential flow 
 * Rotate an (-anpha) angle. Input is the anpha angle
 */
-Vector2 ScoutController::unitPVal( BWAPI::Unit* u, BWAPI::Unit* s)
+Vector2 ScoutController::unitPVal(EnemyUnit& u, BWAPI::Unit* s)
 {
-	UnitType ut = u->getType();
+	UnitType ut = u.getType();
 	Position p = s->getPosition();
   BWTA::Region* re = BWTA::getRegion(s->getPosition());
   Position c;
+#ifdef _SCOUT_DEBUG
+  Position up = u->getPosition();
+  Broodwar->drawBoxMap(up.x()-ut.dimensionLeft(), up.y()-ut.dimensionUp(), up.x()+ut.dimensionRight(), up.y()+ut.dimensionDown(), Colors::Green);
+#endif // _SCOUT_DEBUG
+
   if (re) { 
     c = re->getCenter();
     //if (!re->getBaseLocations().empty()) c = (*re->getBaseLocations().begin())->getPosition();
@@ -513,7 +515,7 @@ Vector2 ScoutController::unitPVal( BWAPI::Unit* u, BWAPI::Unit* s)
 
 	// Unit's radius
 	int r = (ut.dimensionRight() + ut.dimensionLeft() + ut.dimensionUp() + ut.dimensionDown())/2;
-	if (u->isInvincible()) {
+	if (u.isInvincible()) {
 		// Mineral and other indestructive obstacle
 		if (c.getApproxDistance(p) < _p[2]) {
 			return obsVortexPotential(u->getPosition(), p, c, r*r)*_p[0] + obsSourcePotential(u->getPosition(), p, c, r*r)*_p[1];;
@@ -533,13 +535,13 @@ Vector2 ScoutController::unitPVal( BWAPI::Unit* u, BWAPI::Unit* s)
 		//return vortexPotential(u->getPosition(), p)*_p[6];
 	}
   // Bunker, special case
-  else if(ut == UnitTypes::Terran_Bunker && _enBunker[u] != UnitTypes::None) {
-    return needlePotentialVal(u->getPosition(), p, s->getPosition(), (_enBunker[u].groundWeapon().maxRange() + 48)*(1.0/r))*_p[7]*4;
+  else if(ut == UnitTypes::Terran_Bunker && _enBunker[u->getUnit()] != UnitTypes::None) {
+    return needlePotentialVal(u.getPosition(), p, s->getPosition(), (_enBunker[u->getUnit()].groundWeapon().maxRange() + 48)*(1.0/r))*_p[7]*4;
   }
-	else if(Broodwar->self()->isEnemy(u->getPlayer()) && ut.canAttack() && 
-		(!ut.isWorker() || u->getTarget()==s || u->getOrderTarget()==s)) {
+	else if(ut.canAttack() && 
+		      (!ut.isWorker() || u->getTarget()==s)) {
 			// If is can ttacking enemy unit or worker who aim at our scout's position
-			Unit* eTarget = u->getTarget()?u->getTarget():u->getOrderTarget();
+			Unit* eTarget = u.getTarget();
 			int atkRange = ut.groundWeapon().maxRange() + 16;
 			if (eTarget)
 				return needlePotentialVal(u->getPosition(), p, eTarget->getPosition(), atkRange*1.0/r)*_p[7]*2.5;

@@ -7,6 +7,8 @@
 #include <list>
 #include "Helper.h"
 #include "Vector2.h"
+#include "InformationManager.h"
+#include "EnemyUnit.h"
 
 
 #ifndef _SCOUT_DEBUG
@@ -25,6 +27,7 @@
 
 namespace ICEStarCraft {
 
+  class EnemyUnit;
   class ScoutController
 	{
 	public:
@@ -55,7 +58,7 @@ namespace ICEStarCraft {
 		*/
 		Vector2 calculatePVal(BWAPI::Unit* scout);
 
-		Vector2 unitPVal(BWAPI::Unit* u, BWAPI::Unit* s);
+		Vector2 unitPVal(EnemyUnit& u, BWAPI::Unit* s);
 		Vector2 regionPVal (BWTA::Region* r, BWAPI::Unit* s);
 		Vector2 borderPVal (BWTA::Region* r, BWAPI::Unit* s);
 
@@ -109,7 +112,7 @@ namespace ICEStarCraft {
     };
     std::map<BWAPI::Unit*, _UnitInfo> _scoutLastPositions;
     // Store the position of enemy units
-    std::map<BWAPI::Unit*, _UnitInfo> _eUnitPos;
+    std::map<BWAPI::Unit*, EnemyUnit> _eUnitPos;
 
 #ifdef _SCOUT_DEBUG
 		bool show_object_r;

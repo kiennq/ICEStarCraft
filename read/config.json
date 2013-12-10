@@ -18,6 +18,7 @@
 
   "Debug" : {
     "Build Order Manager": true,
-    "Game Flow": false
+    "Game Flow": false,
+    "All": false
   }
 }
