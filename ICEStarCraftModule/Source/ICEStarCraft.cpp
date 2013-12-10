@@ -773,7 +773,7 @@ void ICEStarCraftModule::onUnitComplete(BWAPI::Unit *unit)
 
 void ICEStarCraftModule::showDebugInfo()
 {
-  if (!_showAllDebug) return;
+	if (!_showAllDebug) return;
 	ArmyManager::create()->showDebugInfo();
 	BattleManager::create()->showDebugInfo();
 	DropManager::create()->showDebugInfo();

@@ -267,8 +267,8 @@ void MentalClass::counterMeasure()
 				//break;
 				if (Broodwar->getFrameCount()<24*60*8 && !reactionFinish)
 				{
-					if (Broodwar->getFrameCount()%(24*15)==0)
-						Broodwar->printf("zealot rush");
+					//if (Broodwar->getFrameCount()%(24*15)==0)
+					//	Broodwar->printf("zealot rush");
 					//if (!Broodwar->self()->hasResearched(TechTypes::Spider_Mines)&& !techMng->planned(TechTypes::Spider_Mines))
 					//	bom->research(TechTypes::Spider_Mines,78);//101
 					if (bom->getPlannedCount(UnitTypes::Terran_Vulture,102) < 5)
@@ -325,7 +325,7 @@ void MentalClass::counterMeasure()
 			{ 
 				if (Broodwar->getFrameCount()<24*60*7 && !reactionFinish)
 				{
-					Broodwar->printf("DK tech");
+					//Broodwar->printf("DK tech");
 					bom->build(1,UnitTypes::Terran_Engineering_Bay,120);
 					if (gf->bunkerPosition && (*gf->bunkerPosition)!=TilePositions::None)
 					{
@@ -349,7 +349,7 @@ void MentalClass::counterMeasure()
 				//break;
 				if (Broodwar->getFrameCount() < 24*60*8 && !reactionFinish)
 				{
-					Broodwar->printf("DR rush");
+					//Broodwar->printf("DR rush");
 					if (terrainManager->buPos != TilePositions::None)
 					{
 						bom->build(1,UnitTypes::Terran_Bunker,106,terrainManager->buPos);
@@ -631,7 +631,7 @@ void MentalClass::counterMeasure()
 	{
 		if (Broodwar->getFrameCount()%(24*30) == 9)
 		{
-			Broodwar->printf("Arbiter!");
+			//Broodwar->printf("Arbiter!");
 		}
 
 		if (upgradeMng->getPlannedLevel(UpgradeTypes::Charon_Boosters) < 1)
@@ -681,7 +681,7 @@ void MentalClass::counterMeasure()
 	{
 		if (Broodwar->getFrameCount()%(24*30) == 9)
 		{
-			Broodwar->printf("Dark Templar!");
+			//Broodwar->printf("Dark Templar!");
 		}
 		
 		if (Broodwar->self()->supplyUsed()/2 > 100)
