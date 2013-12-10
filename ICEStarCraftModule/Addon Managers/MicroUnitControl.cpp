@@ -1767,8 +1767,8 @@ bool MicroUnitControl::useIrradiate(Unit* u, UnitGroup& targets)
 	
 	if (target)
 	{
-		Broodwar->printf("use Irradiate on %s",target->getType().getName().c_str());
-		Broodwar->drawLineMap(u->getPosition().x(),u->getPosition().y(),target->getPosition().x(),target->getPosition().y(),Colors::Orange);
+		//Broodwar->printf("use Irradiate on %s",target->getType().getName().c_str());
+		//Broodwar->drawLineMap(u->getPosition().x(),u->getPosition().y(),target->getPosition().x(),target->getPosition().y(),Colors::Orange);
 		return useTech(u,TechTypes::Irradiate,target);
 	}
 	
@@ -1813,8 +1813,8 @@ bool MicroUnitControl::useEMPShockwave(Unit* u, UnitGroup& targets)
 	{
 		target = targets.getCenter();
 	}
-	Broodwar->printf("use EMP Shockwave");
-	Broodwar->drawLineMap(u->getPosition().x(),u->getPosition().y(),target.x(),target.y(),Colors::Orange);
+	//Broodwar->printf("use EMP Shockwave");
+	//Broodwar->drawLineMap(u->getPosition().x(),u->getPosition().y(),target.x(),target.y(),Colors::Orange);
 	return useTech(u,TechTypes::EMP_Shockwave,target);
 }
 
@@ -1872,8 +1872,8 @@ bool MicroUnitControl::useDefensiveMatrix(Unit* u, UnitGroup& targets)
 
 	if (target)
 	{
-		Broodwar->printf("use Defensive Matrix on %s",target->getType().getName().c_str());
-		Broodwar->drawLineMap(u->getPosition().x(),u->getPosition().y(),target->getPosition().x(),target->getPosition().y(),Colors::Orange);
+		//Broodwar->printf("use Defensive Matrix on %s",target->getType().getName().c_str());
+		//Broodwar->drawLineMap(u->getPosition().x(),u->getPosition().y(),target->getPosition().x(),target->getPosition().y(),Colors::Orange);
 		return useTech(u,TechTypes::Defensive_Matrix,target);
 	}
 

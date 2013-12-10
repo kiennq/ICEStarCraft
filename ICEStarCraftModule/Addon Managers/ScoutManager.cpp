@@ -582,7 +582,7 @@ void ScoutManager::scoutEnemyExpansion(Unit* u)
 {		
 	for each (BWTA::BaseLocation* base in this->baseLocationNeedToScout)
 	{
-		Broodwar->drawCircleMap(base->getPosition().x(),base->getPosition().y(),30,Colors::Yellow);
+		//Broodwar->drawCircleMap(base->getPosition().x(),base->getPosition().y(),30,Colors::Yellow);
 	}
 	//Broodwar->drawTextScreen(5,60,"BaseLocationNeedToScout: %d | %d",this->baseLocationNeedToScout.size(),Broodwar->getFrameCount());
 	//Broodwar->drawTextScreen(5,70,"BaseLocationExplored: %d",this->baseLocationsExplored.size());
@@ -641,7 +641,7 @@ void ScoutManager::scoutEnemyExpansion(Unit* u)
 	if (this->currentLocationTarget)
 	{
 		Position tar = this->currentLocationTarget->getPosition();
-		Broodwar->drawLineMap(u->getPosition().x(),u->getPosition().y(),tar.x(),tar.y(),Colors::White);
+		//Broodwar->drawLineMap(u->getPosition().x(),u->getPosition().y(),tar.x(),tar.y(),Colors::White);
 	}
 
 	if (!unitInDanger(u))
@@ -650,11 +650,12 @@ void ScoutManager::scoutEnemyExpansion(Unit* u)
 			u->move(this->currentLocationTarget->getPosition());
 
 		//_T_
-		int range = u->getType() == UnitTypes::Terran_Vulture ? (u->getSpiderMineCount() > 0 ? 32 : u->getType().sightRange()) : u->getType().sightRange();
-		if (range == 32 && !SelectAll()(isBuilding,SCV).inRadius(32*2,this->currentLocationTarget->getPosition()).empty())
-		{
-			range = u->getType().sightRange();
-		}
+		//int range = u->getType() == UnitTypes::Terran_Vulture ? (u->getSpiderMineCount() > 0 ? 32 : u->getType().sightRange()) : u->getType().sightRange();
+		//if (range == 32 && !SelectAll()(isBuilding,SCV).inRadius(32*2,this->currentLocationTarget->getPosition()).empty())
+		//{
+		//	range = u->getType().sightRange();
+		//}
+		int range = 64;
 
 		if(u->getPosition().getApproxDistance(this->currentLocationTarget->getPosition()) <= range)
 		{
@@ -1041,12 +1042,27 @@ void ScoutManager::setExpansionToScout()
 			continue;
 		if (ICEStarCraft::Helper::isDirectlyConnected(bl->getRegion(),BWTA::getRegion(Broodwar->self()->getStartLocation())))
 			continue;
-		if (this->eInfo->isEnemyBase(bl) && !(this->enemyStartLocation && ICEStarCraft::Helper::isDirectlyConnected(bl->getRegion(),this->enemyStartLocation->getRegion())))
+		if (this->eInfo->isEnemyBase(bl) && bl != terrainManager->eNearestBase)
 			continue;
-		if (this->enemyStartLocation && ICEStarCraft::Helper::isDirectlyConnected(bl->getRegion(),this->enemyStartLocation->getRegion()) && bl->isMineralOnly())
-			continue;
+		if (this->enemyStartLocation && ICEStarCraft::Helper::isDirectlyConnected(bl->getRegion(),this->enemyStartLocation->getRegion()))
+		{
+			if (terrainManager->gameMap == Maps::Andromeda || terrainManager->gameMap == Maps::Electric_Circuit)
+			{
+				continue;
+			}
+		}
+
 		if (Broodwar->isVisible(bl->getTilePosition()))
-			continue;//_T_
+		{
+			TilePosition tp = bl->getTilePosition();
+			if (Broodwar->isVisible(TilePosition(tp.x()-6,tp.y()).makeValid()) &&
+				  Broodwar->isVisible(TilePosition(tp.x()+6,tp.y()).makeValid()) &&
+					Broodwar->isVisible(TilePosition(tp.x(),tp.y()-6).makeValid()) &&
+					Broodwar->isVisible(TilePosition(tp.x(),tp.y()+6).makeValid()))
+			{
+				continue;
+			}
+		}//_T_
     
 		this->baseLocationNeedToScout.insert(bl);
   }
