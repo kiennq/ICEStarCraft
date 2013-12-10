@@ -395,6 +395,7 @@ void ConstructionManager::update()
 														else{
 															UnitGroup tempAttackGroup = SelectAll()(isCompleted)(canAttack).not(isWorker,isBuilding,Vulture_Spider_Mine);
 															if (Broodwar->getFrameCount()%24==0){
+                                WorkerManager::create()->addToNotRepairList(un);
 																if(!u->isConstructing())
 																	u->attack(un);
 																tempAttackGroup.attackUnit(un);

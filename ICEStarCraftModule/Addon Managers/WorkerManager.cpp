@@ -14,7 +14,8 @@ WorkerManager* theWorkerManager = NULL;
 WorkerManager* WorkerManager::create(){
 	if (theWorkerManager) 
 		return theWorkerManager;
-	else{
+	else
+  {
 		theWorkerManager = new WorkerManager();
 		return theWorkerManager;
 	}	
@@ -38,7 +39,7 @@ WorkerManager::WorkerManager()
 	_lastFrameCount = GetTickCount();
 
 //********************previous code
-	this->bmc = NULL;
+	this->_bmc = NULL;
 
 	/*setBaseManagerClass(bmc);
 	set<BWAPI::Unit*> allMyMineral = this->bmc->getMyMineralSet();
@@ -48,32 +49,32 @@ WorkerManager::WorkerManager()
 	
 		
 	}*/
-	this->mineralRate       = 0;
-	this->gasRate           = 0;
+	this->_mineralRate       = 0;
+	this->_gasRate           = 0;
 	
 	_workerState.clear();
 	_workerBuildOrder.clear();
 	_workerBuildingRefinery.clear();
-	this->rebalancing = false;
-	this->autoBuild         = false;
-	this->autoBuildPriority = 65;
-	this->optimalWorkerCount = 0;
-	this->WorkersPerGas = -1;
-	this->needTotalWorkerNum = 0;
-	this->currentNum =0;
-	this->lastNum = 0;
-	this->allMineral = Broodwar->getMinerals();
-	this->lastRebalanceTime = 0;
-	this->repairGroup.clear();
-	this->repairList.clear();
-	this->scvDefendTeam.clear();
-	this->enemyToDefend.clear();
+	this->_rebalancing = false;
+	this->_autoBuild         = false;
+	this->_autoBuildPriority = 65;
+	this->_optimalWorkerCount = 0;
+	this->_WorkersPerGas = -1;
+	this->_needTotalWorkerNum = 0;
+	this->_currentNum =0;
+	this->_lastNum = 0;
+	this->_allMineral = Broodwar->getMinerals();
+	this->_lastRebalanceTime = 0;
+	this->_repairGroup.clear();
+	this->_repairList.clear();
+	this->_scvDefendTeam.clear();
+	this->_enemyToDefend.clear();
 	this->constructingSCV.clear();
-	this->mental=MentalClass::create();
-	this->gf=NULL;
-	this->mInfo = NULL;
-	this->eInfo = NULL;
-	repairGroupSize = 1;
+	this->_mental=MentalClass::create();
+	this->_gf=NULL;
+	this->_mInfo = NULL;
+	this->_eInfo = NULL;
+	_repairGroupSize = 1;
 };
 
 void WorkerManager::onOffer(std::set<BWAPI::Unit*> units)
@@ -87,7 +88,7 @@ void WorkerManager::onOffer(std::set<BWAPI::Unit*> units)
 
 void WorkerManager::onRevoke(BWAPI::Unit* u, double bid)
 {
-	repairGroup.erase(u);
+	_repairGroup.erase(u);
 }
 
 void WorkerManager::update()
@@ -97,18 +98,18 @@ void WorkerManager::update()
 
 void WorkerManager::setBaseManagerClass(BaseManager* bmc)
 {
-	this->bmc = bmc;
-	this->gf = GameFlow::create();
-	this->mInfo = MyInfoManager::create();
-	this->eInfo = EnemyInfoManager::create();
+	this->_bmc = bmc;
+	this->_gf = GameFlow::create();
+	this->_mInfo = MyInfoManager::create();
+	this->_eInfo = EnemyInfoManager::create();
 }
 
 void WorkerManager::addUnit(Unit* newWorker) 
 {
 	_workerUnits.insert(newWorker);	  
 	WorkerData temp;
-	workers.insert(make_pair(newWorker,temp));
-	for each(BaseClass* bc in this->bmc->getBaseSet())
+	_workers.insert(make_pair(newWorker,temp));
+	for each(BaseClass* bc in this->_bmc->getBaseSet())
 	{
 		if (bc->getCurrentWorkerNum() >= bc->getNeedWorkerNum())
 		{
@@ -139,15 +140,15 @@ void WorkerManager::addUnit(Unit* newWorker)
 	//for exception
 	if (_workersTarget[newWorker]==NULL||!_workersTarget[newWorker]->exists())
 	{
-		if (!this->bmc->getAllMineralSet().empty())
+		if (!this->_bmc->getAllMineralSet().empty())
 		{
-			Unit* mMineralPitch = (*this->bmc->getAllMineralSet().begin());
+			Unit* mMineralPitch = (*this->_bmc->getAllMineralSet().begin());
 			_workersTarget[newWorker] = mMineralPitch;
 		}
 		//if we are mined out,find a visible mineral to him
 		else
 		{
-			for (std::set<BWAPI::Unit*>::const_iterator it = allMineral.begin(); it != allMineral.end(); it++)
+			for (std::set<BWAPI::Unit*>::const_iterator it = _allMineral.begin(); it != _allMineral.end(); it++)
 			{
 				if ((*it)->isVisible() && (*it)->exists())
 				{
@@ -170,7 +171,7 @@ void WorkerManager::addUnit(Unit* newWorker)
 
 Unit* WorkerManager::getBestGlobalMineral()
 {
-	set<BaseClass*> trybase = this->bmc->getBaseSet();
+	set<BaseClass*> trybase = this->_bmc->getBaseSet();
 	int bestScore;
 	Unit* bestMineral;
 	int shortestDis;
@@ -272,9 +273,9 @@ Unit* WorkerManager::getBestLocalMineral(BaseClass* b)
 
 void WorkerManager::microBalance()
 {
-	set<BaseClass*> allBaseSet = this->bmc->getBaseSet();
+	set<BaseClass*> allBaseSet = this->_bmc->getBaseSet();
     
-	if (Broodwar->getFrameCount()%30 == 0 && WorkersPerGas != -1 && this->rebalancing == false)
+	if (Broodwar->getFrameCount()%30 == 0 && _WorkersPerGas != -1 && this->_rebalancing == false)
 	{
 		set<Unit*> baseGeysers;
 		for (set<BaseClass*>::const_iterator b = allBaseSet.begin();b!= allBaseSet.end();b++)
@@ -284,9 +285,9 @@ void WorkerManager::microBalance()
 			for(set<Unit*>::iterator g = baseGeysers.begin(); g != baseGeysers.end(); g++)
 			{
 				int temp = 0;
-				if ((*b)->getGasWorkerNum() < this->WorkersPerGas && (*g)->getType().isRefinery() && (*g)->getPlayer()==Broodwar->self() && (*g)->isCompleted())
+				if ((*b)->getGasWorkerNum() < this->_WorkersPerGas && (*g)->getType().isRefinery() && (*g)->getPlayer()==Broodwar->self() && (*g)->isCompleted())
 				{
-					temp = this->WorkersPerGas-(*b)->getGasWorkerNum();
+					temp = this->_WorkersPerGas-(*b)->getGasWorkerNum();
 					std::map<BWAPI::Unit*,std::set<BWAPI::Unit*>> workerToBase = (*b)->getWorkerNearBaseSet();
 					if (!workerToBase.empty())
 					{
@@ -306,9 +307,9 @@ void WorkerManager::microBalance()
 						}			
 					}
 				}
-				else if ((*b)->getGasWorkerNum() > this->WorkersPerGas&& (*g)->getType().isRefinery() && (*g)->getPlayer()==Broodwar->self() && (*g)->isCompleted())
+				else if ((*b)->getGasWorkerNum() > this->_WorkersPerGas&& (*g)->getType().isRefinery() && (*g)->getPlayer()==Broodwar->self() && (*g)->isCompleted())
 				{
-					temp = (*b)->getGasWorkerNum() - this->WorkersPerGas;
+					temp = (*b)->getGasWorkerNum() - this->_WorkersPerGas;
 					std::map<BWAPI::Unit*,std::set<BWAPI::Unit*>> workerToBase = (*b)->getWorkerNearBaseSet();
 					if (!workerToBase.empty()){
 						for each (Unit* scv in workerToBase.begin()->second)
@@ -328,7 +329,7 @@ void WorkerManager::microBalance()
 		}
 	}
 
-	if (allBaseSet.size() >= 2 && Broodwar->getFrameCount()%300 == 0 && this->rebalancing == false)
+	if (allBaseSet.size() >= 2 && Broodwar->getFrameCount()%300 == 0 && this->_rebalancing == false)
 	{
 		set<BaseClass*> baseNeedWorker;
 		set<BaseClass*> baseProvideWorker;
@@ -407,21 +408,21 @@ void WorkerManager::microBalance()
 void WorkerManager::rebalanceGathering()
 {	
 	if(Broodwar->getFrameCount()%5 != 0)
-		currentNum = this->bmc->getBaseSet().size();
+		_currentNum = this->_bmc->getBaseSet().size();
 	if(Broodwar->getFrameCount()%5 == 0)
-		lastNum = this->bmc->getBaseSet().size();
+		_lastNum = this->_bmc->getBaseSet().size();
 	//check the change of base number
-	if (currentNum != lastNum && currentNum!=0 && lastNum!=0)
+	if (_currentNum != _lastNum && _currentNum!=0 && _lastNum!=0)
 	{
-		if (lastRebalanceTime==0 || Broodwar->getFrameCount()-lastRebalanceTime>=24*60)
+		if (_lastRebalanceTime==0 || Broodwar->getFrameCount()-_lastRebalanceTime>=24*60)
 		{
 			//setNeedGasLevel(3);
 			//Broodwar->printf("Base Num is %d, begin to rebalance",this->bmc->getBaseSet().size());
-			this->rebalancing = true;
+			this->_rebalancing = true;
 			int transferSCV=0;
 			int remainSCV=0;
 
-			set<BaseClass*> allBaseSet = this->bmc->getBaseSet();
+			set<BaseClass*> allBaseSet = this->_bmc->getBaseSet();
 			set<BaseClass*> baseNeedWorker;
 			set<BaseClass*> baseProvideWorker;
 			baseNeedWorker.clear();
@@ -469,16 +470,16 @@ void WorkerManager::rebalanceGathering()
 				}
 			}
 
-		lastRebalanceTime = Broodwar->getFrameCount();
+		_lastRebalanceTime = Broodwar->getFrameCount();
 	  //autoBuildWorker();
 		}
 	}
-	this->rebalancing =false;
+	this->_rebalancing =false;
 }
 	
 void WorkerManager::setBuildOrderManager(BuildOrderManager* buildOrderManager)
 {
-	this->buildOrderManager = buildOrderManager;
+	this->_buildOrderManager = buildOrderManager;
 }		
 
 
@@ -494,23 +495,23 @@ void WorkerManager::onFrame()
 		//for auto produing SCV
 		autoTrainSCV();
 
-		this->allMineral = Broodwar->getMinerals();
-		if(this->bmc->checkflag == true)
+		this->_allMineral = Broodwar->getMinerals();
+		if(this->_bmc->checkflag == true)
 		{
 			rebalanceGathering();
 			microBalance();
 		}
-		this->mineralRate=0;
-		this->gasRate=0;
-		for(map<Unit*,WorkerData>::iterator u = workers.begin(); u != workers.end(); u++)
+		this->_mineralRate=0;
+		this->_gasRate=0;
+		for(map<Unit*,WorkerData>::iterator u = _workers.begin(); u != _workers.end(); u++)
 		{
 			Unit* i = u->first;
 			if (u->second.resource != NULL)
 			{
 				if (u->second.resource->getType()==UnitTypes::Resource_Mineral_Field)
-					mineralRate+=8/180.0;
+					_mineralRate+=8/180.0;
 				else
-					gasRate+=8/180.0;
+					_gasRate+=8/180.0;
 			}
 		}
 
@@ -537,7 +538,7 @@ void WorkerManager::onFrame()
 								//wk->rightClick(target);
 								//continue;
 								//if the target is not one of our minerals
-								std::set<Unit*> mineralSet = this->bmc->getAllMineralSet();
+								std::set<Unit*> mineralSet = this->_bmc->getAllMineralSet();
 								if (!mineralSet.empty())
 								{
 									if (mineralSet.find(target)==mineralSet.end())
@@ -567,16 +568,16 @@ void WorkerManager::onFrame()
 							else
 							{
 								//if it is not a mineral, then assign one of my mineral to him
-								if (!this->bmc->getAllMineralSet().empty())
+								if (!this->_bmc->getAllMineralSet().empty())
 								{
-									Unit* mMineralPitch = (*this->bmc->getAllMineralSet().begin());
+									Unit* mMineralPitch = (*this->_bmc->getAllMineralSet().begin());
 									_workersTarget[wk] = mMineralPitch;
 									wk->rightClick(_workersTarget[wk]);
 								}
 								//if we are mined out,find a visible mineral
 								else
 								{
-									for (std::set<BWAPI::Unit*>::const_iterator it = allMineral.begin(); it != allMineral.end(); it++)
+									for (std::set<BWAPI::Unit*>::const_iterator it = _allMineral.begin(); it != _allMineral.end(); it++)
 									{
 										if ((*it)->isVisible() && (*it)->exists()){
 											_workersTarget[wk] = (*it);
@@ -591,16 +592,16 @@ void WorkerManager::onFrame()
 						else
 						{
 							//assign one of my mineral to him
-							if (!this->bmc->getAllMineralSet().empty())
+							if (!this->_bmc->getAllMineralSet().empty())
 							{
-								Unit* mMineralPitch = (*this->bmc->getAllMineralSet().begin());
+								Unit* mMineralPitch = (*this->_bmc->getAllMineralSet().begin());
 								_workersTarget[wk] = mMineralPitch;
 								wk->rightClick(_workersTarget[wk]);
 							}
 							//if we are mined out,find a visible mineral to him
 							else
 							{
-								for (std::set<BWAPI::Unit*>::const_iterator it = allMineral.begin(); it != allMineral.end(); it++)
+								for (std::set<BWAPI::Unit*>::const_iterator it = _allMineral.begin(); it != _allMineral.end(); it++)
 								{
 									if ((*it)->isVisible() && (*it)->exists())
 									{
@@ -637,7 +638,7 @@ void WorkerManager::onFrame()
 
 bool WorkerManager::needWorkers()
 {	
-	if (_workerUnits.size()<this->bmc->getAllMineralSet().size())
+	if (_workerUnits.size()<this->_bmc->getAllMineralSet().size())
 		return true;
 	else
 		return false;
@@ -645,32 +646,32 @@ bool WorkerManager::needWorkers()
 
 int WorkerManager::getNeedTotalWorkerNum()
 {
-	this->needTotalWorkerNum = 0;
+	this->_needTotalWorkerNum = 0;
 
-	if(this->bmc->checkflag == true)
+	if(this->_bmc->checkflag == true)
 	{
-		std::set<BaseClass*> bcset = this->bmc->getBaseSet();
+		std::set<BaseClass*> bcset = this->_bmc->getBaseSet();
 		for (std::set<BaseClass*>::const_iterator i=bcset.begin(); i!=bcset.end();i++)
 		{
-			if(this->bmc->checkflag==false)
+			if(this->_bmc->checkflag==false)
 			{
-				this->needTotalWorkerNum = (int)workers.size()+15;
+				this->_needTotalWorkerNum = (int)_workers.size()+15;
 				break;
 			} 
 			else
 			{
 				BaseClass* ii = *i;
-				this->needTotalWorkerNum += ii->getNeedWorkerNum();
+				this->_needTotalWorkerNum += ii->getNeedWorkerNum();
 			}
 		}
 	}
 
-	if (this->needTotalWorkerNum <80)
-		return this->needTotalWorkerNum	;
+	if (this->_needTotalWorkerNum <80)
+		return this->_needTotalWorkerNum	;
 	else
 	{
-		this->needTotalWorkerNum = 80;
-		return this->needTotalWorkerNum	;
+		this->_needTotalWorkerNum = 80;
+		return this->_needTotalWorkerNum	;
 	}
 }
 
@@ -696,12 +697,12 @@ unsigned int WorkerManager::getWorkersMining()
 void WorkerManager::onUnitDestroy(Unit* unit)
 {
 	// Add something here
-	this->enemyToDefend.erase(unit);
-	this->workers.erase(unit);
+	this->_enemyToDefend.erase(unit);
+	this->_workers.erase(unit);
 	_workerUnits.erase(unit);
-	scvDefendTeam.erase(unit);
-	this->repairGroup.erase(unit);	
-	this->repairList.erase(unit);
+	_scvDefendTeam.erase(unit);
+	this->_repairGroup.erase(unit);	
+	this->_repairList.erase(unit);
 }
 
 BWAPI::Unit* WorkerManager::getWorkerForTask(Position toPosition)
@@ -781,46 +782,46 @@ void WorkerManager::tryMiningTrick(Unit* worker)
 
 double WorkerManager::getMineralRate() const
 {
-	return this->mineralRate;
+	return this->_mineralRate;
 }
 double WorkerManager::getGasRate() const
 {
-	return this->gasRate;
+	return this->_gasRate;
 }
 
 int WorkerManager::getOptimalWorkerCount() const
 {
-	return this->optimalWorkerCount;
+	return this->_optimalWorkerCount;
 }
 void WorkerManager::enableAutoBuild()
 {
-	this->autoBuild=true;
+	this->_autoBuild=true;
 }
 void WorkerManager::disableAutoBuild()
 {
-	this->autoBuild=false;
+	this->_autoBuild=false;
 }
 void WorkerManager::setAutoBuildPriority(int priority)
 {
-	this->autoBuildPriority = priority;
+	this->_autoBuildPriority = priority;
 }
 
 void WorkerManager::setWorkerPerGas(int num)
 {
-	this->WorkersPerGas = num;
+	this->_WorkersPerGas = num;
 }
 
 void WorkerManager::setNeedGasLevel(int level)
 {
-	set<BaseClass*> allBaseSet = this->bmc->getBaseSet();
+	set<BaseClass*> allBaseSet = this->_bmc->getBaseSet();
 	set<Unit*> baseGeysers;
 	if (level == 0)
 	{
-		this->WorkersPerGas = 0;
+		this->_WorkersPerGas = 0;
 	}
 	if (level == 1)
 	{
-		this->WorkersPerGas = 1;
+		this->_WorkersPerGas = 1;
 		for (set<BaseClass*>::const_iterator b = allBaseSet.begin();b!= allBaseSet.end();b++)
 		{	
 			baseGeysers = (*b)->getGeysers();
@@ -830,7 +831,7 @@ void WorkerManager::setNeedGasLevel(int level)
 				if (Broodwar->canBuildHere(NULL,_g->getTilePosition(),UnitTypes::Terran_Refinery)&&!_g->getType().isRefinery())
 				{
 					//Broodwar->printf("can build refinery!");
-					this->buildOrderManager->buildAdditional(1,UnitTypes::Terran_Refinery,200,_g->getTilePosition());
+					this->_buildOrderManager->buildAdditional(1,UnitTypes::Terran_Refinery,200,_g->getTilePosition());
 				}
 				//else
 					//Broodwar->printf("already has refinery on it!");
@@ -841,7 +842,7 @@ void WorkerManager::setNeedGasLevel(int level)
 	{
 		if(allBaseSet.size() == 1)
 		{
-			this->WorkersPerGas = 3;
+			this->_WorkersPerGas = 3;
 			for (set<BaseClass*>::const_iterator b = allBaseSet.begin();b!= allBaseSet.end();b++)
 			{	
 				baseGeysers = (*b)->getGeysers();
@@ -849,13 +850,13 @@ void WorkerManager::setNeedGasLevel(int level)
 				{
 					Unit* _g = *g;
 					if (Broodwar->canBuildHere(NULL,_g->getTilePosition(),UnitTypes::Terran_Refinery)&&!_g->getType().isRefinery())
-						this->buildOrderManager->buildAdditional(1,UnitTypes::Terran_Refinery,200,_g->getTilePosition());
+						this->_buildOrderManager->buildAdditional(1,UnitTypes::Terran_Refinery,200,_g->getTilePosition());
 				}	
 			}
 		}
 		else if (allBaseSet.size()>1)
 		{
-			this->WorkersPerGas = 2;
+			this->_WorkersPerGas = 2;
 			for (set<BaseClass*>::const_iterator b = allBaseSet.begin();b!= allBaseSet.end();b++)
 			{	
 				baseGeysers = (*b)->getGeysers();
@@ -863,14 +864,14 @@ void WorkerManager::setNeedGasLevel(int level)
 				{
 					Unit* _g = *g;
 					if (Broodwar->canBuildHere(NULL,_g->getTilePosition(),UnitTypes::Terran_Refinery)&&!_g->getType().isRefinery())
-						this->buildOrderManager->buildAdditional(1,UnitTypes::Terran_Refinery,200,_g->getTilePosition());
+						this->_buildOrderManager->buildAdditional(1,UnitTypes::Terran_Refinery,200,_g->getTilePosition());
 				}
 			}
 		}
 	}
 	if (level == 3)
 	{
-		this->WorkersPerGas = 3;
+		this->_WorkersPerGas = 3;
 		for (set<BaseClass*>::const_iterator b = allBaseSet.begin();b!= allBaseSet.end();b++)
 		{	
 			baseGeysers = (*b)->getGeysers();
@@ -880,10 +881,10 @@ void WorkerManager::setNeedGasLevel(int level)
 				//&&!_g->getType().isRefinery()
 				if (Broodwar->canBuildHere(NULL,_g->getTilePosition(),UnitTypes::Terran_Refinery))
 				{
-					if (this->buildOrderManager->getPlannedCount(UnitTypes::Terran_Refinery,90) < SelectAll()(isCompleted)(Command_Center).size())
+					if (this->_buildOrderManager->getPlannedCount(UnitTypes::Terran_Refinery,90) < SelectAll()(isCompleted)(Command_Center).size())
 					{
 						//Broodwar->printf("Build Terran Refinery at (%d,%d) | %d",_g->getTilePosition().x(),_g->getTilePosition().y(),Broodwar->getFrameCount());
-						this->buildOrderManager->build(SelectAll()(isCompleted)(Command_Center).size(),UnitTypes::Terran_Refinery,90,_g->getTilePosition());
+						this->_buildOrderManager->build(SelectAll()(isCompleted)(Command_Center).size(),UnitTypes::Terran_Refinery,90,_g->getTilePosition());
 					}
 				}				
 			}	
@@ -894,25 +895,25 @@ void WorkerManager::setNeedGasLevel(int level)
 void WorkerManager::autoBuildWorker()
 {	
 	int tmp=0;
-	if (this->autoBuild == true && (int)_workerUnits.size() < (tmp=getNeedTotalWorkerNum()))
+	if (this->_autoBuild == true && (int)_workerUnits.size() < (tmp=getNeedTotalWorkerNum()))
 	{
 		if ((int)_workerUnits.size()<80)
 		{
-			optimalWorkerCount = tmp;
+			_optimalWorkerCount = tmp;
 			BWAPI::UnitType workerType=BWAPI::Broodwar->self()->getRace().getWorker();
 			//
-			if (this->buildOrderManager->getPlannedCount(workerType)<optimalWorkerCount)
+			if (this->_buildOrderManager->getPlannedCount(workerType)<_optimalWorkerCount)
 			{
-				int see=this->buildOrderManager->getPlannedCount(workerType);
+				int see=this->_buildOrderManager->getPlannedCount(workerType);
 				//this->buildOrderManager->deleteItem(workerType,this->autoBuildPriority);
-				this->buildOrderManager->buildAdditional(optimalWorkerCount-see,workerType,this->autoBuildPriority);
+				this->_buildOrderManager->buildAdditional(_optimalWorkerCount-see,workerType,this->_autoBuildPriority);
 			}
 		}
 	}
-	else if (this->autoBuild ==false||(int)_workerUnits.size()>=80)
+	else if (this->_autoBuild ==false||(int)_workerUnits.size()>=80)
 	{
 		BWAPI::UnitType workerType=BWAPI::Broodwar->self()->getRace().getWorker();
-		this->buildOrderManager->deleteItem(workerType,this->autoBuildPriority);
+		this->_buildOrderManager->deleteItem(workerType,this->_autoBuildPriority);
 	}
 }
 
@@ -949,14 +950,14 @@ void WorkerManager::workerRepair()
 	//Broodwar->drawTextScreen(0,20,"Repair team: %d/%d",this->repairGroup.size(),repairGroupSize);
 	//Broodwar->drawTextScreen(0,30,"Repair list: %d",this->repairList.size());
 	
-	for each (Unit* u in this->repairGroup)
+	for each (Unit* u in this->_repairGroup)
 	{
 		Position p = u->getPosition();
 		UnitType ut = u->getType();
 		Broodwar->drawBoxMap(p.x()-ut.dimensionLeft()/2,p.y()-ut.dimensionUp()/2,p.x()+ut.dimensionRight()/2,p.y()+ut.dimensionDown()/2,Colors::Green,true);
 	}
 
-	for each (Unit* u in this->repairList)
+	for each (Unit* u in this->_repairList)
 	{
 		Position p = u->getPosition();
 		UnitType ut = u->getType();
@@ -971,7 +972,7 @@ void WorkerManager::workerRepair()
 	UnitGroup attackers = ArmyManager::create()->getAttackers();
 	for each (Unit* u in Broodwar->self()->getUnits())
 	{
-		if (this->repairList.find(u) != this->repairList.end()
+		if (this->_repairList.find(u) != this->_repairList.end()
 				||
 				!u->isCompleted()	|| u->isBeingConstructed() ||	u->getType().isWorker() || !u->getType().isMechanical() || u->isLifted()
 				||
@@ -985,6 +986,7 @@ void WorkerManager::workerRepair()
 			continue;
 		}
 
+
 		if (((u->getType() == UnitTypes::Terran_Bunker || u->getType() == UnitTypes::Terran_Missile_Turret) && u->getHitPoints() < u->getType().maxHitPoints())
 			  ||
 			  (u->getType().isBuilding() && u->getHitPoints() <= u->getType().maxHitPoints() / 3)
@@ -995,22 +997,23 @@ void WorkerManager::workerRepair()
 				||
 				(u->getType() == UnitTypes::Terran_Battlecruiser && u->getHitPoints() <= 200))
 		{
-			this->repairList.insert(u);
+			this->_repairList.insert(u);
 		}
 	}
 
 	// remove units from repair list
-	for(set<Unit*>::iterator i = repairList.begin(); i != repairList.end();)
+	for(set<Unit*>::iterator i = _repairList.begin(); i != _repairList.end();)
 	{
 		Unit* u = *i;
-		if (u->getHitPoints() == u->getType().maxHitPoints())
+		if (u->getHitPoints() == u->getType().maxHitPoints() ||
+        _notRepairList.find(u) != _notRepairList.end())
 		{
-			repairList.erase(i++);
+			_repairList.erase(i++);
 		}
 		else if (u->getType() == UnitTypes::Terran_Vulture && !attackers.empty() && attackers.find(u) == attackers.end())
 		{
-			repairList.erase(i++);
-			for each (Unit* scv in this->repairGroup)
+			_repairList.erase(i++);
+			for each (Unit* scv in this->_repairGroup)
 			{
 				if (scv->isRepairing() && scv->getOrderTarget() == u)
 				{
@@ -1025,39 +1028,39 @@ void WorkerManager::workerRepair()
 	}
 
 	// set the number of SCVs we need
-	this->repairGroupSize = this->repairList.empty() ? 1 : 2;
+	this->_repairGroupSize = this->_repairList.empty() ? 1 : 2;
 	
 	// for emergency, enlarge repair group
 	Unit* bunker = SelectAll(UnitTypes::Terran_Bunker)(isCompleted).getNearest(TerrainManager::create()->mSecondChokepoint->getCenter());
 	if (bunker && SelectAllEnemy()(canAttack)(isDetected).inRadius(32*10,bunker->getPosition()).size() > 1)
 	{
-		if (this->mInfo->myFightingValue().first < this->eInfo->enemyFightingValue().first
+		if (this->_mInfo->myFightingValue().first < this->_eInfo->enemyFightingValue().first
 			  ||
 				SelectAll()(isCompleted)(Siege_Tank).inRadius(32*10,bunker->getPosition()).empty())
 		{
-			this->repairGroupSize = 5;
+			this->_repairGroupSize = 5;
 		}
 		else
 		{
-			this->repairGroupSize = 3;
+			this->_repairGroupSize = 3;
 		}
 	}
 
-	int num = repairList(Battlecruiser).size();
+	int num = _repairList(Battlecruiser).size();
 	if (num > 1)
 	{
 		int need = num <= 4 ? 4 : (num <= 6 ? 6 : 8);
-		this->repairGroupSize = need > this->repairGroupSize ? need : this->repairGroupSize;
+		this->_repairGroupSize = need > this->_repairGroupSize ? need : this->_repairGroupSize;
 	}
 
 	// remove SCVs that are scouting or constructing from repair group
-	for (set<Unit*>::iterator i = this->repairGroup.begin(); i != this->repairGroup.end();)
+	for (set<Unit*>::iterator i = this->_repairGroup.begin(); i != this->_repairGroup.end();)
 	{
 		Unit* scv = *i;
 		if (scv->isConstructing() || scv->getLastCommand().getType() == UnitCommandTypes::Build || scv->getOrder() == Orders::ConstructingBuilding || _workerState[scv] == Scouting)
 		{
 			this->_workerUnits.insert(scv);
-			this->repairGroup.erase(i++);	
+			this->_repairGroup.erase(i++);	
 		}
 		else
 		{
@@ -1065,7 +1068,7 @@ void WorkerManager::workerRepair()
 		}
 	}
 
-	if (this->repairGroup.size() < this->repairGroupSize)
+	if (this->_repairGroup.size() < this->_repairGroupSize)
 	{
 		// add SCVs to repair group, start from SCVs near the bunker
 		if (bunker)
@@ -1079,13 +1082,13 @@ void WorkerManager::workerRepair()
 				}
 			}
 
-			while (this->repairGroup.size() < this->repairGroupSize && !workers.empty())
+			while (this->_repairGroup.size() < this->_repairGroupSize && !workers.empty())
 			{
 				Unit* nearestSCV = workers.getNearest(bunker->getPosition());
 				if (nearestSCV)
 				{
 					workers.erase(nearestSCV);
-					this->repairGroup.insert(nearestSCV);
+					this->_repairGroup.insert(nearestSCV);
 					arbitrator->setBid(this, nearestSCV, 50);
 				}
 			}
@@ -1094,25 +1097,25 @@ void WorkerManager::workerRepair()
 		{
 			for each (Unit* u in this->_workerUnits)
 			{
-				if (this->repairGroup.size() >= this->repairGroupSize)
+				if (this->_repairGroup.size() >= this->_repairGroupSize)
 				{
 					break;
 				}
 				
 				if (!u->isConstructing() && !u->isCarryingGas() && _workerState[u] != Scouting)
 				{
-					this->repairGroup.insert(u);
+					this->_repairGroup.insert(u);
 					arbitrator->setBid(this, u, 50);
 				}
 			}
 		}
 	}
-	else if (this->repairGroup.size() > this->repairGroupSize)
+	else if (this->_repairGroup.size() > this->_repairGroupSize)
 	{
 		// remove SCVs from repair group
-		for (set<Unit*>::iterator i = this->repairGroup.begin(); i != this->repairGroup.end();)
+		for (set<Unit*>::iterator i = this->_repairGroup.begin(); i != this->_repairGroup.end();)
 		{
-			if (this->repairGroup.size() <= this->repairGroupSize)
+			if (this->_repairGroup.size() <= this->_repairGroupSize)
 			{
 				break;
 			}
@@ -1121,7 +1124,7 @@ void WorkerManager::workerRepair()
 			if (!scv->isRepairing())
 			{
 				this->_workerUnits.insert(scv);
-				this->repairGroup.erase(i++);
+				this->_repairGroup.erase(i++);
 			}
 			else
 			{
@@ -1130,7 +1133,7 @@ void WorkerManager::workerRepair()
 		}
 	}
 
-	for each (Unit* u in this->repairGroup)
+	for each (Unit* u in this->_repairGroup)
 	{
 		if (Broodwar->getFrameCount() < 24*60*8 && bunker && !bunker->isUnderAttack())
 		{
@@ -1141,7 +1144,7 @@ void WorkerManager::workerRepair()
 				u->move(bunker->getPosition());
 			}
 		}
-		else if (!repairList.empty())
+		else if (!_repairList.empty())
 		{
 			this->_workerUnits.erase(u);
 		}
@@ -1153,33 +1156,33 @@ void WorkerManager::workerRepair()
 	
 	// number of SCVs to repair each non-building unit
 	int need = 0;
-	if (!this->repairList.not(isBuilding).empty())
+	if (!this->_repairList.not(isBuilding).empty())
 	{
-		need = this->repairGroup.size() / this->repairList.not(isBuilding).size();
+		need = this->_repairGroup.size() / this->_repairList.not(isBuilding).size();
 		need = need < 1 ? 1 : need;
 	}
 
 	// repair damaged units
-	for each (Unit* repairTarget in this->repairList)
+	for each (Unit* repairTarget in this->_repairList)
 	{		
 		// repair bunker first
-		if (repairTarget->getType() != UnitTypes::Terran_Bunker && !repairList(Bunker).empty() && !this->mental->enemyInSight.empty())
+		if (repairTarget->getType() != UnitTypes::Terran_Bunker && !_repairList(Bunker).empty() && !this->_mental->enemyInSight.empty())
 		{
 			continue;
 		}
 
 		// then repair dropship
-		if (repairTarget->getType() != UnitTypes::Terran_Dropship && !repairList(Dropship).empty())
+		if (repairTarget->getType() != UnitTypes::Terran_Dropship && !_repairList(Dropship).empty())
 		{
 			continue;
 		}
 
-		for each(Unit* repairWorker in repairGroup)
+		for each(Unit* repairWorker in _repairGroup)
 		{
 			if (!repairTarget->getType().isBuilding())
 			{
 				int n = 0; // number of SCVs that are repairing this target
-				for each (Unit* u in repairGroup)
+				for each (Unit* u in _repairGroup)
 				{
 					if (u->getLastCommand().getType() == UnitCommandTypes::Repair && u->getLastCommand().getTarget() == repairTarget)
 					{
@@ -1203,26 +1206,26 @@ void WorkerManager::workerRepair()
 
 UnitGroup WorkerManager::getRepairList()
 {
-	return this->repairList;
+	return this->_repairList;
 }
 
 bool WorkerManager::isInRepairList(Unit* u) const
 {
-	return (repairList.find(u) != repairList.end());
+	return (_repairList.find(u) != _repairList.end());
 }
 
 
 void WorkerManager::onUnitMorph(Unit* u)
 {
 	if (Broodwar->self()->isEnemy(u->getPlayer())){
-		if (!u->getType().isBuilding() && (this->enemyToDefend.find(u))!=this->enemyToDefend.end())
-			this->enemyToDefend.erase(u);
+		if (!u->getType().isBuilding() && (this->_enemyToDefend.find(u))!=this->_enemyToDefend.end())
+			this->_enemyToDefend.erase(u);
 	}
 }
 
 void WorkerManager::onUnitHide(BWAPI::Unit* u)
 {
-	this->enemyToDefend.erase(u);
+	this->_enemyToDefend.erase(u);
 }
 
 void WorkerManager::autoTrainSCV()
@@ -1232,15 +1235,15 @@ void WorkerManager::autoTrainSCV()
 		return;
 	}
 
-	int need = (int)(bmc->getAllMineralSet().size() * 2.5 + bmc->getAllGeyserSet().size() * 3 + 3);
+	int need = (int)(_bmc->getAllMineralSet().size() * 2.5 + _bmc->getAllGeyserSet().size() * 3 + 3);
 	if (need > 80)
 	{
 		need = 80;
 	}
 
-	if (buildOrderManager->getPlannedCount(UnitTypes::Terran_SCV,this->autoBuildPriority+30) < need)
+	if (_buildOrderManager->getPlannedCount(UnitTypes::Terran_SCV,this->_autoBuildPriority+30) < need)
 	{
-		this->buildOrderManager->build(need,UnitTypes::Terran_SCV,this->autoBuildPriority+30);
+		this->_buildOrderManager->build(need,UnitTypes::Terran_SCV,this->_autoBuildPriority+30);
 	}
 
 	if (Broodwar->self()->allUnitCount(UnitTypes::Terran_SCV) < need && Broodwar->getFrameCount()%24 == 0)
@@ -1267,4 +1270,9 @@ void WorkerManager::onUnitDiscover(BWAPI::Unit* u)
 	{
 		addUnit(u);	 
 	}
+}
+
+void WorkerManager::addToNotRepairList( Unit* u )
+{
+  _notRepairList.insert(u);
 }

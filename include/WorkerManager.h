@@ -95,6 +95,8 @@ public:
 	UnitGroup getRepairList();
 	bool isInRepairList(Unit*) const;
 
+  void addToNotRepairList(Unit* u);
+
 protected:
 	//Single ton class
 	WorkerManager();
@@ -103,38 +105,39 @@ private:
 
 	Arbitrator::Arbitrator<BWAPI::Unit*,double>* arbitrator;
 
-	int repairGroupSize;
+	int _repairGroupSize;
 	//ScoutManager* scoutManager;
-	MyInfoManager* mInfo;
-	EnemyInfoManager* eInfo;
-	GameFlow* gf;
-	MentalClass* mental;
+	MyInfoManager* _mInfo;
+	EnemyInfoManager* _eInfo;
+	GameFlow* _gf;
+	MentalClass* _mental;
 	BWAPI::Unit* getBestLocalMineral(BaseClass* b);
 	BWAPI::Unit* getBestGlobalMineral();
 	BWAPI::Position getPositionToScout(BWAPI::Position seedPos, BWTA::Region* myRegion, BWAPI::Position basePos, bool checkVisible = false);
 	void tryMiningTrick(BWAPI::Unit* worker);
-	double mineralRate;
-	double gasRate;
+	double _mineralRate;
+	double _gasRate;
 	int _lastFrameCount;
 	int _accumluatedMinerals[61];	// We save the "accumulated minerals" for the last 60 seconds (initially, it's all 50s, since you start with 50 minerals)
 	int _mineralPS, _mineralPM;
 	double _averageMineralPS, _averageMineralPM;
 	UnitSet _workerBuildingRefinery;
-  std::map<BWAPI::Unit*,WorkerData> workers;
-	BaseManager* bmc;
-	bool autoBuild;
-	int autoBuildPriority;
-	int optimalWorkerCount;
-	BuildOrderManager* buildOrderManager;
-	int WorkersPerGas;
-	int needTotalWorkerNum;
-	int currentNum;
-	int lastNum;
-	bool rebalancing;
-	std::set<BWAPI::Unit*> allMineral ;
-	int lastRebalanceTime;
-	UnitGroup repairGroup;
-	UnitGroup repairList;
-	UnitGroup scvDefendTeam;
-	UnitGroup enemyToDefend;
+  std::map<BWAPI::Unit*,WorkerData> _workers;
+	BaseManager* _bmc;
+	bool _autoBuild;
+	int _autoBuildPriority;
+	int _optimalWorkerCount;
+	BuildOrderManager* _buildOrderManager;
+	int _WorkersPerGas;
+	int _needTotalWorkerNum;
+	int _currentNum;
+	int _lastNum;
+	bool _rebalancing;
+	std::set<BWAPI::Unit*> _allMineral ;
+	int _lastRebalanceTime;
+	UnitGroup _repairGroup;
+	UnitGroup _repairList;
+  UnitGroup _notRepairList;
+	UnitGroup _scvDefendTeam;
+	UnitGroup _enemyToDefend;
 };

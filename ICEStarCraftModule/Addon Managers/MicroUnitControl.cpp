@@ -1291,7 +1291,7 @@ void MicroUnitControl::tankAttack(BWAPI::Unit* u, BWAPI::Position p, int reachRa
 		}
 
 		if (enemyInRange.empty())
-		{
+    {
 			// destroy buildings that block its way
 			Unit* bs = NULL;
 			if (Broodwar->getFrameCount() > 24*60*10 &&
@@ -1300,7 +1300,12 @@ void MicroUnitControl::tankAttack(BWAPI::Unit* u, BWAPI::Position p, int reachRa
 			{
 				for each (Unit* i in Broodwar->self()->getUnits())
 				{
-					if (i->getType() == UnitTypes::Terran_Supply_Depot && i->getTilePosition().getDistance(TerrainManager::create()->bsPos) < 2)
+          if (i->getTilePosition().getDistance(TerrainManager::create()->bsPos) > 2)
+          {
+            continue;
+          }
+					if (i->getType() == UnitTypes::Terran_Supply_Depot ||
+              (i->getType() == UnitTypes::Terran_Bunker && ArmyManager::create()->getArmyState() != ICEStarCraft::ArmyGuard))
 					{
 						bs = i;
 						break;
@@ -1310,6 +1315,7 @@ void MicroUnitControl::tankAttack(BWAPI::Unit* u, BWAPI::Position p, int reachRa
 
 			if (bs)
 			{
+        workerManager->addToNotRepairList(bs);
 				attack(u,bs);
 				return;
 			}
