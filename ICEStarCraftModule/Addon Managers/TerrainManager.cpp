@@ -50,7 +50,7 @@ TerrainManager::TerrainManager()
 	analyzeMyChokepoints();
 	analyzeSiegePoint();
 	
-	if (Broodwar->enemy()->getRace() == Races::Protoss)
+	if (Broodwar->enemy()->getRace() != Races::Zerg)
 	{
 		analyzeWallinPositions();
 	}

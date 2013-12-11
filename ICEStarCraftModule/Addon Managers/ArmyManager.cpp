@@ -504,6 +504,10 @@ bool ArmyManager::allUnitsGather(Position p, bool needTank)
 			int px = (atkReg->getCenter().x()/32 + Broodwar->mapWidth()/2)/2;
 			int py = (atkReg->getCenter().y()/32 + Broodwar->mapHeight()/2)/2;
 			gatherPoint = Position(terrainManager->getConnectedTilePositionNear(TilePosition(px,py)));
+			if (gatherPoint.getApproxDistance(atkReg->getCenter()) > setPoint.getApproxDistance(atkReg->getCenter()))
+			{
+				gatherPoint = setPoint;
+			}
 
 			//Broodwar->drawCircleMap(gatherPoint.x(),gatherPoint.y(),20,Colors::Purple,true);
 		}
