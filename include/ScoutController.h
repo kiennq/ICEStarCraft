@@ -12,7 +12,7 @@
 
 
 #ifndef _SCOUT_DEBUG
-//#define _SCOUT_DEBUG
+#define _SCOUT_DEBUG
 #endif
 
 #ifndef _LOG_TO_FILE
@@ -45,6 +45,8 @@ namespace ICEStarCraft {
 
     void addToScoutSet(BWAPI::Unit *u);
     void removeFromScoutSet(BWAPI::Unit *u);
+    void setTargetRegion(BWTA::Region* r);
+    std::set<BWAPI::Position>& getAttractPoints();
 
 		template<size_t N> void setParams(const double (&array)[N]);
 
@@ -60,7 +62,8 @@ namespace ICEStarCraft {
 
 		Vector2 unitPVal(EnemyUnit& u, BWAPI::Unit* s);
 		Vector2 regionPVal (BWTA::Region* r, BWAPI::Unit* s);
-		Vector2 borderPVal (BWTA::Region* r, BWAPI::Unit* s);
+		Vector2 borderPVal (BWTA::Region* r, BWAPI::Unit* s, bool fGoThrough = false);
+		Vector2 attractPointPVal (BWAPI::Unit* s);
 
 		Vector2 vortexPotential(const BWAPI::Position& s, const BWAPI::Position& p);
 		Vector2 sourcePotential(const BWAPI::Position& s, const BWAPI::Position& p);
@@ -68,8 +71,6 @@ namespace ICEStarCraft {
 		Vector2 obsSourcePotential(const BWAPI::Position& s, const BWAPI::Position& p, const BWAPI::Position& c, double a2);
 		Vector2 needlePotentialVal(const BWAPI::Position& s, const BWAPI::Position& p, const BWAPI::Position& target, double bias);
 
-    /* <unit , < position , reverse> >  */
-    std::map<BWAPI::Unit*, std::pair<BWAPI::Position, int> > _scouts;
     // For unseen bunker, assume only one type of unit inside
     std::map<BWAPI::Unit*, BWAPI::UnitType> _enBunker;
 		std::set<BWTA::BaseLocation*> _enBaseLoacation;
@@ -87,6 +88,7 @@ namespace ICEStarCraft {
 	private:
 		int _paralength;
 		double* _p;
+    BWTA::Region* _targetReg;
     // Custom unit info
     static struct _UnitInfo {
       BWAPI::Position pos;
@@ -94,8 +96,6 @@ namespace ICEStarCraft {
       // when stucked, click on predefined mineral
       bool fStuck;
       BWAPI::Unit* mineral;
-      // unit will fade after a certain time
-      int ctFadeThres;
 
       _UnitInfo(const BWAPI::Position& pos, int iFrame, bool fStuck, BWAPI::Unit* mineral)
         : pos(pos)
@@ -103,16 +103,14 @@ namespace ICEStarCraft {
         , fStuck(fStuck)
         , mineral(mineral) {}
 
-      _UnitInfo(const BWAPI::Position& pos, int iFrame, int ctFadeThres)
-        : pos(pos)
-        , iFrame(iFrame)
-        , ctFadeThres(ctFadeThres) {} 
-
       _UnitInfo(){}
     };
     std::map<BWAPI::Unit*, _UnitInfo> _scoutLastPositions;
     // Store the position of enemy units
     std::map<BWAPI::Unit*, EnemyUnit> _eUnitPos;
+    /* <unit , < position , reverse> >  */
+    std::map<BWAPI::Unit*, std::pair<BWAPI::Position, int> > _scouts;
+    std::set<BWAPI::Position> _attractPoints;
 
 #ifdef _SCOUT_DEBUG
 		bool show_object_r;
@@ -129,7 +127,7 @@ namespace ICEStarCraft {
 		std::map<BWAPI::Unit*, std::list<std::pair<BWAPI::Position, int>>> _obj;
 #endif // _SCOUT_DEBUG
 
-    void _registerEnUnitPosition();
+    void _registerEnUnitPosition(std::set<BWAPI::Unit*>& units);
     // Fade unit instantly
     void _fadeUnit(BWAPI::Unit* u);
     void _fadeUnits();

@@ -39,12 +39,12 @@ Json::Value& Config::operator()()
 
 int Config::TIME_BUILDING_FADE()
 {
-  _GET_JSON1(_root, "Building Fade Time", 24*60).asInt();
+  _GET_JSON1(_root, "Building Fade Time", 24*30).asInt();
 }
 
 int Config::TIME_MOVING_UNIT_FADE()
 {
-  _GET_JSON1(_root, "Moving Unit Fade Time", 24*30).asInt();
+  _GET_JSON1(_root, "Moving Unit Fade Time", 24*10).asInt();
 }
 
 int ICEStarCraft::Config::GF_TURRET_BUILD_TIME()

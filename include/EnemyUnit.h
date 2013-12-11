@@ -20,6 +20,7 @@ namespace ICEStarCraft
 			,_ScarabCount(unit->getScarabCount())
 			,_LastUpdatedFrame(BWAPI::Broodwar->getFrameCount())
       ,_isBeingConstructed(unit->isBeingConstructed())
+      ,_isMorphing(unit->isMorphing())
       ,_isInvincible(unit->isInvincible())
       ,_isLifted(unit->isLifted())
       ,_isBurrowed(unit->isBurrowed())
@@ -27,7 +28,9 @@ namespace ICEStarCraft
       ,_fadeTime(fadeTime)
 		{}
 
-    EnemyUnit() {}
+    EnemyUnit()
+      :_Unit(NULL)
+    {}
 
 		int getID() const;
 		BWAPI::Unit* getUnit() const;
@@ -41,6 +44,7 @@ namespace ICEStarCraft
 		int	getScarabCount() const;
 		int getLastUpdatedFrame() const;
     bool isBeingConstructed() const;
+    bool isMorphing() const;
     bool isInvincible() const;
     bool isLifted() const;
     bool isBurrowed() const;
@@ -67,6 +71,7 @@ namespace ICEStarCraft
 		int _ScarabCount;
 		int _LastUpdatedFrame;
     bool _isBeingConstructed;
+    bool _isMorphing;
     int _fadeTime;
     bool _isInvincible;
     bool _isLifted;

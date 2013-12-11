@@ -68,8 +68,14 @@ bool EnemyUnit::isBeingConstructed() const
   return _isBeingConstructed;
 }
 
+bool EnemyUnit::isMorphing() const
+{
+  return _isMorphing;
+}
+
 void EnemyUnit::update(bool hasGone /*= false*/)
 {
+  if (!_Unit) return;
 	if (!hasGone && _Unit->exists())
 	{
 		_ID                 = _Unit->getID();
@@ -82,6 +88,7 @@ void EnemyUnit::update(bool hasGone /*= false*/)
 		_ScarabCount        = _Unit->getScarabCount();
 		_LastUpdatedFrame   = Broodwar->getFrameCount();
     _isBeingConstructed = _Unit->isBeingConstructed();
+    _isMorphing         = _Unit->isMorphing();
     _isInvincible       = _Unit->isInvincible();
     _isLifted           = _Unit->isLifted();
     _isBurrowed         = _Unit->isBurrowed();

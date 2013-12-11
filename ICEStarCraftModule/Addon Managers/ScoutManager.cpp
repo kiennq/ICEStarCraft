@@ -490,87 +490,93 @@ void ScoutManager::scoutEnemyOpening(Unit* u)
 
 		if (this->ScoutUnitPurposeMap[u] == EnemyOpening)
 		{       
+			Chokepoint* waypoint = TerrainManager::create()->eFirstChokepoint;
 			Chokepoint* chkPoint = BWTA::getNearestChokepoint(u->getPosition());
+      _nextTargetBase = TerrainManager::create()->eNearestBase;
+      BWTA::Region* curReg = BWTA::getRegion(u->getPosition());
 			if (!_fSwitchRegion &&
-				  BWTA::getRegion(u->getPosition()) == enemyStartLocation->getRegion() &&
+          _nextTargetBase &&
 				  chkPoint &&
-				  u->getPosition().getApproxDistance(chkPoint->getCenter()) > 120)
+				  u->getPosition().getApproxDistance(chkPoint->getCenter()) > 96)
 			{
-				if (Broodwar->getFrameCount() % (24*60) == 0)
-				{
-					if (!_nextTargetBase)
-					{
-						double dis = 9999;
-						for each (BaseLocation *b in BWTA::getBaseLocations()){
-							if (b!=enemyStartLocation)
-							{
-								double tdis = BWTA::getGroundDistance(b->getTilePosition(),enemyStartLocation->getTilePosition());
-								if (dis > tdis && 
-									!(BWTA::getShortestPath(b->getTilePosition(), enemyStartLocation->getTilePosition()).empty()) && 
-									!b->getGeysers().empty())
-								{
-									dis = tdis;
-									_nextTargetBase = b;
-								} 
-							}
-						}
-					}
-					ScoutController::create()->removeFromScoutSet(u);
-					_fSwitchRegion = true;
-					u->move(_nextTargetBase->getPosition());
-					// Broodwar->printf("Go to next base");
-				}
-				else
-				{
-					ScoutController::create()->addToScoutSet(u);
-					ScoutController::create()->onFrame();
-				}
+
+        if (curReg == enemyStartLocation->getRegion() ||
+            curReg == _nextTargetBase->getRegion())
+        {
+          if (Broodwar->getFrameCount() % (24*60) == 0)
+          {
+            //ScoutController::create()->removeFromScoutSet(u);
+            if (curReg == enemyStartLocation->getRegion())
+            {
+              _fSwitchRegion = true;
+              ScoutController::create()->setTargetRegion(_nextTargetBase->getRegion());
+              ScoutController::create()->getAttractPoints().insert(waypoint->getCenter());
+            }
+            return;
+            // Broodwar->printf("Go to next base");
+          }
+          else
+          {
+            if (curReg == enemyStartLocation->getRegion())
+              ScoutController::create()->getAttractPoints().erase(waypoint->getCenter());
+            ScoutController::create()->addToScoutSet(u);
+            ScoutController::create()->onFrame();
+          }
+        }
+        else
+        {
+          ScoutController::create()->setTargetRegion(enemyStartLocation->getRegion());
+          ScoutController::create()->getAttractPoints().insert(waypoint->getCenter());
+          u->move(enemyStartLocation->getPosition());
+        }
 			}
 			else if (_nextTargetBase && 
 				       _fSwitchRegion &&
-				       BWTA::getRegion(u->getPosition()) == _nextTargetBase->getRegion() &&
 				       chkPoint &&
-				       u->getPosition().getApproxDistance(chkPoint->getCenter()) > 120)
-			{
-				if (Broodwar->getFrameCount() % (24*10) == 0)
-				{
-					ScoutController::create()->removeFromScoutSet(u);
-					_fSwitchRegion = false;
-					u->move(enemyStartLocation->getPosition());
-					// Broodwar->printf("Go to enemy base");
-				}
-				else
-				{
-					ScoutController::create()->addToScoutSet(u);
-					ScoutController::create()->onFrame();
-				}
-			}
+				       u->getPosition().getApproxDistance(chkPoint->getCenter()) > 96)
+	
+      {
+        if (curReg == enemyStartLocation->getRegion() ||
+            curReg == _nextTargetBase->getRegion())
+        {
+          if (Broodwar->getFrameCount() % (24*10) == 0)
+          {
+            //ScoutController::create()->removeFromScoutSet(u);
+            if (curReg == _nextTargetBase->getRegion())
+            {
+            _fSwitchRegion = false;
+              ScoutController::create()->setTargetRegion(enemyStartLocation->getRegion());
+            ScoutController::create()->getAttractPoints().insert(waypoint->getCenter());
+            }
+            return;
+            // Broodwar->printf("Go to next base");
+          }
+          else
+          {
+            if (curReg == _nextTargetBase->getRegion())
+              ScoutController::create()->getAttractPoints().erase(waypoint->getCenter());
+            ScoutController::create()->addToScoutSet(u);
+            ScoutController::create()->onFrame();
+          }
+        }
+        else
+        {
+          ScoutController::create()->setTargetRegion(_nextTargetBase->getRegion());
+          ScoutController::create()->getAttractPoints().insert(waypoint->getCenter());
+          u->move(_nextTargetBase->getPosition());
+        }
+      }
+      // If not reach, move directly to enemy base
 			else if (!_fSwitchRegion)
 			{
+        ScoutController::create()->setTargetRegion(enemyStartLocation->getRegion());
 				u->move(enemyStartLocation->getPosition());
 			}
+      // If not reach, move directly to next enemy base
 			else
 			{
+        ScoutController::create()->setTargetRegion(_nextTargetBase->getRegion());
 				u->move(_nextTargetBase->getPosition());
-			}
-
-			if (!_nextTargetBase)
-			{
-				double dis = 9999;
-				for each (BaseLocation *b in BWTA::getBaseLocations())
-				{
-					if (b != enemyStartLocation)
-					{
-						double tdis = BWTA::getGroundDistance(b->getTilePosition(),enemyStartLocation->getTilePosition());
-						if (dis > tdis &&
-							  !(BWTA::getShortestPath(b->getTilePosition(), enemyStartLocation->getTilePosition()).empty()) &&
-								!b->getGeysers().empty())
-						{
-							dis = tdis;
-							_nextTargetBase = b;
-						} 
-					}
-				}
 			}
 
 			if (_nextTargetBase) Broodwar->drawCircleMap(_nextTargetBase->getPosition().x(), _nextTargetBase->getPosition().x(), 5, Colors::Orange, true);
@@ -1172,6 +1178,7 @@ bool isWalkTileWalkable(Position pos)
 
 void ScoutManager::destroy()
 {
+  ScoutController::destroy();
   if (theScoutManager) delete theScoutManager;
 }
 

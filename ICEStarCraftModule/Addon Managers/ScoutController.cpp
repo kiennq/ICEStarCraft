@@ -21,10 +21,11 @@ ScoutController* theScoutController = NULL;
 *	7: enemy's needle
 */
 ScoutController::ScoutController(void)
+  : _targetReg(NULL)
 {
 	// 5 parameters
 
-	double p[] = {400,100,128,160,-600,300,150,300};
+	double p[] = {600,100,128,96,-500,300,150,300};
 	setParams(p);
 
 	//set<BaseLocation*> tmp = BWTA::getStartLocations();
@@ -80,7 +81,6 @@ void ScoutController::onFrame()
   if (Broodwar->getFrameCount()%1 == 0)
   {
     detectUnseenUnitInsideBunker();
-    _registerEnUnitPosition();
     _fadeUnits();
   }
 
@@ -88,13 +88,16 @@ void ScoutController::onFrame()
 
 #ifdef _SCOUT_DEBUG
 		if (show_object_r) {
-			Position curCe = BWTA::getRegion(i->first->getPosition())->getCenter();
-			Broodwar->drawCircleMap(curCe.x(), curCe.y(), 3, Colors::Red, true);
-			Broodwar->drawCircleMap(curCe.x(), curCe.y(), (int)_p[2], Colors::Cyan);
-			//TODO: Need to show a cirle around each unit building
-			for each (pair<Position,int> _obstacle in _obj[i->first]) {
-				Broodwar->drawCircleMap(_obstacle.first.x(), _obstacle.first.y(), _obstacle.second, Colors::Cyan);
-			}
+      if (_targetReg)
+      {
+        Position curCe = _targetReg->getCenter();
+        Broodwar->drawCircleMap(curCe.x(), curCe.y(), 3, Colors::Red, true);
+        Broodwar->drawCircleMap(curCe.x(), curCe.y(), (int)_p[2], Colors::Cyan);
+        //TODO: Need to show a cirle around each unit building
+      }
+      for each (pair<Position,int> _obstacle in _obj[i->first]) {
+        Broodwar->drawCircleMap(_obstacle.first.x(), _obstacle.first.y(), _obstacle.second, Colors::Cyan);
+      }
 		}
 		Position scout_pos = i->first->getPosition();
 		if (show_unit_p) {
@@ -115,6 +118,7 @@ void ScoutController::onFrame()
 			for each (Vector2 _bp in _border_p[i->first]) {
 				Broodwar->drawLineMap(scout_pos.x(), scout_pos.y(), scout_pos.x()+(int)_bp.x(), scout_pos.y()+(int)_bp.y(), Colors::Orange);
 				Broodwar->drawCircleMap(scout_pos.x()+(int)_bp.x(), scout_pos.y()+(int)_bp.y(), 2, Colors::Orange, true);
+        Broodwar->drawTextMap(scout_pos.x()+(int)_bp.x(), scout_pos.y()+(int)_bp.y()-3, "b");
 			}
 		}
 		if (show_all_p) {
@@ -144,7 +148,9 @@ void ScoutController::onFrame()
 
 #endif // _SCOUT_DEBUG
 
-		if(Broodwar->getFrameCount()%1==0 ||Helper::nearReachPos(i->first, i->second.first) || Helper::nearReachPos(i->first, i->first->getTargetPosition(), 32)) 
+		if (Broodwar->getFrameCount()%1==0 ||
+        Helper::nearReachPos(i->first, i->second.first) ||
+        Helper::nearReachPos(i->first, i->first->getTargetPosition(), 32)) 
     {
       Position target = i->first->getPosition();
       _UnitInfo& unitLastLoc = _scoutLastPositions[i->first];
@@ -160,7 +166,7 @@ void ScoutController::onFrame()
       else 
       {
         //Seem we stuck
-        if (target.getApproxDistance(unitLastLoc.pos) < 4 && Broodwar->getFrameCount()-unitLastLoc.iFrame > 3) 
+        if (target.getApproxDistance(unitLastLoc.pos) < 4 && Broodwar->getFrameCount()-unitLastLoc.iFrame > 7) 
         {
           unitLastLoc.fStuck = true;
           // Find mineral patch
@@ -197,6 +203,7 @@ void ScoutController::onFrame()
             //Broodwar->printf("Stuck plus %d", Broodwar->getFrameCount() - unitLastLoc.frame);
           }
           // recalculate potential value
+          _targetReg = _targetReg ?  _targetReg : BWTA::getRegion(i->first->getPosition());
           int rev = i->second.second;
           _p[0] *= rev;
           _p[4] *= rev;
@@ -218,7 +225,8 @@ void ScoutController::onFrame()
             //if (BWTA::getRegion(target) != BWTA::getRegion(i->first->getPosition())) {
             if (!target.isValid())
             {
-              target = seg*(-1) + target;
+              //target = seg*(-1) + target;
+              target.makeValid();
               break;
             }
           }
@@ -321,10 +329,11 @@ void ScoutController::detectUnseenUnitInsideBunker()
 }
 
 
-void ScoutController::_registerEnUnitPosition()
+void ScoutController::_registerEnUnitPosition(std::set<BWAPI::Unit*>& units)
 {
-  for each (Unit* u in Broodwar->enemy()->getUnits())
+  for each (Unit* u in units)
   {
+    if (u->getPlayer()->isAlly(Broodwar->self())) continue;
     int fadeTime = u->getType().isBuilding()? Config::i().TIME_BUILDING_FADE()
                                             : Config::i().TIME_MOVING_UNIT_FADE();
     // Insert into unit's list
@@ -332,10 +341,26 @@ void ScoutController::_registerEnUnitPosition()
 		{
       for each (Unit* inBunker in u->getLoadedUnits()) 
 			{
-        _eUnitPos[inBunker] =  EnemyUnit(inBunker, fadeTime);
+        map<Unit*, EnemyUnit>::iterator i = _eUnitPos.find(inBunker);
+        if (i != _eUnitPos.end())
+        {
+          i->second.update();
+        }
+        else
+        {
+          _eUnitPos[inBunker] = EnemyUnit(inBunker, fadeTime);
+        }
       }
     }
-    _eUnitPos[u] =  EnemyUnit(u, fadeTime);
+    map<Unit*, EnemyUnit>::iterator i = _eUnitPos.find(u);
+    if (i != _eUnitPos.end())
+    {
+      i->second.update();
+    }
+    else
+    {
+      _eUnitPos[u] = EnemyUnit(u, fadeTime);
+    }
   }
 }
 
@@ -400,6 +425,16 @@ void ScoutController::removeFromScoutSet( BWAPI::Unit *u )
   _scoutLastPositions.erase(u);
 }
 
+void ScoutController::setTargetRegion(BWTA::Region* r)
+{
+  _targetReg = r;
+}
+
+set<Position>& ScoutController::getAttractPoints()
+{
+  return _attractPoints;
+}
+
 Vector2 ScoutController::calculatePVal( Unit* scout )
 {
 	BWTA::Region* curReg = BWTA::getRegion(scout->getPosition());
@@ -419,15 +454,13 @@ Vector2 ScoutController::calculatePVal( Unit* scout )
   _screenPos = Position(0,0);
 #endif // _SCOUT_DEBUG
 
-
+  set<Unit*> allUnits = Broodwar->getUnitsInRadius(scout->getPosition(), scout->getType().sightRange()+64);
+  _registerEnUnitPosition(allUnits);
+  
 	// Calculate unitPVal
   for (map<Unit*, EnemyUnit>::iterator im = _eUnitPos.begin(); im != _eUnitPos.end(); im++) 
 	{
     EnemyUnit& u = im->second;
-    if (u.isBeingConstructed() && u.getHitPoints()*1.0/u.getType().maxHitPoints() < .7)
-    {
-      continue;
-    }
 		Vector2 _dir = vortexPotential(curReg->getCenter(), im->second.getPosition())*_p[0];
 
 		Vector2 u_tmp = unitPVal(u, scout);
@@ -447,7 +480,9 @@ Vector2 ScoutController::calculatePVal( Unit* scout )
 			obstacleNum++;
 			obstacleVal += u_tmp;
 #ifdef _SCOUT_DEBUG
-			_list_o.push_back(make_pair((u)->getPosition(), (ut.dimensionRight() + ut.dimensionLeft() + ut.dimensionUp() + ut.dimensionDown())/2));
+      double tr = sqrt(1.0*ut.dimensionRight()*ut.dimensionRight() + ut.dimensionLeft()*ut.dimensionLeft())/2 +
+                  sqrt(1.0*ut.dimensionUp()*ut.dimensionUp() + ut.dimensionDown()*ut.dimensionDown())/2;
+			_list_o.push_back(make_pair((u)->getPosition(), (int)tr));
 #endif
 		}
 #ifdef _SCOUT_DEBUG
@@ -465,23 +500,26 @@ Vector2 ScoutController::calculatePVal( Unit* scout )
 #endif
 
 	// Calculate regionPVal
-	Vector2 r_tmp = regionPVal(curReg, scout);
+	Vector2 r_tmp = regionPVal(_targetReg, scout);
 	s += r_tmp;
 #ifdef _SCOUT_DEBUG
 	_list_a.push_back(r_tmp*100);
 #endif
 
 	// Calculate borderPVal
-	Vector2 b_tmp = borderPVal(curReg, scout);
+	Vector2 b_tmp = borderPVal(curReg, scout, curReg != _targetReg);
 	s += b_tmp;
 #ifdef _SCOUT_DEBUG
 	_list_a.push_back(b_tmp*100);
 	_all_p[scout] = _list_a;
 #endif
 
+  Vector2 att_tmp = attractPointPVal(scout);
+  s += att_tmp;
+
 	// Checking if enemy infront of us
 	double cosEn = en_dir.cos(r_tmp);
-	if ((cosEn < -0.5 && enNum >=3) || (cosEn < -0.85)) 
+	if ((cosEn < -0.5 && enNum >=3) || (cosEn < -0.85) || b_tmp.cos(att_tmp) < -0.5) 
 	{
 		/*_p[0] = -_p[0];
 		_p[4] = -_p[4];
@@ -514,23 +552,27 @@ Vector2 ScoutController::unitPVal(EnemyUnit& u, BWAPI::Unit* s)
   }
 
 	// Unit's radius
-	int r = (ut.dimensionRight() + ut.dimensionLeft() + ut.dimensionUp() + ut.dimensionDown())/2;
+  double r =  sqrt(1.0*ut.dimensionRight()*ut.dimensionRight() + ut.dimensionLeft()*ut.dimensionLeft())/2 + 
+              sqrt(1.0*ut.dimensionUp()*ut.dimensionUp() + ut.dimensionDown()*ut.dimensionDown())/2;
 	if (u.isInvincible()) {
 		// Mineral and other indestructive obstacle
 		if (c.getApproxDistance(p) < _p[2]) {
-			return obsVortexPotential(u->getPosition(), p, c, r*r)*_p[0] + obsSourcePotential(u->getPosition(), p, c, r*r)*_p[1];;
+			return obsVortexPotential(u->getPosition(), p, c, r*r)*_p[0]*1.2 + obsSourcePotential(u->getPosition(), p, c, r*r)*_p[1]*1.2;
 		} else {
-			return obsVortexPotential(u->getPosition(), p, c, r*r)*_p[0] - obsSourcePotential(u->getPosition(), p, c, r*r)*_p[1];;
+			return obsVortexPotential(u->getPosition(), p, c, r*r)*_p[0]*1.2 - obsSourcePotential(u->getPosition(), p, c, r*r)*_p[1]*1.2;
 		}
 
 		//return vortexPotential(u->getPosition(), p)*_p[6];
-  } else if(ut.isBuilding() && !u->isLifted() && !ut.canAttack() && ut != UnitTypes::Terran_Bunker){
+  } else if(ut.isBuilding() &&
+            !u->isLifted() &&
+            (!ut.canAttack() || u->isBeingConstructed() || u->isMorphing()) &&
+            ut != UnitTypes::Terran_Bunker){
 		//Broodwar->drawCircleMap(u->getPosition().x(), u->getPosition().y(), 2, Colors::Red, true);
 		//Broodwar->drawCircleMap(u->getPosition().x(), u->getPosition().y(), u->getPosition().getDistance(s->getPosition()), Colors::Orange);
 		if (c.getApproxDistance(p) < _p[2]) {
-			return obsVortexPotential(u->getPosition(), p, c, r*r)*_p[0] + obsSourcePotential(u->getPosition(), p, c, r*r)*_p[1];;
+			return obsVortexPotential(u->getPosition(), p, c, r*r)*_p[0]*1.2 + obsSourcePotential(u->getPosition(), p, c, r*r)*_p[1]*1.2;
 		} else {
-			return obsVortexPotential(u->getPosition(), p, c, r*r)*_p[0] - obsSourcePotential(u->getPosition(), p, c, r*r)*_p[1];;
+			return obsVortexPotential(u->getPosition(), p, c, r*r)*_p[0]*1.2 - obsSourcePotential(u->getPosition(), p, c, r*r)*_p[1]*1.2;
 		}
 		//return vortexPotential(u->getPosition(), p)*_p[6];
 	}
@@ -539,7 +581,8 @@ Vector2 ScoutController::unitPVal(EnemyUnit& u, BWAPI::Unit* s)
     return needlePotentialVal(u.getPosition(), p, s->getPosition(), (_enBunker[u->getUnit()].groundWeapon().maxRange() + 48)*(1.0/r))*_p[7]*4;
   }
 	else if(ut.canAttack() && 
-		      (!ut.isWorker() || u->getTarget()==s)) {
+		      (!ut.isWorker() || u->getTarget()==s) &&
+          u->getPosition().getApproxDistance(p) < ut.groundWeapon().maxRange() + 128) {
 			// If is can ttacking enemy unit or worker who aim at our scout's position
 			Unit* eTarget = u.getTarget();
 			int atkRange = ut.groundWeapon().maxRange() + 16;
@@ -552,9 +595,9 @@ Vector2 ScoutController::unitPVal(EnemyUnit& u, BWAPI::Unit* s)
 	}
 	// else
 	if (c.getApproxDistance(p) < _p[2]) {
-		return obsVortexPotential(u->getPosition(), p, c, r*r)*_p[0] + obsSourcePotential(u->getPosition(), p, c, r*r)*_p[1];;
+		return obsVortexPotential(u->getPosition(), p, c, r*r)*_p[0]*1.2 + obsSourcePotential(u->getPosition(), p, c, r*r)*_p[1]*1.2;
 	} else {
-		return obsVortexPotential(u->getPosition(), p, c, r*r)*_p[0] - obsSourcePotential(u->getPosition(), p, c, r*r)*_p[1];;
+		return obsVortexPotential(u->getPosition(), p, c, r*r)*_p[0]*1.2 - obsSourcePotential(u->getPosition(), p, c, r*r)*_p[1]*1.2;
 	}
 }
 
@@ -562,60 +605,74 @@ Vector2 ScoutController::unitPVal(EnemyUnit& u, BWAPI::Unit* s)
 Vector2 ScoutController::regionPVal(BWTA::Region* r, BWAPI::Unit* s)
 {
   Position c = r->getCenter();
-  //if (!r->getBaseLocations().empty()) c = (*r->getBaseLocations().begin())->getPosition();
+  if (!r->getBaseLocations().empty()) c = (*r->getBaseLocations().begin())->getPosition();
 	Position p = s->getPosition();
-  int d2Center = c.getApproxDistance(p);
-  _p[2] = r->getPolygon().getPerimeter()/(M_PI * 7);
+  BWTA::Region* curReg = BWTA::getRegion(p);
+  int d2Center = curReg->getCenter().getApproxDistance(p);
+  double pullCorr =  curReg == _targetReg ? 0 : 20; 
+  double sorCorr = curReg == _targetReg ? 1 : 0;
+  double vorCorr = curReg == _targetReg ? 1 : d2Center < _p[2] ? 0.01 : 0.01;
+  //_p[2] = r->getPolygon().getPerimeter()/(M_PI * 7);
+  _p[2] = s->getType().sightRange() + 32;
+	Vector2 cVor = vortexPotential(curReg->getCenter(),p)*_p[0]*vorCorr;
+	Vector2 cSor = sourcePotential(curReg->getCenter(),p)*_p[1]*sorCorr;
+	Vector2 tSor = sourcePotential(c,p)*_p[1]*pullCorr;
+  //if (cVor.cos(tSor) > 0.6)
+  //{
+  //  _scouts[s].second *= -1;
+  //  Broodwar->printf("\x1D %d", _scouts[s].second);
+  //}
 #ifdef _SCOUT_DEBUG
-	Vector2 vor, sor;
-	list<Vector2> list_r;
-	vor = vortexPotential(c,p)*_p[0];
-	sor = sourcePotential(c,p)*_p[1];
-	list_r.push_back(vor*100);
+  _region_p[s].clear();
+	_region_p[s].push_back(cVor*100);
 #endif
 	if (d2Center < _p[2]) {
 #ifdef _SCOUT_DEBUG
-		list_r.push_back(sor*100);
-		_region_p[s] = list_r;
+		_region_p[s].push_back(cSor*100);
+		_region_p[s].push_back(-tSor*100);
 #endif
-		return vortexPotential(c,p)*_p[0] + sourcePotential(c,p)*_p[1];
+		return cVor + cSor;
 	}
 	else {
 #ifdef _SCOUT_DEBUG
-		list_r.push_back(-sor*100);
-		_region_p[s] = list_r;
+		_region_p[s].push_back(-cSor*100);
+		_region_p[s].push_back(-tSor*100);
 #endif
-		return vortexPotential(c,p)*_p[0] - sourcePotential(c,p)*_p[1];
+		return cVor - cSor;
 	}
 }
 
 /** Find all close points and calculate sum of potential emit from them 
 * Should I change it to B(z) = z^n ???
 */
-Vector2 ScoutController::borderPVal( BWTA::Region* r, BWAPI::Unit* s)
+Vector2 ScoutController::borderPVal(BWTA::Region* r, BWAPI::Unit* s, bool fGoThrough)
 {
   const BWTA::Polygon border = r->getPolygon();
   const list<Position> detailBorder =  getBorder(r);
 	Position p = s->getPosition();
 	int numBorder = 0;
 	Vector2 b;
-  int borderCo = r->getPolygon().getPerimeter()/(M_PI * 15);
-  _p[3] = borderCo > _p[3]? borderCo : _p[3];
+  int borderCo = r->getPolygon().getPerimeter()/(M_PI * 14);
+  _p[3] = borderCo > 96 ? borderCo : 96;
+  double sorCorr = BWTA::getRegion(p) == _targetReg ? 1 : 0;
+  Chokepoint* chkPoint = BWTA::getNearestChokepoint(p);
+  bool fInactiveBorder = p.getApproxDistance(chkPoint->getCenter()) < _p[3] + 128;
 #ifdef _SCOUT_DEBUG
 	list<Vector2> list_b;
 #endif
 	for (list<Position>::const_iterator i = detailBorder.begin(); i != detailBorder.end(); i++) {
 		if (p.getApproxDistance(*i) < _p[3]) {
-      Chokepoint* chkPoint = BWTA::getNearestChokepoint(*i);
-      /*if (chkPoint && i->getApproxDistance(chkPoint->getCenter()) <= chkPoint->getWidth()/2)
-        continue;*/
+      if (fGoThrough && fInactiveBorder)
+      {
+        continue;
+      }
 #ifdef _SCOUT_DEBUG
-			list_b.push_back(vortexPotential(*i, p)*_p[4]*100 + sourcePotential(*i, p)*_p[5]*100);
+			list_b.push_back(vortexPotential(*i, p)*_p[4]*100 + sourcePotential(*i, p)*_p[5]*100*sorCorr);
 			Broodwar->drawCircleMap(i->x(), i->y(), 2, Colors::Red, true);
 			//Broodwar->drawCircleMap(i->x(), i->y(), p.getApproxDistance(*i), Colors::Yellow);
 			//list_b.push_back(vortexPotential(*i, p)*_p[4]*100);
 #endif
-			b += vortexPotential(*i, p)*_p[4] + sourcePotential(*i, p)*_p[5];
+			b += vortexPotential(*i, p)*_p[4] + sourcePotential(*i, p)*_p[5]*sorCorr;
 			numBorder++;
 		}
 	}
@@ -636,6 +693,20 @@ Vector2 ScoutController::borderPVal( BWTA::Region* r, BWAPI::Unit* s)
 	if(!list_b.empty()) _border_p[s] = list_b;
 #endif
 	return b;
+}
+
+Vector2 ScoutController::attractPointPVal (BWAPI::Unit* s)
+{
+  Vector2 re;
+	Position sp = s->getPosition();
+  for each (Position p in _attractPoints)
+  {
+#ifdef _SCOUT_DEBUG
+    _region_p[s].push_back(sourcePotential(p, sp)*(-1000)*100);
+#endif // _SCOUT_DEBUG
+    re += sourcePotential(p, sp)*(-1000);
+  }
+  return re;
 }
 
 /** V(z) = ilog(z-z_s) */
