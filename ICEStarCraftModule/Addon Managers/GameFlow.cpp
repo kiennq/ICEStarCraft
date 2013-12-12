@@ -943,6 +943,7 @@ void GameFlow::onFrameTT()
 			if (Broodwar->self()->minerals() > 60 &&
 					Broodwar->getFrameCount()%(24*5) == 0 &&
 					Broodwar->self()->supplyUsed()/2 <= 150 &&
+          buildOrder->getPlannedCount(UnitTypes::Terran_Siege_Tank_Tank_Mode) + buildOrder->getPlannedCount(UnitTypes::Terran_Siege_Tank_Siege_Mode) >= 3  &&
 					buildOrder->getPlannedCount(UnitTypes::Terran_Vulture,65) < 20)
 			{
 				buildOrder->buildAdditional(mInfo->countUnitNum(UnitTypes::Terran_Factory,1),UnitTypes::Terran_Vulture,69);

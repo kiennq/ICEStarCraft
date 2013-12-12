@@ -695,7 +695,7 @@ void ArmyManager::ArmyGuard()
 	state = ICEStarCraft::ArmyGuard;
 	attackTarget = new AttackTarget(NULL,setPoint,"NoAttackTarget");
 
-	if (Broodwar->getFrameCount()%(24*3) != 9)
+	if (Broodwar->getFrameCount()%(10) != 9)
 	{
 		return;
 	}
