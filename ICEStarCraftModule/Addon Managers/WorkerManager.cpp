@@ -1246,14 +1246,17 @@ void WorkerManager::autoTrainSCV()
 		this->_buildOrderManager->build(need,UnitTypes::Terran_SCV,this->_autoBuildPriority+30);
 	}
 
-	if (Broodwar->self()->allUnitCount(UnitTypes::Terran_SCV) < need && Broodwar->getFrameCount()%24 == 0)
+	if (MentalClass::create()->STflag != MentalClass::PtechCarrier)
 	{
-		for each (Unit* u in Broodwar->self()->getUnits())
+		if (Broodwar->self()->allUnitCount(UnitTypes::Terran_SCV) < need && Broodwar->getFrameCount()%24 == 0)
 		{
-			if (u->getType() == UnitTypes::Terran_Command_Center && u->isCompleted() && !u->isTraining() && !u->isConstructing())
+			for each (Unit* u in Broodwar->self()->getUnits())
 			{
-				u->train(UnitTypes::Terran_SCV);
-				//Broodwar->printf("Auto train SCV");
+				if (u->getType() == UnitTypes::Terran_Command_Center && u->isCompleted() && !u->isTraining() && !u->isConstructing())
+				{
+					u->train(UnitTypes::Terran_SCV);
+					//Broodwar->printf("Auto train SCV");
+				}
 			}
 		}
 	}

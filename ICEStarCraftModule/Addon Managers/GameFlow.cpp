@@ -805,7 +805,7 @@ void GameFlow::onFrameTT()
 			mental->marineRushOver = true;
 
 			if (buildOrder->getPlannedCount(UnitTypes::Terran_Barracks,100) < 1 && Broodwar->self()->supplyUsed()/2 >= 10)
-				buildOrder->build(1,UnitTypes::Terran_Barracks,130);
+				buildOrder->build(1,UnitTypes::Terran_Barracks,130,terrainManager->bbPos);
 
 			if (buildOrder->getPlannedCount(UnitTypes::Terran_Refinery,99) < 1 && Broodwar->self()->supplyUsed()/2 >= 12)
 				buildOrder->build(1,UnitTypes::Terran_Refinery,125);
@@ -839,7 +839,11 @@ void GameFlow::onFrameTT()
 					}
 				}
 
-				if (bunkerPosition)
+				if (terrainManager->buPos != TilePositions::None)
+				{
+					buildOrder->build(1,UnitTypes::Terran_Bunker,98,terrainManager->buPos);
+				}
+				else if (bunkerPosition)
 				{
 					buildOrder->build(1,UnitTypes::Terran_Bunker,98,*bunkerPosition);
 				}
@@ -912,7 +916,7 @@ void GameFlow::onFrameTT()
 		//first check buildings for stage 2
 		if (mInfo->countUnitNum(UnitTypes::Terran_Machine_Shop,1) > 0)
 		{
-			if (_14CC_ && buildOrder->getPlannedCount(UnitTypes::Terran_Siege_Tank_Tank_Mode,72) < 1)
+			if (buildOrder->getPlannedCount(UnitTypes::Terran_Siege_Tank_Tank_Mode,72) < 1)
 			{
 				buildOrder->build(1,UnitTypes::Terran_Siege_Tank_Tank_Mode,72);
 			}

@@ -78,7 +78,7 @@ void ICEStarCraftModule::onStart()
 
 	this->buildOrderManager  = new BuildOrderManager(this->buildManager,this->techManager,this->upgradeManager,workerManager,this->supplyManager);
 	//this->buildOrderManager->setDebugMode(false);
-	if (Broodwar->enemy()->getRace() == Races::Protoss)
+	if (Broodwar->enemy()->getRace() != Races::Zerg)
 	{
 		this->buildManager->setBuildDistance(0);
 	}
@@ -323,7 +323,7 @@ void ICEStarCraftModule::onFrame()
 	//CalculationTime["TechManager"] = (float)(1000*(clock()-t))/CLOCKS_PER_SEC;
 	
 	t = clock();
-	if (Broodwar->enemy()->getRace() == Races::Protoss)
+	if (Broodwar->enemy()->getRace() != Races::Zerg)
 	{
 		if ((SelectAll()(Supply_Depot).size() > 1 && SelectAll()(Bunker).size() > 0) ||	Broodwar->getFrameCount() > 24*60*4)
 		{

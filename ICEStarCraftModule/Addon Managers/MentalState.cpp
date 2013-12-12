@@ -248,18 +248,18 @@ void MentalClass::counterMeasure()
 					bom->build(1,UnitTypes::Terran_Bunker,106,terrainManager->buPos);
 				}//_T_
 
-				if (Broodwar->getFrameCount()>=24*60*5 && !reactionFinish && Broodwar->enemy()->getRace() == Races::Protoss)
-				{
-					if (bom->getPlannedCount(UnitTypes::Terran_Marine,40)<8)
-						bom->buildAdditional(1,UnitTypes::Terran_Marine,66);
-					//build another bunker
-					if (bom->getPlannedCount(UnitTypes::Terran_Bunker,60)<2 && gf->bunkerPosition)
-					{
-						bom->buildAdditional(1,UnitTypes::Terran_Bunker,71,*gf->bunkerPosition);
-					}
-					reactionFinish = true;
-					return;
-				}
+				//if (Broodwar->getFrameCount()>=24*60*5 && !reactionFinish && Broodwar->enemy()->getRace() == Races::Protoss)
+				//{
+				//	if (bom->getPlannedCount(UnitTypes::Terran_Marine,40)<8)
+				//		bom->buildAdditional(1,UnitTypes::Terran_Marine,66);
+				//	//build another bunker
+				//	if (bom->getPlannedCount(UnitTypes::Terran_Bunker,60)<2 && gf->bunkerPosition)
+				//	{
+				//		bom->buildAdditional(1,UnitTypes::Terran_Bunker,71,*gf->bunkerPosition);
+				//	}
+				//	reactionFinish = true;
+				//	return;
+				//}
 				break;
 			}
 		case PrushZealot:
@@ -1024,7 +1024,7 @@ void MentalClass::attackTimingCheck()
 				{
 					goAttack = true;
 				}
-				else if (Broodwar->self()->supplyUsed()/2 >= 180 || Broodwar->getFrameCount() > 24*60*50)
+				else if (Broodwar->self()->supplyUsed()/2 >= 180 || Broodwar->getFrameCount() > 24*60*45)
 				{
 					goAttack = true;
 				}

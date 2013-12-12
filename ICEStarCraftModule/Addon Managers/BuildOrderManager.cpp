@@ -1080,8 +1080,8 @@ pair<int, BuildOrderManager::Resources> BuildOrderManager::reserveResources(Meta
 		t=nextFreeTime(builder,unitType);
 	pair<int, Resources> ret;
 	ret.first=t;
-	ret.second.minerals=unitType.mineralPrice()*2/3;
-	ret.second.gas=unitType.gasPrice()*2/3;
+	ret.second.minerals=unitType.mineralPrice();//*2/3;
+	ret.second.gas=unitType.gasPrice();//*2/3;
 	reserveResources(ret);
 	return ret;
 }
