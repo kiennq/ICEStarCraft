@@ -367,7 +367,11 @@ void BaseClass::scvDefendBase()
 
 	for each (Unit* u in Broodwar->self()->getUnits())
 	{
-		if (u->isCompleted() && u->getType() == UnitTypes::Terran_SCV && !u->isConstructing() && !u->isRepairing())
+		if (u->isCompleted() &&
+        u->getType() == UnitTypes::Terran_SCV &&
+        !u->isConstructing() &&
+        !u->isRepairing() &&
+        (!worker->getArbitrator()->hasBid(u) || worker->getArbitrator()->getHighestBidder(u).first==worker))
 		{
 			if (base == BWTA::getStartLocation(Broodwar->self()))
 			{

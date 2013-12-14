@@ -82,12 +82,14 @@ void WorkerManager::onOffer(std::set<BWAPI::Unit*> units)
 	for each (Unit* u in units)
 	{
 		arbitrator->accept(this, u);
+    addUnit(u);
 		_workerUnits.insert(u);
 	}
 }
 
 void WorkerManager::onRevoke(BWAPI::Unit* u, double bid)
 {
+  _workerUnits.erase(u);
 	_repairGroup.erase(u);
 }
 
@@ -1271,7 +1273,8 @@ void WorkerManager::onUnitDiscover(BWAPI::Unit* u)
 
 	if (u->getPlayer() == Broodwar->self() && u->getType().isWorker())
 	{
-		addUnit(u);	 
+		//addUnit(u);	 
+    arbitrator->setBid(this, u, 40);
 	}
 }
 

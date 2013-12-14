@@ -25,6 +25,7 @@ typedef std::map<BWAPI::Unit*, BWTA::BaseLocation*> WorkerToBaseMap;
 class WorkerManager : public Arbitrator::Controller<BWAPI::Unit*,double>
 {
 public:
+  typedef Arbitrator::Arbitrator<BWAPI::Unit*,double>* PArbitrator;
 
 	class WorkerData
 	{
@@ -47,7 +48,8 @@ public:
 	static WorkerManager* create();
 	static void destroy();
 	
-	void setArbitrator(Arbitrator::Arbitrator<BWAPI::Unit*,double>* arbitrator) {this->arbitrator = arbitrator;}
+	void setArbitrator(PArbitrator arbitrator) {this->arbitrator = arbitrator;}
+  PArbitrator getArbitrator() {return arbitrator;}
 
 	std::string getName() const {return "WorkerManager";}
 
@@ -103,7 +105,7 @@ protected:
 
 private:
 
-	Arbitrator::Arbitrator<BWAPI::Unit*,double>* arbitrator;
+	PArbitrator arbitrator;
 
 	int _repairGroupSize;
 	//ScoutManager* scoutManager;
