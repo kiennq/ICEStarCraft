@@ -385,7 +385,7 @@ void ArmyManager::updateSetPoint()
 	}
 	else
 	{
-		clock_t t = clock();
+		//clock_t t = clock();
 		vector<TilePosition> path = BWTA::getShortestPath(TilePosition(setPoint),TilePosition(terrainManager->eSecondChokepoint->getCenter()));
 		//Broodwar->printf("getShortestPath %.0f",(float)(1000*(clock()-t)/CLOCKS_PER_SEC));
 		if (path.empty() || path.size() < 5)
@@ -774,7 +774,9 @@ void ArmyManager::ArmyDefend()
 		Unit* target = mental->enemyInSight.getNearest(setPoint);
 		Position targetPos = (target && target->exists()) ? target->getPosition() : setPoint;
 
-		if (targetPos.getApproxDistance(setPoint) < 32*10 && BWTA::getRegion(targetPos) != BWTA::getRegion(Broodwar->self()->getStartLocation()))
+		if (targetPos.getApproxDistance(setPoint) < 32*10 &&
+			  BWTA::getRegion(targetPos) != BWTA::getRegion(Broodwar->self()->getStartLocation()) &&
+				BWTA::getRegion(targetPos) != TerrainManager::create()->mNearestBase->getRegion())
 		{
 			targetPos = setPoint;
 		}
@@ -1026,6 +1028,21 @@ UnitGroup ArmyManager::getAttackTargets(UnitGroup& enemies, BWAPI::Position p, i
 	}
 
 	return targets;
+}
+
+string ArmyManager::getArmyStateString() const
+{
+	switch (state)
+	{
+	case ICEStarCraft::ArmyGuard:
+		return "ArmyGuard";
+	case ICEStarCraft::ArmyDefend:
+		return "ArmyDefend";
+	case ICEStarCraft::ArmyAttack:
+		return "ArmyAttack";
+	default:
+		return "None";
+	}
 }
 
 void ArmyManager::showDebugInfo()

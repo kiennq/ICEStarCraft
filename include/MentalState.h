@@ -83,6 +83,7 @@ public:
 	eStrategyType STflag;
 	bool marineRushOver;
 
+	std::string getSTflag();
 	void showDebugInfo();
 
 protected:

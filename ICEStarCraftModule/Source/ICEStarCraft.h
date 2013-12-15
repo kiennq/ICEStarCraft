@@ -29,9 +29,9 @@
 #include "PFFunctions.h"
 #include "Config.h"
 
-#define _BATTLE_DEBUG
+//#define _BATTLE_DEBUG
 //#define _LOG_TO_FILE
-#define _TIME_DEBUG
+//#define _TIME_DEBUG
 
 extern bool analyzed;
 extern BWTA::Region* home;

@@ -949,14 +949,14 @@ std::set<BWAPI::Unit*> WorkerManager::selectSCV(int n)
 
 void WorkerManager::workerRepair()
 {
-	//Broodwar->drawTextScreen(0,20,"Repair team: %d/%d",this->repairGroup.size(),repairGroupSize);
-	//Broodwar->drawTextScreen(0,30,"Repair list: %d",this->repairList.size());
+	//Broodwar->drawTextScreen(0,20,"Repair team: %d/%d",this->_repairGroup.size(),_repairGroupSize);
+	//Broodwar->drawTextScreen(0,30,"Repair list: %d",this->_repairList.size());
 	
 	for each (Unit* u in this->_repairGroup)
 	{
-		Position p = u->getPosition();
+	  Position p = u->getPosition();
 		UnitType ut = u->getType();
-		//Broodwar->drawBoxMap(p.x()-ut.dimensionLeft()/2,p.y()-ut.dimensionUp()/2,p.x()+ut.dimensionRight()/2,p.y()+ut.dimensionDown()/2,Colors::Green,true);
+	  Broodwar->drawBoxMap(p.x()-ut.dimensionLeft()/2,p.y()-ut.dimensionUp()/2,p.x()+ut.dimensionRight()/2,p.y()+ut.dimensionDown()/2,Colors::Green,true);
 	}
 
 	for each (Unit* u in this->_repairList)

@@ -65,12 +65,13 @@ public:
 	void update();
 	void onUnitDestroy(BWAPI::Unit*);
 
-	UnitGroup               getAttackers()          {return attackers;}
-	AttackTarget*           getAttackTarget() const {return attackTarget;}
-	ICEStarCraft::ArmyState getArmyState()    const {return state;}
-	BWAPI::Position         getSetPoint()     const {return setPoint;}
-	BWAPI::Position         getSiegePoint()   const {return siegePoint;}
-	BWAPI::Position         getGatherPoint()  const {return gatherPoint;}
+	UnitGroup               getAttackers()             {return attackers;}
+	AttackTarget*           getAttackTarget()    const {return attackTarget;}
+	ICEStarCraft::ArmyState getArmyState()       const {return state;}
+	std::string             getArmyStateString() const;
+	BWAPI::Position         getSetPoint()        const {return setPoint;}
+	BWAPI::Position         getSiegePoint()      const {return siegePoint;}
+	BWAPI::Position         getGatherPoint()     const {return gatherPoint;}
 
 	// get enemy units that we can/should attack
 	static bool isAttackTarget(BWAPI::Unit*);

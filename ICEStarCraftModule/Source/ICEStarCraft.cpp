@@ -14,50 +14,6 @@ void ICEStarCraftModule::onStart()
 {
 	if (Broodwar->isReplay()) return;
 
-#ifdef _LOG_TO_FILE
-	ifstream _in1("retryTimesMax.txt", ios::in);
-	if (_in1.is_open())
-	{
-		_in1 >> reTryTimesMax;
-		_in1.close();
-	}
-	else
-	{
-		reTryTimesMax = 50;
-	}	
-
-	reTryTimes = -1;
-	ifstream _in("temp.txt", ios::in);
-	if (_in.is_open())
-	{
-		_in >> reTryTimes;
-		_in.close();
-	}
-
-	if(reTryTimes == -1)
-	{
-		ofstream _out("ICEStarCraft_log.csv", ios::app);
-		_out << Broodwar->mapFileName().c_str() << endl;
-		_out << "Win/Lose,FrameCount,UnitScore,KillScore,BuildingScore,RazingScore" << endl;
-		_out.close();
-		reTryTimes = reTryTimesMax;
-	}
-
-	reTryTimes--;
-	fstream _out("temp.txt", ios::out);
-	_out << reTryTimes;
-	_out.close();
-	if (reTryTimes < 0)
-	{
-		Broodwar->pauseGame();
-		//return;
-	}
-	else
-	{
-		Broodwar->printf("%d games left...",reTryTimes+1);
-	}
-#endif
-
 	BWTA::readMap();
 	BWTA::analyze();
 	analyzed=true;
@@ -141,23 +97,6 @@ void ICEStarCraftModule::onStart()
 
 void ICEStarCraftModule::onEnd(bool isWinner)
 {
-#ifdef _LOG_TO_FILE
-	if (reTryTimes >= 0)
-	{
-		//_out << "Win/Lose,FrameCount,UnitScore,KillScore,BuildingScore,RazingScore" << endl;
-		ofstream _out("ICEStarCraft_log.csv", ios::app);
-		string result = Broodwar->self()->isVictorious() ? "win" : "lose";
-		_out << result.c_str() << ",";
-		_out << Broodwar->getFrameCount() << ",";
-		_out << Broodwar->self()->getUnitScore() << ",";
-		_out << Broodwar->self()->getKillScore() << ",";
-		_out << Broodwar->self()->getBuildingScore() << ",";
-		_out << Broodwar->self()->getRazingScore() << ",";
-		_out << endl;
-		_out.close();
-	}
-#endif
-
 	MentalClass::destroy();
 	WorkerManager::destroy();
 	ScoutManager::destroy();
@@ -227,16 +166,15 @@ void ICEStarCraftModule::onFrame()
 	this->arbitrator.update();
 	this->upgradeManager->update();
 	this->techManager->update();
-	if (Broodwar->enemy()->getRace() == Races::Protoss)
+	if (Broodwar->enemy()->getRace() != Races::Zerg)
 	{
 		if ((SelectAll()(Supply_Depot).size() > 1 && SelectAll()(Bunker).size() > 0) ||	Broodwar->getFrameCount() > 24*60*4)
 		{
 			this->buildManager->setBuildDistance(1);
 		}
 	}
-#ifdef _BATTLE_DEBUG
 	showDebugInfo();
-#endif // _BATTLE_DEBUG
+
 #endif //_TIME_DEBUG
 
 
@@ -773,6 +711,11 @@ void ICEStarCraftModule::onUnitComplete(BWAPI::Unit *unit)
 
 void ICEStarCraftModule::showDebugInfo()
 {
+	Broodwar->drawTextScreen(5,15,"Time: %02d:%02d",(Broodwar->getFrameCount()/24)/60,(Broodwar->getFrameCount()/24)%60);
+	Broodwar->drawTextScreen(5,25,"%s | %s",ArmyManager::create()->getArmyStateString().c_str(),ArmyManager::create()->getAttackTarget()->getType().c_str());
+	Broodwar->drawTextScreen(5,35,"EnemyOpening: %s",MentalClass::create()->getSTflag().c_str());
+	Broodwar->drawTextScreen(5,45,"EnemyInSight: %d",MentalClass::create()->enemyInSight.size());
+
 	if (!_showAllDebug) return;
 	ArmyManager::create()->showDebugInfo();
 	BattleManager::create()->showDebugInfo();

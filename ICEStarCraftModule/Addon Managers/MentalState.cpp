@@ -429,7 +429,7 @@ void MentalClass::counterMeasure()
 						 myInfo->countUnitNum(UnitTypes::Terran_Marine,1) < 4)
 					{
 						// train marine
-						if (bom->getPlannedCount(UnitTypes::Terran_Marine,100) < 15)
+						if (bom->getPlannedCount(UnitTypes::Terran_Marine,80) < 15)
 						{
 							bom->build(15,UnitTypes::Terran_Marine,80);
 						}
@@ -472,6 +472,22 @@ void MentalClass::counterMeasure()
 			}
 		case TrushMarine:
 			{
+				if (!reactionFinish)
+				{
+					if (bom->getPlannedCount(UnitTypes::Terran_Marine,80) < 8)
+					{
+						bom->build(8,UnitTypes::Terran_Marine,80);
+					}
+					else
+					{
+						reactionFinish = true;
+					}
+
+					if (Broodwar->getFrameCount() > 24*60*6)
+					{
+						reactionFinish = true;
+					}
+				}
 			}
 			break;
 		}
@@ -1030,6 +1046,43 @@ void MentalClass::attackTimingCheck()
 				}
 			}
 		}
+	}
+}
+
+string MentalClass::getSTflag()
+{
+	switch (STflag)
+	{
+	case MentalClass::NotSure:
+		return "Unknown";
+	case MentalClass::PrushZealot:
+		return "PrushZealot";
+	case MentalClass::PrushDragoon:
+		return "PrushDragoon";
+	case MentalClass::PtechDK:
+		return "PtechDK";
+	case MentalClass::PtechReaver:
+		return "PtechReaver";
+	case MentalClass::BeCareful:
+		return "BeCareful";
+	case MentalClass::P2Base:
+		return "P2Base";
+	case MentalClass::PtechCarrier:
+		return "PtechCarrier";
+	case MentalClass::ZrushZergling:
+		return "ZrushZergling";
+	case MentalClass::Ztech:
+		return "Ztech";
+	case MentalClass::Zexpansion:
+		return "Zexpansion";
+	case MentalClass::TrushMarine:
+		return "TrushMarine";
+	case MentalClass::Ttech:
+		return "Ttech";
+	case MentalClass::Texpansion:
+		return "Texpansion";
+	default:
+		return "Unknown";
 	}
 }
 
