@@ -752,10 +752,19 @@ void MentalClass::baseUnderAttack()
 	}
 
 	enemyInSight.clear();
+	set<Position> centers;
 	for each (Unit* cc in SelectAll(UnitTypes::Terran_Command_Center))
 	{
-		int r = cc->getTilePosition() == Broodwar->self()->getStartLocation() ? 32*25 : 32*20;
-		for each (Unit* u in Broodwar->getUnitsInRadius(cc->getPosition(),r))
+		centers.insert(cc->getPosition());
+	}
+	if (terrainManager->mNearestBase)      centers.insert(terrainManager->mNearestBase->getPosition());
+	if (terrainManager->mFirstChokepoint)  centers.insert(terrainManager->mFirstChokepoint->getCenter());
+	if (terrainManager->mSecondChokepoint) centers.insert(terrainManager->mSecondChokepoint->getCenter());
+
+	for each (Position p in centers)
+	{
+		int r = TilePosition(p).getDistance(Broodwar->self()->getStartLocation()) < 3 ? 32*25 : 32*20;
+		for each (Unit* u in Broodwar->getUnitsInRadius(p,r))
 		{
 			if (u->getPlayer() != Broodwar->enemy())
 			{
@@ -763,18 +772,34 @@ void MentalClass::baseUnderAttack()
 			}
 
 			UnitType type = u->getType();
-			if (type == UnitTypes::Protoss_Scarab || type == UnitTypes::Terran_Vulture_Spider_Mine || type == UnitTypes::Terran_Nuclear_Missile || type == UnitTypes::Protoss_Interceptor)
+			if (type == UnitTypes::Protoss_Scarab
+			    ||
+			    type == UnitTypes::Terran_Vulture_Spider_Mine
+			    ||
+			    type == UnitTypes::Terran_Nuclear_Missile
+			    ||
+			    type == UnitTypes::Protoss_Interceptor)
 			{
 				continue;
 			}
 
-			if (type.canAttack() || type == UnitTypes::Protoss_Carrier || type == UnitTypes::Protoss_Reaver || type == UnitTypes::Terran_Bunker || type == UnitTypes::Protoss_Shuttle)
+			if (type.canAttack()
+			    ||
+			    type == UnitTypes::Protoss_Carrier
+			    ||
+			    type == UnitTypes::Protoss_Reaver
+			    ||
+			    type == UnitTypes::Terran_Bunker
+			    ||
+			    type == UnitTypes::Protoss_Shuttle
+			    ||
+			    type == UnitTypes::Terran_Dropship)
 			{
 				enemyInSight.insert(u);	
 			}
 		}
 	}
-	
+
 	for each(Unit* u in Broodwar->self()->getUnits())
 	{
 		if (!u->getType().isBuilding())

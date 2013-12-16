@@ -737,7 +737,7 @@ void ICEStarCraftModule::showDebugInfo()
 			Broodwar->drawTextMap(u->getPosition().x(),u->getPosition().y(),"%s",u->getOrder().getName().c_str());
       if (arbitrator.hasBid(u))
       {
-        Broodwar->drawTextMap(u->getPosition().x(),u->getPosition().y()-5,"%s %.2f", arbitrator.getHighestBidder(u).first->getName().c_str(), arbitrator.getHighestBidder(u).second);
+        Broodwar->drawTextMap(u->getPosition().x(),u->getPosition().y()-10,"%s %.2f", arbitrator.getHighestBidder(u).first->getName().c_str(), arbitrator.getHighestBidder(u).second);
       }
 			
 			for each (Unit* e in Broodwar->enemy()->getUnits())

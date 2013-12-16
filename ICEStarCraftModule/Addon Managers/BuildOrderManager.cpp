@@ -1260,7 +1260,8 @@ void BuildOrderManager::autoExpand(int priority,int maxlimit)
 			  ||
 				i == terrainManager->eNearestBase
 			  ||
-			  !SelectAllEnemy()(canAttack,Carrier,Reaver,Bunker).not(Vulture_Spider_Mine,Scarab,Interceptor).inRadius(32*6,i->getPosition()).empty())
+			  (i != terrainManager->mNearestBase &&
+				 !SelectAllEnemy()(canAttack,Carrier,Reaver,Bunker).not(Vulture_Spider_Mine,Scarab,Interceptor).inRadius(32*6,i->getPosition()).empty()))
 		{
 			continue;
 		}

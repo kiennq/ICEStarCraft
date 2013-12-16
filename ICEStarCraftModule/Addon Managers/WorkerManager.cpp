@@ -949,7 +949,7 @@ std::set<BWAPI::Unit*> WorkerManager::selectSCV(int n)
 
 void WorkerManager::workerRepair()
 {
-	//Broodwar->drawTextScreen(0,20,"Repair team: %d/%d",this->_repairGroup.size(),_repairGroupSize);
+	//Broodwar->drawTextScreen(433,290,"Repair team: %d/%d",this->_repairGroup.size(),_repairGroupSize);
 	//Broodwar->drawTextScreen(0,30,"Repair list: %d",this->_repairList.size());
 	
 	for each (Unit* u in this->_repairGroup)
@@ -1135,15 +1135,17 @@ void WorkerManager::workerRepair()
 		}
 	}
 
+	int guard = 0;
 	for each (Unit* u in this->_repairGroup)
 	{
-		if (Broodwar->getFrameCount() < 24*60*8 && bunker && !bunker->isUnderAttack())
+		if (Broodwar->getFrameCount() < 24*60*8 && bunker && !bunker->isUnderAttack() && guard < 2)
 		{
 			// order SCVs to wait beside the bunker in early game
 			this->_workerUnits.erase(u);
 			if (!u->isRepairing() && !u->isCarryingMinerals() && !u->isCarryingGas() && u->getPosition().getApproxDistance(bunker->getPosition()) > 32 * 2)
 			{
 				u->move(bunker->getPosition());
+				guard++;
 			}
 		}
 		else if (!_repairList.empty())
@@ -1179,7 +1181,7 @@ void WorkerManager::workerRepair()
 			continue;
 		}
 
-		for each(Unit* repairWorker in _repairGroup)
+		for each (Unit* repairWorker in _repairGroup)
 		{
 			if (!repairTarget->getType().isBuilding())
 			{

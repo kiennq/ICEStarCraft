@@ -1229,7 +1229,7 @@ void MicroUnitControl::tankAttack(BWAPI::Unit* u, BWAPI::Position p, int reachRa
 
 	if (p == siegePoint)
 	{
-		reachRange = 32*4;
+		reachRange = 32*3;
 		BWTA::Region* reg = BWTA::getRegion(p);
 
 		int count = 0;
@@ -1240,17 +1240,13 @@ void MicroUnitControl::tankAttack(BWAPI::Unit* u, BWAPI::Position p, int reachRa
 			{
 				continue;
 			}
-			if (reg && BWTA::getRegion(i->getPosition()) == reg && i->getPosition().getDistance(p) < reachRange)
-			{
-				count++;
-			}
-			else if (i->getPosition().getDistance(p) < reachRange)
+			if (i->getPosition().getDistance(p) <= reachRange && (!reg || BWTA::getRegion(i->getPosition()) == reg))
 			{
 				count++;
 			}
 		}
 
-		if (count > 4)
+		if (count >= 4)
 		{
 			reachRange = 32*6;
 			count = 0;
@@ -1261,17 +1257,13 @@ void MicroUnitControl::tankAttack(BWAPI::Unit* u, BWAPI::Position p, int reachRa
 				{
 					continue;
 				}
-				if (reg && BWTA::getRegion(i->getPosition()) == reg && i->getPosition().getDistance(p) < reachRange)
-				{
-					count++;
-				}
-				else if (i->getPosition().getDistance(p) < reachRange)
+				if (i->getPosition().getDistance(p) <= reachRange && (!reg || BWTA::getRegion(i->getPosition()) == reg))
 				{
 					count++;
 				}
 			}
 			
-			if (count > 8)
+			if (count >= 7)
 			{
 				p = ArmyManager::create()->getSetPoint();
 			}
