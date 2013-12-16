@@ -1196,7 +1196,9 @@ void GameFlow::onFrameTP()
 				buildOrder->buildAdditional(2,UnitTypes::Terran_Marine,68);
 		}
 
-		if ((mInfo->countUnitNum(UnitTypes::Terran_Vulture,2) >= 1 || eInfo->killedEnemyNum > 2) &&
+		if ((mInfo->countUnitNum(UnitTypes::Terran_Vulture,2) >= 1 ||
+          eInfo->killedEnemyNum > 2 ||
+          Broodwar->self()->minerals() > 600) &&
 			  mInfo->countUnitNum(UnitTypes::Terran_Command_Center,1) < 2 &&
 				mInfo->countUnitNum(UnitTypes::Terran_SCV,2) > 14)
 		{

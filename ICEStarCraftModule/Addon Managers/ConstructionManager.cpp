@@ -115,14 +115,18 @@ void ConstructionManager::update()
 		{
 			for(std::set<BWAPI::Unit*>::iterator u = myPlayerUnits.begin(); u != myPlayerUnits.end(); u++)
 			{
-				//if this unit is completed and the right type, and doesn't have an addon, and we aren't already using it
+				// if this unit is completed and the right type, and doesn't have an addon, and we aren't already using it
+        // also we make sure that builder has enough HP
 				if ((*u)->getType()==i->first && this->builders.find(*u)==this->builders.end())
 				{
 					//bid value depends on distance - we like closer builders better
 					double min_dist=1000000;
 					for(std::set<Building*>::iterator b = i->second.begin(); b != i->second.end(); b++)
 					{
-						double dist = (*u)->getPosition().getDistance((*b)->position);
+            // we consider HP into choosing unit too
+						double dist = (*u)->getPosition().getDistance((*b)->position) +
+                          ((*u)->getType().maxHitPoints() - (*u)->getHitPoints())*32;
+                          ;
 						if (dist < min_dist)
 							min_dist = dist;
 					}
@@ -484,6 +488,13 @@ void ConstructionManager::update()
 						//if the building is terran, the worker may have been killed
 						if (u == NULL) //looks like the worker was killed, or revoked. In either case we need to ask for another worker to finish our building
 							buildingsNeedingBuilders[b->type.whatBuilds().first].insert(b);
+            else if (u->getHitPoints() < 15) // if dont have enough hp, remove
+            {
+              this->builders.erase(u);
+              arbitrator->removeBid(this, u);
+              u->haltConstruction();
+              u = b->builderUnit = NULL;
+            }
 						else
 						{
 							//we have a worker, so lets rightClick it on the incomplete building so it can resume construction

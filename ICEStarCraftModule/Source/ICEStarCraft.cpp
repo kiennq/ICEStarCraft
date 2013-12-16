@@ -20,7 +20,10 @@ void ICEStarCraftModule::onStart()
 	
 	Broodwar->printf("%s", Broodwar->mapName().c_str());
 
-	//Broodwar->enableFlag(Flag::UserInput);
+  if (Config::i().DEBUG_ALL())
+  {
+    Broodwar->enableFlag(Flag::UserInput);
+  }
 	Broodwar->setLocalSpeed(0);
 
 	unitGroupManager = UnitGroupManager::create();
@@ -732,6 +735,10 @@ void ICEStarCraftModule::showDebugInfo()
 		if (u->isSelected())
 		{
 			Broodwar->drawTextMap(u->getPosition().x(),u->getPosition().y(),"%s",u->getOrder().getName().c_str());
+      if (arbitrator.hasBid(u))
+      {
+        Broodwar->drawTextMap(u->getPosition().x(),u->getPosition().y()-5,"%s %.2f", arbitrator.getHighestBidder(u).first->getName().c_str(), arbitrator.getHighestBidder(u).second);
+      }
 			
 			for each (Unit* e in Broodwar->enemy()->getUnits())
 			{
