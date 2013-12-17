@@ -1,4 +1,4 @@
-#include <ConstructionManager.h>
+﻿#include <ConstructionManager.h>
 #include <UnitGroupManager.h>
 using namespace BWAPI;
 ConstructionManager::ConstructionManager(Arbitrator::Arbitrator<BWAPI::Unit*,double>* arbitrator, BuildingPlacer* placer)
