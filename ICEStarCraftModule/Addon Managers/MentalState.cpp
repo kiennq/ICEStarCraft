@@ -1032,19 +1032,31 @@ void MentalClass::attackTimingCheck()
 		{
 			if (goAttack)
 			{
+				int ratio = Broodwar->self()->supplyUsed()/2 < 100 ? 1.2 : 1.0;
 				if (Broodwar->self()->supplyUsed()/2 < 180 &&
 						SelectAll()(isCompleted)(Battlecruiser)(HitPoints,">",400).size() < 6 &&
-					  myInfo->myFightingValue().first < enemyInfo->enemyFightingValue().first)
+					  myInfo->myFightingValue().first < ratio * enemyInfo->enemyFightingValue().first)
 				{
 					goAttack = false;
 				}
 			}
 			else
 			{
-				if (Broodwar->getFrameCount() > 24*60*10 &&
-					  Broodwar->getFrameCount() < 24*60*14 &&
-					  Broodwar->self()->supplyUsed()/2 > 120 &&
-						myInfo->myFightingValue().first > 1.3 * enemyInfo->enemyFightingValue().first)
+				int mTank = ArmyManager::create()->getAttackers()(Siege_Tank).size() + BattleManager::create()->getMyUnits()(Siege_Tank).size();
+				int eTank = enemyInfo->countUnitNum(UnitTypes::Terran_Siege_Tank_Tank_Mode) + enemyInfo->countUnitNum(UnitTypes::Terran_Siege_Tank_Siege_Mode);
+
+				if (Broodwar->getFrameCount() < 24*60*10 &&
+					  Broodwar->self()->supplyUsed()/2 > 80 &&
+						myInfo->myFightingValue().first > 1.8 * enemyInfo->enemyFightingValue().first &&
+						mTank >= eTank + 4)
+				{
+					goAttack = true;
+				}
+				else if (Broodwar->getFrameCount() > 24*60*10 &&
+					       Broodwar->getFrameCount() < 24*60*14 &&
+					       Broodwar->self()->supplyUsed()/2 > 120 &&
+						     myInfo->myFightingValue().first > 1.3 * enemyInfo->enemyFightingValue().first &&
+								 mTank >= eTank + 6)
 				{
 					goAttack = true;
 				}
