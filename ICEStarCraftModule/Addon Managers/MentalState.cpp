@@ -1030,21 +1030,26 @@ void MentalClass::attackTimingCheck()
 		//_T_
 		else
 		{
+			int mTank = ArmyManager::create()->getAttackers()(Siege_Tank).size() + BattleManager::create()->getMyUnits()(Siege_Tank).size();
+			int eTank = enemyInfo->countUnitNum(UnitTypes::Terran_Siege_Tank_Tank_Mode) + enemyInfo->countUnitNum(UnitTypes::Terran_Siege_Tank_Siege_Mode);
+
 			if (goAttack)
 			{
-				int ratio = Broodwar->self()->supplyUsed()/2 < 100 ? 1.2 : 1.0;
 				if (Broodwar->self()->supplyUsed()/2 < 180 &&
 						SelectAll()(isCompleted)(Battlecruiser)(HitPoints,">",400).size() < 6 &&
-					  myInfo->myFightingValue().first < ratio * enemyInfo->enemyFightingValue().first)
+					  myInfo->myFightingValue().first < enemyInfo->enemyFightingValue().first)
+				{
+					goAttack = false;
+				}
+
+				if (Broodwar->self()->supplyUsed()/2 < 100 &&
+					  (myInfo->myFightingValue().first < 1.2 * enemyInfo->enemyFightingValue().first || mTank <= eTank))
 				{
 					goAttack = false;
 				}
 			}
 			else
 			{
-				int mTank = ArmyManager::create()->getAttackers()(Siege_Tank).size() + BattleManager::create()->getMyUnits()(Siege_Tank).size();
-				int eTank = enemyInfo->countUnitNum(UnitTypes::Terran_Siege_Tank_Tank_Mode) + enemyInfo->countUnitNum(UnitTypes::Terran_Siege_Tank_Siege_Mode);
-
 				if (Broodwar->getFrameCount() < 24*60*10 &&
 					  Broodwar->self()->supplyUsed()/2 > 80 &&
 						myInfo->myFightingValue().first > 1.8 * enemyInfo->enemyFightingValue().first &&
