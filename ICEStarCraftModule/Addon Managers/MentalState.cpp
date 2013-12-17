@@ -239,27 +239,12 @@ void MentalClass::counterMeasure()
 		{
 		case NotSure:
 			{
-				//_T_
 				if (Broodwar->getFrameCount() >= 24*60*2.5 && Broodwar->getFrameCount() <= 24*60*5 &&
 					  Broodwar->enemy()->getRace() == Races::Protoss &&
-					  //!scm->enemyStartLocation &&
 						myInfo->countUnitNum(UnitTypes::Terran_Bunker,2) < 1)
 				{
 					bom->build(1,UnitTypes::Terran_Bunker,106,terrainManager->buPos);
-				}//_T_
-
-				//if (Broodwar->getFrameCount()>=24*60*5 && !reactionFinish && Broodwar->enemy()->getRace() == Races::Protoss)
-				//{
-				//	if (bom->getPlannedCount(UnitTypes::Terran_Marine,40)<8)
-				//		bom->buildAdditional(1,UnitTypes::Terran_Marine,66);
-				//	//build another bunker
-				//	if (bom->getPlannedCount(UnitTypes::Terran_Bunker,60)<2 && gf->bunkerPosition)
-				//	{
-				//		bom->buildAdditional(1,UnitTypes::Terran_Bunker,71,*gf->bunkerPosition);
-				//	}
-				//	reactionFinish = true;
-				//	return;
-				//}
+				}
 				break;
 			}
 		case PrushZealot:
@@ -267,10 +252,6 @@ void MentalClass::counterMeasure()
 				//break;
 				if (Broodwar->getFrameCount()<24*60*8 && !reactionFinish)
 				{
-					//if (Broodwar->getFrameCount()%(24*15)==0)
-					//	Broodwar->printf("zealot rush");
-					//if (!Broodwar->self()->hasResearched(TechTypes::Spider_Mines)&& !techMng->planned(TechTypes::Spider_Mines))
-					//	bom->research(TechTypes::Spider_Mines,78);//101
 					if (bom->getPlannedCount(UnitTypes::Terran_Vulture,102) < 5)
 					{
 						bom->build(5,UnitTypes::Terran_Vulture,102);
@@ -329,17 +310,17 @@ void MentalClass::counterMeasure()
 					bom->build(1,UnitTypes::Terran_Engineering_Bay,120);
 					if (gf->bunkerPosition && (*gf->bunkerPosition)!=TilePositions::None)
 					{
-						bom->buildAdditional(1,UnitTypes::Terran_Missile_Turret,91,(*gf->bunkerPosition));//_T_ 71
-						bom->buildAdditional(1,UnitTypes::Terran_Missile_Turret,90,(TilePosition)terrainManager->mFirstChokepoint->getCenter());//70
+						bom->buildAdditional(1,UnitTypes::Terran_Missile_Turret,91,(*gf->bunkerPosition));
+						bom->buildAdditional(1,UnitTypes::Terran_Missile_Turret,90,(TilePosition)terrainManager->mFirstChokepoint->getCenter());
 					}
 					else
 					{
-						bom->buildAdditional(1,UnitTypes::Terran_Missile_Turret,91,(TilePosition)terrainManager->mSecondChokepoint->getCenter());//71
-						bom->buildAdditional(1,UnitTypes::Terran_Missile_Turret,90,(TilePosition)terrainManager->mFirstChokepoint->getCenter());//70
+						bom->buildAdditional(1,UnitTypes::Terran_Missile_Turret,91,(TilePosition)terrainManager->mSecondChokepoint->getCenter());
+						bom->buildAdditional(1,UnitTypes::Terran_Missile_Turret,90,(TilePosition)terrainManager->mFirstChokepoint->getCenter());
 					}
 
 					if (bom->getPlannedCount(UnitTypes::Terran_Comsat_Station)<myInfo->countUnitNum(UnitTypes::Terran_Command_Center,1))						
-						bom->build(myInfo->countUnitNum(UnitTypes::Terran_Command_Center,1),UnitTypes::Terran_Comsat_Station,80);//100				
+						bom->build(myInfo->countUnitNum(UnitTypes::Terran_Command_Center,1),UnitTypes::Terran_Comsat_Station,80);		
 					reactionFinish = true;						
 				}		
 				break;
@@ -355,10 +336,10 @@ void MentalClass::counterMeasure()
 						bom->build(1,UnitTypes::Terran_Bunker,106,terrainManager->buPos);
 					}
 					if (!Broodwar->self()->hasResearched(TechTypes::Tank_Siege_Mode) && !techMng->planned(TechTypes::Tank_Siege_Mode))
-						bom->research(TechTypes::Tank_Siege_Mode,95);//75
+						bom->research(TechTypes::Tank_Siege_Mode,95);
 					if (bom->getPlannedCount(UnitTypes::Terran_Siege_Tank_Tank_Mode,65)<3)
 					{
-						bom->buildAdditional(3,UnitTypes::Terran_Siege_Tank_Tank_Mode,95);//75
+						bom->buildAdditional(3,UnitTypes::Terran_Siege_Tank_Tank_Mode,95);
 					}
 					reactionFinish = true;
 				}
@@ -370,9 +351,9 @@ void MentalClass::counterMeasure()
 				if (Broodwar->getFrameCount()<24*60*7&&!reactionFinish)
 				{
 					//Broodwar->printf("2Base openning");
-					if(myInfo->countUnitNum(UnitTypes::Terran_Command_Center,2) < 2 && myInfo->countUnitNum(UnitTypes::Terran_SCV,1) >= 18)//18
+					if(myInfo->countUnitNum(UnitTypes::Terran_Command_Center,2) < 2 && myInfo->countUnitNum(UnitTypes::Terran_SCV,1) >= 18)
 					{
-						bom->autoExpand(100,2);//200
+						bom->autoExpand(100,2);
 						if (terrainManager->buPos != TilePositions::None && Broodwar->self()->allUnitCount(UnitTypes::Terran_Bunker) < 1)
 						{
 							bom->build(1,UnitTypes::Terran_Bunker,106,terrainManager->buPos,false);
@@ -382,7 +363,7 @@ void MentalClass::counterMeasure()
 
 					if (!Broodwar->self()->hasResearched(TechTypes::Tank_Siege_Mode) && !techMng->planned(TechTypes::Tank_Siege_Mode))
 					{
-						bom->research(TechTypes::Tank_Siege_Mode,95);//75
+						bom->research(TechTypes::Tank_Siege_Mode,95);
 					}
 					if (bom->getPlannedCount(UnitTypes::Terran_Siege_Tank_Tank_Mode,70)<3)
 					{
@@ -752,19 +733,25 @@ void MentalClass::baseUnderAttack()
 	}
 
 	enemyInSight.clear();
-	set<Position> centers;
+	map<Position,int> centers;
 	for each (Unit* cc in SelectAll(UnitTypes::Terran_Command_Center))
 	{
-		centers.insert(cc->getPosition());
+		if (cc->getTilePosition() == Broodwar->self()->getStartLocation())
+		{
+			centers.insert(make_pair(cc->getPosition(),32*25));
+		}
+		else
+		{
+			centers.insert(make_pair(cc->getPosition(),32*20));
+		}
 	}
-	if (terrainManager->mNearestBase)      centers.insert(terrainManager->mNearestBase->getPosition());
-	if (terrainManager->mFirstChokepoint)  centers.insert(terrainManager->mFirstChokepoint->getCenter());
-	if (terrainManager->mSecondChokepoint) centers.insert(terrainManager->mSecondChokepoint->getCenter());
+	if (terrainManager->mNearestBase)      centers.insert(make_pair(terrainManager->mNearestBase->getPosition(),32*20));
+	if (terrainManager->mFirstChokepoint)  centers.insert(make_pair(terrainManager->mFirstChokepoint->getCenter(),32*10));
+	if (terrainManager->mSecondChokepoint) centers.insert(make_pair(terrainManager->mSecondChokepoint->getCenter(),32*10));
 
-	for each (Position p in centers)
+	for (map<Position,int>::iterator i = centers.begin(); i != centers.end(); i++)
 	{
-		int r = TilePosition(p).getDistance(Broodwar->self()->getStartLocation()) < 3 ? 32*25 : 32*20;
-		for each (Unit* u in Broodwar->getUnitsInRadius(p,r))
+		for each (Unit* u in Broodwar->getUnitsInRadius(i->first,i->second))
 		{
 			if (u->getPlayer() != Broodwar->enemy())
 			{

@@ -41,6 +41,12 @@ public:
 	BWAPI::Unit* getUnit()        const {return unit;}
 	BWAPI::Position getPosition() const {return position;}
 	std::string getType()         const {return type;}
+	void update(BWAPI::Unit* u, BWAPI::Position p, std::string t)
+	{
+		unit = u;
+		position = p;
+		type = t;
+	}
 
 private:
 

@@ -273,11 +273,9 @@ void ICEStarCraftModule::onFrame()
 	}
 	CalculationTime["Others"] += (float)(1000*(clock()-t))/CLOCKS_PER_SEC;
 
-#ifdef _BATTLE_DEBUG
 	t = clock();
 	showDebugInfo();
-	CalculationTime["DrawInfo"] = (float)(1000*(clock()-t))/CLOCKS_PER_SEC;
-#endif // _BATTLE_DEBUG
+	CalculationTime["DebugInfo"] = (float)(1000*(clock()-t))/CLOCKS_PER_SEC;
 
 	Broodwar->drawTextScreen(190,335,"\x07 Frame: %d",Broodwar->getFrameCount());
 	Broodwar->drawTextScreen(270,335,"\x07 FPS: %d",Broodwar->getFPS());
