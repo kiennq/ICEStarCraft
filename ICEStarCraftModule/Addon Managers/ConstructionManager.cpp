@@ -1,6 +1,7 @@
 ﻿#include <ConstructionManager.h>
 #include <UnitGroupManager.h>
 using namespace BWAPI;
+using namespace std;
 ConstructionManager::ConstructionManager(Arbitrator::Arbitrator<BWAPI::Unit*,double>* arbitrator, BuildingPlacer* placer)
 {
 	this->arbitrator   = arbitrator;
@@ -35,7 +36,8 @@ void ConstructionManager::onOffer(std::set<BWAPI::Unit*> units)
 				//only consider this builder if it can build this type of building
 				if (((*b)->type.whatBuilds().first)==(*u)->getType() && (!(*b)->type.isAddon() || (*u)->getAddon()==NULL))
 				{
-					double dist = (*u)->getPosition().getDistance((*b)->position);
+					double dist = (*u)->getPosition().getDistance((*b)->position) +
+                        ((*u)->getType().maxHitPoints() - (*u)->getHitPoints())*32;
 					if (dist < min_dist)
 					{
 						min_dist = dist;
@@ -126,7 +128,6 @@ void ConstructionManager::update()
             // we consider HP into choosing unit too
 						double dist = (*u)->getPosition().getDistance((*b)->position) +
                           ((*u)->getType().maxHitPoints() - (*u)->getHitPoints())*32;
-                          ;
 						if (dist < min_dist)
 							min_dist = dist;
 					}
@@ -330,7 +331,7 @@ void ConstructionManager::update()
 							this->worker->constructingSCV.insert(u);
 
 							double distance = u->getPosition().getDistance(b->position);
-							if (distance > 100 && u->getLastCommandFrame() + 4 < BWAPI::Broodwar->getFrameCount() && u->getOrder() != BWAPI::Orders::Move ) //if its too far away, tell it to go to the build site
+							if (distance > 64 && u->getLastCommandFrame() + 4 < BWAPI::Broodwar->getFrameCount() && u->getOrder() != BWAPI::Orders::Move ) //if its too far away, tell it to go to the build site
 								u->rightClick(b->position);
 							else //if its close enough, tell it to build
 								if (BWAPI::Broodwar->canBuildHere(u, b->tilePosition, b->type)) //if we can build here, tell the worker to build
@@ -573,21 +574,42 @@ int ConstructionManager::getPlannedCount(BWAPI::UnitType type) const
 
 void ConstructionManager::deleteBuilding(BWAPI::UnitType type, BWTA::Region* r)
 {
-	if (!type.isBuilding()) return;
-	for (std::map<BWAPI::Unit*,Building*>::iterator i = builders.begin(); i!=builders.end(); i++) {
-		if (i->second->type == type && BWTA::getRegion(i->second->tilePosition)==r) {
-			for (std::list<Building>::iterator l = incompleteBuildings.begin(); l!=incompleteBuildings.end(); l++){
-				if (l->type == type && BWTA::getRegion(l->tilePosition)==r){
-					Broodwar->printf("Plan %s in position (%d,%d) is removed", l->type.c_str(),l->position.x(),l->position.y());
-					incompleteBuildings.erase(l);					
-					break;
-				}
-			}
-			Broodwar->printf("Builder %s is removed",i->first->getType().c_str());
-			builders.erase(i);			
-			break;
-		}
-	}
+  if (!type.isBuilding()) return;
+  // Remove building from incompleteBuildings list
+  for (std::list<Building>::iterator i = incompleteBuildings.begin(), j; i!=incompleteBuildings.end();){
+    j = i++;
+    Building* b = &(*(j));
+    if (b->type == type &&
+        (!r || BWTA::getRegion(b->tilePosition)==r))
+    {
+      Broodwar->printf("Plan %s in position (%d,%d) is removed", b->type.c_str(),b->position.x(),b->position.y());
+      Unit* u = b->builderUnit;
+      startedCount[b->type]--;
+      plannedCount[b->type]--;
+      // if there is builder, halt construction and remove from bid
+      if (u != NULL)
+      {
+        if (!type.isAddon())
+        {
+          u->haltConstruction();
+        }
+        this->builders.erase(u);
+        arbitrator->removeBid(this,u);
+      }
+      // if we already build this building, cancel it
+      if (b->buildingUnit)
+      {
+        b->buildingUnit->cancelConstruction();
+      }
+      this->placer->freeTiles(b->tilePosition, b->type.tileWidth(), b->type.tileHeight());
+
+      // this building dont need anymore worker
+      buildingsNeedingBuilders[b->type.whatBuilds().first].erase(b);
+
+      // remove the building
+      this->incompleteBuildings.erase(j);
+    }
+  }
 }
 
 int ConstructionManager::getStartedCount(BWAPI::UnitType type) const

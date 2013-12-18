@@ -95,8 +95,9 @@ int BuildManager::getPlannedCount(BWAPI::UnitType type) const
 	}
 }
 
-void BuildManager::deletePlannedCount(BWAPI::UnitType type, BWTA::Region* r)
+void BuildManager::deletePlannedItem(BWAPI::UnitType type, BWTA::Region* r)
 {
+	if (type==BWAPI::UnitTypes::None || type==BWAPI::UnitTypes::Unknown) return;
 	if (type.getRace()==BWAPI::Races::Zerg && type.isBuilding()==type.whatBuilds().first.isBuilding())
 		return;
 	else

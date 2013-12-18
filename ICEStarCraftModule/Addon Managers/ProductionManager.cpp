@@ -131,9 +131,9 @@ void ProductionManager::update()
 			arbitrator->setBid(this, *u, 50);
 	}
 
-	std::map<BWAPI::Unit*,Unit>::iterator i_next;
+	std::map<BWAPI::Unit*,ProdUnit>::iterator i_next;
 	//go through all the factories that are producing units
-	for(std::map<BWAPI::Unit*,Unit>::iterator i=producingUnits.begin();i!=producingUnits.end();i=i_next)
+	for(std::map<BWAPI::Unit*,ProdUnit>::iterator i=producingUnits.begin();i!=producingUnits.end();i=i_next)
 	{
 		i_next=i;
 		i_next++;
@@ -186,8 +186,8 @@ void ProductionManager::update()
 					//if the build unit is not the right type, stop training it
 					if (i->second.unit->exists() && i->second.unit->getType()!=i->second.type.type)
 					{
-						//_T_
-						//i->first->cancelTrain();
+						//_T_??
+						i->first->cancelTrain();
 					}
 					//if the factory is not training, set the build unit does not exist
 					if (!i->first->isTraining())
@@ -235,6 +235,44 @@ bool ProductionManager::train(BWAPI::UnitType type, bool forceNoAddon)
 	productionQueues[type.whatBuilds().first].push_back(newType);
 	plannedCount[type]++;
 	return true;
+}
+
+void ProductionManager::cancelUnit(BWAPI::UnitType type)
+{
+	//production order starts here
+	if (!type.whatBuilds().first.canProduce() || type.isBuilding()) //we only accept things that can be produced
+		return;
+	//go through all the factories that are producing units
+	for(std::map<BWAPI::Unit*,ProdUnit>::iterator i, i_next = producingUnits.begin(); i_next != producingUnits.end();)
+  {
+    i = i_next++;
+    if (i->second.type.type == type)
+    {
+      // remove this type from producingUnits immediately 
+      arbitrator->removeBid(this, i->first);
+      startedCount[i->second.type.type]--;
+      plannedCount[i->second.type.type]--;
+      //if the build unit is the right type, stop training it too
+      if (i->second.type.type == i->second.unit->getType())
+        i->first->cancelTrain();
+      producingUnits.erase(i);
+    }
+  }
+  // Also remember to clean this unit type of the productionQueues, else it will request for this unit type again
+  std::map<BWAPI::UnitType, std::list<ProductionUnitType>>::iterator q=productionQueues.find(type.whatBuilds().first);
+  if (q!=productionQueues.end() && !q->second.empty()) //well, only if the queue actually exists
+  {
+    // loop through the queue
+    for(std::list<ProductionUnitType>::iterator t1 = q->second.begin(), t; t1 != q->second.end();)
+    {
+      t = t1++;
+      // we found the type, remove it
+      if (t->type == type)
+      {
+        q->second.erase(t);
+      }
+    }
+  }
 }
 
 int ProductionManager::getPlannedCount(BWAPI::UnitType type) const

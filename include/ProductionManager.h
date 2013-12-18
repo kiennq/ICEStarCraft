@@ -14,6 +14,7 @@ public:
 
 	void onRemoveUnit(BWAPI::Unit* unit);
 	bool train(BWAPI::UnitType type, bool forceNoAddon=false);
+  void cancelUnit(BWAPI::UnitType type);
 	int getPlannedCount(BWAPI::UnitType type) const;
 	int getStartedCount(BWAPI::UnitType type) const;
 	BWAPI::UnitType getBuildType(BWAPI::Unit* unit) const;
@@ -25,7 +26,7 @@ private:
 		BWAPI::UnitType type;
 		bool forceNoAddon;
 	};
-	class Unit
+	class ProdUnit
 	{
 	public:
 		ProductionUnitType type;
@@ -35,8 +36,10 @@ private:
 	};
 	bool canMake(BWAPI::Unit* builder, BWAPI::UnitType type);
 	Arbitrator::Arbitrator<BWAPI::Unit*,double>* arbitrator;
+  // map between producer type and trainee type
 	std::map<BWAPI::UnitType,std::list<ProductionUnitType > > productionQueues;
-	std::map<BWAPI::Unit*,Unit> producingUnits;
+  // map between trainer and trainee
+	std::map<BWAPI::Unit*,ProdUnit> producingUnits;
 	BuildingPlacer* placer;
 	std::map<BWAPI::UnitType, int> plannedCount;
 	std::map<BWAPI::UnitType, int> startedCount;
