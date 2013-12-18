@@ -810,6 +810,13 @@ void GameFlow::onFrameTT()
 			if (buildOrder->getPlannedCount(UnitTypes::Terran_Refinery,99) < 1 && Broodwar->self()->supplyUsed()/2 >= 12)
 				buildOrder->build(1,UnitTypes::Terran_Refinery,125);
 
+			//
+			if (buildOrder->getPlannedCount(UnitTypes::Terran_Factory,99) < 1 && Broodwar->self()->supplyUsed()/2 >= 16)
+			{
+				buildOrder->build(1,UnitTypes::Terran_Factory,100);
+				buildOrder->build(1,UnitTypes::Terran_Machine_Shop,90);
+			}
+
 			if (buildOrder->getPlannedCount(UnitTypes::Terran_Marine,70) < 4)
 				buildOrder->build(4,UnitTypes::Terran_Marine,80);//_T_
 		}
@@ -818,11 +825,11 @@ void GameFlow::onFrameTT()
 		if (!_14CC_ && mInfo->countUnitNum(UnitTypes::Terran_Marine,2) >= 2 && mInfo->countUnitNum(UnitTypes::Terran_SCV,1) >= 15 &&	Broodwar->getFrameCount()%(24*2) == 0)
 		{
 			//expand 2nd base
-			if ((Broodwar->enemy()->deadUnitCount(UnitTypes::Terran_SCV) + Broodwar->enemy()->deadUnitCount(UnitTypes::Terran_Marine)) >= 12 && Broodwar->getFrameCount() <= 24*60*7.5)
-				buildOrder->autoExpand(100,3);
-			else
-				buildOrder->autoExpand(100,2);
-
+			if (mInfo->countUnitNum(UnitTypes::Terran_Factory,2) > 0)
+			{
+				buildOrder->autoExpand(200,2);
+			}
+			
 			if (buildOrder->getPlannedCount(UnitTypes::Terran_Refinery,99) < 1 && Broodwar->self()->supplyUsed()/2 >= 12)
 				buildOrder->build(1,UnitTypes::Terran_Refinery,99);
 
@@ -872,7 +879,7 @@ void GameFlow::onFrameTT()
 		//opening over, stage 2 begin--------------------------------------------------build some advanced buildings
 		//first check if all necessary buildings for opening are constructed
 
-		if (mInfo->countUnitNum(UnitTypes::Terran_Command_Center,2) >= 2)
+		if (mInfo->countUnitNum(UnitTypes::Terran_Command_Center,2) >= 2 || mInfo->countUnitNum(UnitTypes::Terran_Factory,2) > 0)
 		{
 			if (_14CC_) buildOrder->build(1,UnitTypes::Terran_Factory,108);
 			if (_14CC_) buildOrder->build(2,UnitTypes::Terran_Factory,78);
@@ -896,15 +903,15 @@ void GameFlow::onFrameTT()
 				buildOrder->build(5,UnitTypes::Terran_Factory,70);
 			}
 			//once we have armory
-			if (mInfo->countUnitNum(UnitTypes::Terran_Armory,2)>0)
+			if (mInfo->countUnitNum(UnitTypes::Terran_Armory,1) > 0)
 			{
 				if (upgradeManager->getPlannedLevel(UpgradeTypes::Terran_Vehicle_Weapons)<1)
 					buildOrder->upgrade(1,UpgradeTypes::Terran_Vehicle_Weapons,76);
+
+				if (upgradeManager->getPlannedLevel(UpgradeTypes::Charon_Boosters) < 1 && mInfo->countUnitNum(UnitTypes::Terran_Goliath,2) > 0)
+					buildOrder->upgrade(1,UpgradeTypes::Charon_Boosters,67);
 			}
 
-			if (mInfo->countUnitNum(UnitTypes::Terran_Armory,1)>0 && upgradeManager->getPlannedLevel(UpgradeTypes::Charon_Boosters)<1)
-				buildOrder->upgrade(1,UpgradeTypes::Charon_Boosters,67);
-			
 			if (Broodwar->self()->supplyUsed()/2>=50 && mInfo->countUnitNum(UnitTypes::Terran_Academy,1)>0)
 				buildOrder->build(mInfo->countUnitNum(UnitTypes::Terran_Command_Center,1),UnitTypes::Terran_Comsat_Station,70);
 			if (mInfo->countUnitNum(UnitTypes::Terran_Siege_Tank_Tank_Mode,2)>=2)
@@ -965,10 +972,16 @@ void GameFlow::onFrameTT()
 					buildOrder->buildAdditional(1,UnitTypes::Terran_Machine_Shop,70);
 			}
 			//if finish upgrading Terran_Vehicle_Weapons, then continue upgrade
-			if (!SelectAll()(Armory)(isCompleted)(isUpgrading)(RemainingUpgradeTime,"<",24*60*2).empty())
+			if (!SelectAll()(Armory)(isCompleted)(isUpgrading)(RemainingUpgradeTime,"<",24*3).empty())
 			{
-				if (upgradeManager->getPlannedLevel(UpgradeTypes::Terran_Vehicle_Weapons)<3)
+				if (upgradeManager->getPlannedLevel(UpgradeTypes::Terran_Vehicle_Plating) < 1)
+				{	
+					buildOrder->upgrade(1,UpgradeTypes::Terran_Vehicle_Plating,75);
+				}
+				else if (upgradeManager->getPlannedLevel(UpgradeTypes::Terran_Vehicle_Weapons) < 3)
+				{
 					buildOrder->upgrade(3,UpgradeTypes::Terran_Vehicle_Weapons,75);
+				}
 			}
 			//if we have advantages or too much money, then expand again
 			if((Broodwar->self()->supplyUsed()/2 >= 100 && mInfo->myDeadArmy < eInfo->killedEnemyNum) ||
@@ -981,10 +994,10 @@ void GameFlow::onFrameTT()
 		}
 
 		//stage 3 over, stage 4 begin----------------- build more advanced building and military, upgrade
-		if(Broodwar->self()->supplyUsed()/2 >= 120 &&
-			mInfo->countUnitNum(UnitTypes::Terran_Factory,2) >= 5 && 
-			mInfo->countUnitNum(UnitTypes::Terran_Command_Center,2)>=3 &&
-			Broodwar->self()->supplyUsed()/2 <= 160)
+		if (Broodwar->self()->supplyUsed()/2 >= 120 &&
+			  mInfo->countUnitNum(UnitTypes::Terran_Factory,2) >= 5 && 
+			  mInfo->countUnitNum(UnitTypes::Terran_Command_Center,2)>=3 &&
+			  Broodwar->self()->supplyUsed()/2 <= 160)
 		{
 			if (Broodwar->self()->supplyUsed()/2 > 120 || Broodwar->getFrameCount() > 24*60*14)
 			{
@@ -1037,8 +1050,7 @@ void GameFlow::onFrameTT()
 				buildOrder->autoExpand(100,5);
 
 			//for produce battle cruiser , build star port first
-			if (Broodwar->self()->supplyUsed()/2 >= 130 && SelectAll()(isCompleted)(Siege_Tank).size() >= 8 &&
-				  mInfo->countUnitNum(UnitTypes::Terran_Command_Center,1) >= 2)
+			if (Broodwar->self()->supplyUsed()/2 >= 130 && SelectAll()(isCompleted)(Siege_Tank).size() >= 8 && mInfo->countUnitNum(UnitTypes::Terran_Command_Center,1) >= 2)
 			{
 				if (buildOrder->getPlannedCount(UnitTypes::Terran_Starport) < 5)
 				{

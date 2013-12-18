@@ -693,7 +693,7 @@ void ArmyManager::allUnitsAvoidNuclearMissile()
 void ArmyManager::ArmyGuard()
 {
 	state = ICEStarCraft::ArmyGuard;
-	attackTarget = new AttackTarget(NULL,setPoint,"NoAttackTarget");
+	attackTarget->update(NULL,setPoint,"NoAttackTarget");
 
 	if (Broodwar->getFrameCount()%(10) != 9)
 	{
@@ -781,7 +781,7 @@ void ArmyManager::ArmyDefend()
 			targetPos = setPoint;
 		}
 
-		attackTarget = new AttackTarget(target,targetPos,"EnemyArmy");
+		attackTarget->update(target,targetPos,"EnemyArmy");
 	}
 
 	if (attackTarget->getPosition() != Positions::None)
@@ -882,15 +882,15 @@ void ArmyManager::ArmyAttack()
 			{
 				if (mainbaseTar && mainbasePos != Positions::None)
 				{
-					attackTarget = new AttackTarget(mainbaseTar,mainbasePos,"MainBase");
+					attackTarget->update(mainbaseTar,mainbasePos,"MainBase");
 				}
 				else if (expansionTar && expansionPos != Positions::None)
 				{
-					attackTarget = new AttackTarget(expansionTar,expansionPos,"Expansion");
+					attackTarget->update(expansionTar,expansionPos,"Expansion");
 				}
 				else
 				{
-					attackTarget = new AttackTarget(NULL,scoutManager->enemyStartLocation->getPosition(),"MainBase");
+					attackTarget->update(NULL,scoutManager->enemyStartLocation->getPosition(),"MainBase");
 				}
 			}
 			// our army is not large enough, so start from enemy expansion
@@ -898,15 +898,15 @@ void ArmyManager::ArmyAttack()
 			{
 				if (expansionTar && expansionPos != Positions::None)
 				{
-					attackTarget = new AttackTarget(expansionTar,expansionPos,"Expansion");
+					attackTarget->update(expansionTar,expansionPos,"Expansion");
 				}
 				else if (mainbaseTar && mainbasePos != Positions::None)
 				{
-					attackTarget = new AttackTarget(mainbaseTar,mainbasePos,"OnlyMainBase");
+					attackTarget->update(mainbaseTar,mainbasePos,"OnlyMainBase");
 				}
 				else
 				{
-					attackTarget = new AttackTarget(NULL,scoutManager->enemyStartLocation->getPosition(),"OnlyMainBase");
+					attackTarget->update(NULL,scoutManager->enemyStartLocation->getPosition(),"OnlyMainBase");
 				}
 			}
 		}
@@ -938,12 +938,12 @@ void ArmyManager::ArmyAttack()
 
 			if (target)
 			{
-				attackTarget = new AttackTarget(target->getUnit(),target->getPosition(),target->getType().getName());
+				attackTarget->update(target->getUnit(),target->getPosition(),target->getType().getName());
 			}
 			else
 			{
 				// we don't know anything about enemy
-				attackTarget = new AttackTarget(NULL,terrainManager->mSecondChokepoint->getCenter(),"NoAttackTarget");
+				attackTarget->update(NULL,terrainManager->mSecondChokepoint->getCenter(),"NoAttackTarget");
 			}
 		}
 	}

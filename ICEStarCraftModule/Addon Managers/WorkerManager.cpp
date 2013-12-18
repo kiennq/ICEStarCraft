@@ -1252,7 +1252,7 @@ void WorkerManager::autoTrainSCV()
 
 	if (MentalClass::create()->STflag != MentalClass::PtechCarrier)
 	{
-		if (Broodwar->self()->allUnitCount(UnitTypes::Terran_SCV) < need && Broodwar->getFrameCount()%24 == 0)
+		if (Broodwar->self()->allUnitCount(UnitTypes::Terran_SCV) < need && Broodwar->getFrameCount()%(24*2) == 0)
 		{
 			for each (Unit* u in Broodwar->self()->getUnits())
 			{
