@@ -846,6 +846,7 @@ void BuildOrderManager::deleteItem(BWAPI::UnitType t,int priority)
 			break;
 		}			
 	}
+	this->buildManager->deletePlannedItem(t, NULL);
 }
 void BuildOrderManager::deleteItem(BWAPI::UnitType t,int priority, BWTA::Region* r)
 {
@@ -858,7 +859,7 @@ void BuildOrderManager::deleteItem(BWAPI::UnitType t,int priority, BWTA::Region*
 			break;
 		}			
 	}
-	this->buildManager->deletePlannedCount(t,r);
+	this->buildManager->deletePlannedItem(t,r);
 }
 void BuildOrderManager::deleteItem(BWAPI::UnitType t)
 {
@@ -871,6 +872,7 @@ void BuildOrderManager::deleteItem(BWAPI::UnitType t)
 			break;
 		}			
 	}
+	this->buildManager->deletePlannedItem(t, NULL);
 }
 
 void BuildOrderManager::adjustPriority(BWAPI::UnitType t,int variation)
