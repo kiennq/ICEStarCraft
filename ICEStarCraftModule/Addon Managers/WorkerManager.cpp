@@ -1144,7 +1144,7 @@ void WorkerManager::workerRepair()
 			this->_workerUnits.erase(u);
 			if (!u->isRepairing() && !u->isCarryingMinerals() && !u->isCarryingGas() && u->getPosition().getApproxDistance(bunker->getPosition()) > 32 * 2)
 			{
-				u->move(bunker->getPosition());
+				MicroUnitControl::move(u,bunker->getPosition());
 				guard++;
 			}
 		}

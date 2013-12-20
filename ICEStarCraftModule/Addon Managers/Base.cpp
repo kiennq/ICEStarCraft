@@ -351,6 +351,13 @@ void BaseClass::scvDefendBase()
 			{
 				enemyToDefend.insert(e);
 			}
+			else if (TerrainManager::create()->mNearestBase &&
+				       e->getTilePosition().getDistance(TerrainManager::create()->mNearestBase->getTilePosition()) < 8 &&
+							 e->getType().isBuilding() &&
+							 Broodwar->getFrameCount() < 24*60*7)
+			{
+				enemyToDefend.insert(e);
+			}
 		}
 		else
 		{
