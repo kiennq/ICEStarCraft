@@ -958,7 +958,7 @@ bool ArmyManager::isAttackTarget(Unit* unit)
 		return false;
 	}
 	
-	if (!unit->isCompleted() || unit->isLoaded() || !unit->isDetected())		 
+	if ((!unit->isCompleted() && !unit->getType().isBuilding()) || unit->isLoaded() || !unit->isDetected())		 
 	{
 		return false;
 	}

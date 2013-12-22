@@ -361,23 +361,6 @@ void GameFlow::autoTrainArmy()
 
 void GameFlow::onFrameTZ()
 {
-	/*if (Broodwar->self()->supplyUsed()/2 > 60 && Broodwar->getFrameCount()%(24*10) == 120)
-	{
-		buildOrder->build(1,UnitTypes::Terran_Starport,120);
-		buildOrder->build(1,UnitTypes::Terran_Control_Tower,115);
-		buildOrder->build(1,UnitTypes::Terran_Science_Facility,115);
-		buildOrder->build(3,UnitTypes::Terran_Science_Vessel,120);
-		buildOrder->build(6,UnitTypes::Terran_Science_Vessel,95);
-		if (!Broodwar->self()->hasResearched(TechTypes::Irradiate) && !buildOrder->plannedTech(TechTypes::Irradiate))
-		{
-			buildOrder->research(TechTypes::Irradiate,100);
-		}
-		if (Broodwar->self()->getUpgradeLevel(UpgradeTypes::Titan_Reactor) < 1 && upgradeManager->getPlannedLevel(UpgradeTypes::Titan_Reactor) < 1)
-		{
-			buildOrder->upgrade(1,UpgradeTypes::Titan_Reactor,95);
-		}
-	}*/
-
 	if (Broodwar->getFrameCount()%(24*2) == 0)
 	{
 		//gas control

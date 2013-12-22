@@ -1138,7 +1138,7 @@ void WorkerManager::workerRepair()
 	int guard = 0;
 	for each (Unit* u in this->_repairGroup)
 	{
-		if (Broodwar->getFrameCount() < 24*60*8 && bunker && !bunker->isUnderAttack() && guard < 2)
+		if (Broodwar->getFrameCount() < 24*60*8 && bunker && !bunker->isUnderAttack() && guard < 3)
 		{
 			// order SCVs to wait beside the bunker in early game
 			this->_workerUnits.erase(u);
@@ -1252,7 +1252,7 @@ void WorkerManager::autoTrainSCV()
 
 	if (MentalClass::create()->STflag != MentalClass::PtechCarrier)
 	{
-		if (Broodwar->self()->allUnitCount(UnitTypes::Terran_SCV) < need && Broodwar->getFrameCount()%(24*2) == 0)
+		if (Broodwar->self()->allUnitCount(UnitTypes::Terran_SCV) < need && Broodwar->getFrameCount()%(24) == 0)
 		{
 			for each (Unit* u in Broodwar->self()->getUnits())
 			{

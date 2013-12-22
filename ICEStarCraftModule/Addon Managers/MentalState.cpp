@@ -745,9 +745,7 @@ void MentalClass::baseUnderAttack()
 			centers.insert(make_pair(cc->getPosition(),32*20));
 		}
 	}
-	if (terrainManager->mNearestBase)      centers.insert(make_pair(terrainManager->mNearestBase->getPosition(),32*20));
-	if (terrainManager->mFirstChokepoint)  centers.insert(make_pair(terrainManager->mFirstChokepoint->getCenter(),32*10));
-	if (terrainManager->mSecondChokepoint) centers.insert(make_pair(terrainManager->mSecondChokepoint->getCenter(),32*10));
+	if (terrainManager->mNearestBase) centers.insert(make_pair(terrainManager->mNearestBase->getPosition(),32*20));
 
 	for (map<Position,int>::iterator i = centers.begin(); i != centers.end(); i++)
 	{
@@ -1061,7 +1059,7 @@ void MentalClass::attackTimingCheck()
 					       Broodwar->getFrameCount() < 24*60*14 &&
 					       Broodwar->self()->supplyUsed()/2 > 120 &&
 						     myInfo->myFightingValue().first > 1.3 * enemyInfo->enemyFightingValue().first &&
-								 mTank >= eTank + 6)
+								 (mTank >= eTank + 6 || enemyInfo->countUnitNum(UnitTypes::Terran_Command_Center) > 2))
 				{
 					goAttack = true;
 				}

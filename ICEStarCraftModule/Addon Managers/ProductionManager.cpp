@@ -187,7 +187,7 @@ void ProductionManager::update()
 					if (i->second.unit->exists() && i->second.unit->getType()!=i->second.type.type)
 					{
 						//_T_??
-						i->first->cancelTrain();
+						//i->first->cancelTrain();
 					}
 					//if the factory is not training, set the build unit does not exist
 					if (!i->first->isTraining())

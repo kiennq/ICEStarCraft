@@ -174,78 +174,7 @@ void BaseManager::update()
 				BLtoBCMap.erase(bc->getBaseLocation());
 			}
 		}
-	}	
-	//UnitGroup allBase = SelectAll()(isCompleted)(Command_Center);
-	//int watch1 =this->bom->getPlannedCount(UnitTypes::Terran_SCV,30);	
-	//int watch2=(int)SelectAll()(isCompleted)(SCV).size();
-	//for each(Unit* db in allBase){
-	//	if (BWTA::getNearestBaseLocation(db->getTilePosition())->getTilePosition().getDistance(db->getTilePosition())!=0 
-	//		&&this->bom->getPlannedCount(UnitTypes::Terran_SCV,30)==(int)SelectAll()(isCompleted)(SCV).size()){
-	//		Position neareatPosition = BWTA::getNearestBaseLocation(db->getTilePosition())->getPosition();
-	//		TilePosition neareatTile = BWTA::getNearestBaseLocation(db->getTilePosition())->getTilePosition();
-	//		if (db->isTraining())
-	//			continue;
-	//		if (!Broodwar->isVisible(neareatTile))
-	//			continue;
-	//		if(this->bom->getPlannedCount(UnitTypes::Terran_SCV,30)!=(int)SelectAll()(isCompleted)(SCV).size())
-	//			continue;
-	//		//if (BWTA::getNearestBaseLocation(db->getTilePosition())->getTilePosition().getDistance(db->getTilePosition())>=8)
-	//		//	continue;
-	//		
-	//		std::set<Unit*> ontileUnit = Broodwar->getUnitsInRadius(neareatPosition,32*5);
-	//		for each(Unit* u in ontileUnit){
-	//			if(u==db)
-	//				continue;
-	//			else if (u->getPlayer() == Broodwar->enemy()){
-	//				EnemyOnBL = true;
-	//				return;
-	//			}
-	//				
-	//			else if(u->getPlayer() == Broodwar->self() && !u->getType().isResourceDepot()){
-	//				if(u->getType().isBuilding()){
-	//					TilePosition newT = TilePosition(u->getTilePosition().x()+2,u->getTilePosition().y()+2);
-	//					if(Broodwar->getFrameCount()%24 == 0)
-	//						u->lift();
-	//					if(u->isLifted())
-	//						u->land(newT);
-	//				}
-	//					
-	//				
-	//				else{
-	//					if (u->getPosition().getApproxDistance(neareatPosition)<4*32){
-	//						if (u->getType()==UnitTypes::Terran_Siege_Tank_Siege_Mode && u->isSieged())
-	//							u->unsiege();
-	//						u->move(BWTA::getStartLocation(Broodwar->self())->getPosition());
-	//					}
-	//						
-	//					else
-	//						return;
-	//				}								
-	//			}
-	//		}
-	//		if (db->isLifted() && !EnemyOnBL){
-	//			if(db->getLastCommand().getType()==UnitCommandTypes::Land && Broodwar->getFrameCount()%24==0)
-	//				return;
-	//			else
-	//				db->land(BWTA::getNearestBaseLocation(db->getTilePosition())->getTilePosition());
-	//			}
-	//		else if(!db->isLifted() && !EnemyOnBL){
-	//			if(Broodwar->getFrameCount()%24==0)
-	//				db->lift();
-	//			if (db->isLifted()){
-	//				if(db->getLastCommand().getType()==UnitCommandTypes::Land&& Broodwar->getFrameCount()%24==0)
-	//					return;
-	//				else
-	//					db->land(BWTA::getNearestBaseLocation(db->getTilePosition())->getTilePosition());
-	//			}
-	//		}
-	//	}
-	//	else
-	//		continue;
-	//}		
-
-
-
+	}
 }
 
 
