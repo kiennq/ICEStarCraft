@@ -102,6 +102,7 @@
     <ClCompile Include="..\include\json\jsoncpp.cpp" />
     <ClCompile Include="Addon Managers\Common.cpp" />
     <ClCompile Include="Addon Managers\Config.cpp" />
+    <ClCompile Include="Addon Managers\MacroUnitControl.cpp" />
     <ClCompile Include="Source\Dll.cpp" />
     <ClCompile Include="Addon Managers\EnhancedUI.cpp" />
     <ClCompile Include="Source\ICEStarCraft.cpp" />
@@ -129,7 +130,6 @@
     <ClCompile Include="Addon Managers\BaseDefenseManager.cpp" />
     <ClCompile Include="Addon Managers\BattleManager.cpp" />
     <ClCompile Include="Addon Managers\DropManager.cpp" />
-    <ClCompile Include="..\include\MacroUnitControl.cpp" />
     <ClCompile Include="Addon Managers\MicroUnitControl.cpp" />
     <ClCompile Include="Addon Managers\MineManager.cpp" />
     <ClCompile Include="Addon Managers\EnemyStandard.cpp" />
