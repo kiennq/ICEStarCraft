@@ -162,9 +162,6 @@
     <ClCompile Include="Addon Managers\DropManager.cpp">
       <Filter>Addon Managers\MacroManager</Filter>
     </ClCompile>
-    <ClCompile Include="..\include\MacroUnitControl.cpp">
-      <Filter>Addon Managers\MacroManager</Filter>
-    </ClCompile>
     <ClCompile Include="Addon Managers\MicroUnitControl.cpp">
       <Filter>Addon Managers\MacroManager</Filter>
     </ClCompile>
@@ -206,6 +203,9 @@
     </ClCompile>
     <ClCompile Include="..\include\json\jsoncpp.cpp">
       <Filter>Addon Managers\Helper\json</Filter>
+    </ClCompile>
+    <ClCompile Include="Addon Managers\MacroUnitControl.cpp">
+      <Filter>Addon Managers\MacroManager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
