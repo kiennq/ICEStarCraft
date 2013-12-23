@@ -105,7 +105,7 @@ void BuildManager::deletePlannedItem(BWAPI::UnitType type, BWTA::Region* r)
 		if (type.isBuilding())
 			this->constructionManager->deleteBuilding(type,r);
 		else
-			this->productionManager->getPlannedCount(type);
+			this->productionManager->cancelUnit(type);
 	}
 }
 
