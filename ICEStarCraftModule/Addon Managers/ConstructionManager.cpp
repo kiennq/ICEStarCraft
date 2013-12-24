@@ -583,7 +583,6 @@ void ConstructionManager::deleteBuilding(BWAPI::UnitType type, BWTA::Region* r)
         (!r || BWTA::getRegion(b->tilePosition)==r))
     {
       //Broodwar->printf("Plan %s in position (%d,%d) is removed", b->type.c_str(),b->position.x(),b->position.y());
-			Broodwar->drawCircleMap(b->tilePosition.x()*TILE_SIZE,b->tilePosition.y()*TILE_SIZE,20,Colors::Green,true);
       Unit* u = b->builderUnit;
       startedCount[b->type]--;
       plannedCount[b->type]--;
