@@ -582,7 +582,8 @@ void ConstructionManager::deleteBuilding(BWAPI::UnitType type, BWTA::Region* r)
     if (b->type == type &&
         (!r || BWTA::getRegion(b->tilePosition)==r))
     {
-      Broodwar->printf("Plan %s in position (%d,%d) is removed", b->type.c_str(),b->position.x(),b->position.y());
+      //Broodwar->printf("Plan %s in position (%d,%d) is removed", b->type.c_str(),b->position.x(),b->position.y());
+			Broodwar->drawCircleMap(b->tilePosition.x()*TILE_SIZE,b->tilePosition.y()*TILE_SIZE,20,Colors::Green,true);
       Unit* u = b->builderUnit;
       startedCount[b->type]--;
       plannedCount[b->type]--;
@@ -591,7 +592,7 @@ void ConstructionManager::deleteBuilding(BWAPI::UnitType type, BWTA::Region* r)
       {
         if (!type.isAddon())
         {
-          u->haltConstruction();
+          if (!u->haltConstruction()) u->stop();
         }
         this->builders.erase(u);
         arbitrator->removeBid(this,u);
@@ -617,7 +618,6 @@ void ConstructionManager::deleteBuilding(BWAPI::UnitType type, BWTA::Region* r)
       // if we already build this building, cancel it
       if (b->buildingUnit)
       {
-        Broodwar->printf("Cancel construction %s in position (%d,%d)", b->buildingUnit->getType().getName().c_str(),b->position.x(),b->position.y());
         b->buildingUnit->cancelConstruction();
       }
       this->placer->freeTiles(b->tilePosition, b->type.tileWidth(), b->type.tileHeight());

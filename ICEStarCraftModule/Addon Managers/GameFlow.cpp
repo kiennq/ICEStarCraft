@@ -124,9 +124,7 @@ void GameFlow::onFrame()
 
 	//build Turret
 	
-	if (Broodwar->getFrameCount() >= Config::i().GF_TURRET_BUILD_TIME() && 
-		  Broodwar->getFrameCount()%(24*20) == 0 &&	
-		  Broodwar->enemy()->getRace() != Races::Zerg)
+	if (Broodwar->getFrameCount() >= Config::i().GF_TURRET_BUILD_TIME() && Broodwar->getFrameCount()%(24*20) == 0)
 	{
 		if (Broodwar->self()->allUnitCount(UnitTypes::Terran_Engineering_Bay) < 1 && buildOrder->getPlannedCount(UnitTypes::Terran_Engineering_Bay,65) < 1)
 		{
@@ -159,7 +157,10 @@ void GameFlow::onFrame()
 					continue;
 				}
 				int need = 1;
-				if (Broodwar->getFrameCount() > 24*60*12 && (eInfo->EnemyhasBuilt(UnitTypes::Terran_Dropship,2) || eInfo->EnemyhasBuilt(UnitTypes::Protoss_Shuttle,2)))
+				if (Broodwar->getFrameCount() > 24*60*12 &&
+					  (eInfo->EnemyhasBuilt(UnitTypes::Terran_Dropship,2) ||
+						 eInfo->EnemyhasBuilt(UnitTypes::Protoss_Shuttle,2) ||
+						 eInfo->EnemyhasBuilt(UnitTypes::Zerg_Mutalisk,2)))
 				{
 					need = 2;
 				}
@@ -475,15 +476,6 @@ void GameFlow::onFrameTZ()
 				{
 					buildOrder->research(TechTypes::Spider_Mines,68);
 				}
-			}
-		}
-
-		//delete bunker
-		if (Broodwar->getFrameCount() > 24*60*12 || Broodwar->self()->supplyUsed()/2 > 65)
-		{
-			if (buildOrder->getPlannedCount(UnitTypes::Terran_Bunker) > 0)
-			{
-				buildOrder->deleteItem(UnitTypes::Terran_Bunker);
 			}
 		}
 
