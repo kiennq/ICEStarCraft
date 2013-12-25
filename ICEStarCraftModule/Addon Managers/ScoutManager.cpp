@@ -62,6 +62,8 @@ ScoutManager::ScoutManager()
 
 	_fSwitchRegion = false;
 	_nextTargetBase = NULL;
+  _fChangedRegion = false;
+  _lastSwitchRegionFrame = 0;
 	
 	this->deadScoutUnitCount = 0;
 };
@@ -372,6 +374,33 @@ void ScoutManager::onUnitDestroy(Unit* unit)
 	{
     this->scoutGroup.erase(unit);
 		this->deadScoutUnitCount++;
+    // Try to infer enemy start location
+    BWTA::Region* curReg = BWTA::getRegion(unit->getPosition());
+    if (!enemyStartLocation &&
+        !curReg->getBaseLocations().empty())
+    {
+      // find closest start location
+      BaseLocation* start = NULL;
+      double minDist = 99999;
+      for each (BaseLocation* bl in BWTA::getBaseLocations())
+      {
+        if (bl == myStartLocation ||
+            bl == TerrainManager::create()->mNearestBase ||
+            (bl->getRegion() == curReg && !bl->isStartLocation())) 
+        {
+          continue;
+        }
+        double dist = getGroundDistance(unit->getTilePosition(), bl->getTilePosition());
+        if (dist >= 0 && dist < minDist)
+        {
+          minDist = dist;
+          start = bl;
+        }
+      }
+      enemyStartLocation = start && start->isStartLocation() ? start : NULL;
+      if (enemyStartLocation)
+        Broodwar->printf("Infered enemy start location");
+    }
   }
   if (this->ScoutUnitPurposeMap.find(unit) != this->ScoutUnitPurposeMap.end())
 	{
@@ -503,22 +532,25 @@ void ScoutManager::scoutEnemyOpening(Unit* u)
         if (curReg == enemyStartLocation->getRegion() ||
             curReg == _nextTargetBase->getRegion())
         {
-          if (Broodwar->getFrameCount() % (24*60) == 0)
+          if (Broodwar->getFrameCount() > _lastSwitchRegionFrame+24*40 && 
+              curReg == enemyStartLocation->getRegion() &&
+              _fChangedRegion)
           {
             //ScoutController::create()->removeFromScoutSet(u);
-            if (curReg == enemyStartLocation->getRegion())
-            {
-              _fSwitchRegion = true;
-              ScoutController::create()->setTargetRegion(_nextTargetBase->getRegion());
-              ScoutController::create()->getAttractPoints().insert(waypoint->getCenter());
-            }
-            return;
+            _fSwitchRegion = true;
+            _fChangedRegion = false;
+            ScoutController::create()->setTargetRegion(_nextTargetBase->getRegion());
+            ScoutController::create()->getAttractPoints().insert(waypoint->getCenter());
             // Broodwar->printf("Go to next base");
           }
           else
           {
-            if (curReg == enemyStartLocation->getRegion())
+            if (curReg == enemyStartLocation->getRegion() && !_fChangedRegion)
+            {
               ScoutController::create()->getAttractPoints().erase(waypoint->getCenter());
+              _fChangedRegion = true;
+              _lastSwitchRegionFrame = Broodwar->getFrameCount();
+            }
             ScoutController::create()->addToScoutSet(u);
             ScoutController::create()->onFrame();
           }
@@ -539,22 +571,25 @@ void ScoutManager::scoutEnemyOpening(Unit* u)
         if (curReg == enemyStartLocation->getRegion() ||
             curReg == _nextTargetBase->getRegion())
         {
-          if (Broodwar->getFrameCount() % (24*10) == 0)
+          if (Broodwar->getFrameCount() > _lastSwitchRegionFrame+24*10 &&
+              curReg == _nextTargetBase->getRegion() &&
+              _fChangedRegion)
           {
             //ScoutController::create()->removeFromScoutSet(u);
-            if (curReg == _nextTargetBase->getRegion())
-            {
             _fSwitchRegion = false;
-              ScoutController::create()->setTargetRegion(enemyStartLocation->getRegion());
+            _fChangedRegion = false;
+            ScoutController::create()->setTargetRegion(enemyStartLocation->getRegion());
             ScoutController::create()->getAttractPoints().insert(waypoint->getCenter());
-            }
-            return;
             // Broodwar->printf("Go to next base");
           }
           else
           {
-            if (curReg == _nextTargetBase->getRegion())
+            if (curReg == _nextTargetBase->getRegion() && !_fChangedRegion)
+            {
               ScoutController::create()->getAttractPoints().erase(waypoint->getCenter());
+              _fChangedRegion = true;
+              _lastSwitchRegionFrame = Broodwar->getFrameCount();
+            }
             ScoutController::create()->addToScoutSet(u);
             ScoutController::create()->onFrame();
           }

@@ -119,17 +119,8 @@ private:
 
 	bool _fSwitchRegion;
 	BaseLocation* _nextTargetBase;
-
-	int SMD;
-	double UpP;
-	double DownP;
-	double LeftP;
-	double RightP;
-	double UpRightP;
-	double UpLeftP;
-	double DownRightP;
-	double DownLeftP;
-	double CenterP;
+  int _lastSwitchRegionFrame;
+  bool _fChangedRegion;
 
 	//_T_
 	int deadScoutUnitCount;
