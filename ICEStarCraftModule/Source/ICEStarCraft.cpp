@@ -13,6 +13,11 @@ BWTA::Region* enemy_base;
 void ICEStarCraftModule::onStart()
 {
 	if (Broodwar->isReplay()) return;
+  if (!Broodwar->enemy())
+  {
+    Broodwar->pauseGame();
+    return;
+  }
 
 	BWTA::readMap();
 	BWTA::analyze();
@@ -133,6 +138,7 @@ void ICEStarCraftModule::onEnd(bool isWinner)
 void ICEStarCraftModule::onFrame()
 {
 	if (Broodwar->isReplay()) return;
+  if (!Broodwar->enemy()) return;
 
 	if (Broodwar->getFrameCount() == 24*5)
 	{
@@ -481,6 +487,7 @@ void ICEStarCraftModule::onNukeDetect(BWAPI::Position target)
 
 void ICEStarCraftModule::onUnitDiscover(BWAPI::Unit* unit)
 {
+  if (!Broodwar->enemy()) return;
 	if (Broodwar->isReplay())return;
 
 	unitGroupManager->onUnitDiscover(unit);
@@ -494,6 +501,7 @@ void ICEStarCraftModule::onUnitDiscover(BWAPI::Unit* unit)
 
 void ICEStarCraftModule::onUnitEvade(BWAPI::Unit* unit)
 {
+  if (!Broodwar->enemy()) return;
 	unitGroupManager->onUnitEvade(unit);
 	this->mental->onUnitEvade(unit);
 	if (Broodwar->self()->isEnemy(unit->getPlayer()) &&
@@ -513,11 +521,13 @@ void ICEStarCraftModule::onUnitEvade(BWAPI::Unit* unit)
 
 void ICEStarCraftModule::onUnitShow(BWAPI::Unit* unit)
 {
+  if (!Broodwar->enemy()) return;
 	this->eInfo->onUnitDiscover(unit);
 }
 
 void ICEStarCraftModule::onUnitHide(BWAPI::Unit* unit)
 {
+  if (!Broodwar->enemy()) return;
 	workerManager->onUnitHide(unit);
 }
 
@@ -528,6 +538,7 @@ void ICEStarCraftModule::onUnitCreate(BWAPI::Unit* unit)
 
 void ICEStarCraftModule::onUnitDestroy(BWAPI::Unit* unit)
 {
+  if (!Broodwar->enemy()) return;
 	baseManager->onUnitDestroy(unit);
 	workerManager->onUnitDestroy(unit);
 	this->mental->onUnitDestroy(unit);
@@ -544,6 +555,7 @@ void ICEStarCraftModule::onUnitDestroy(BWAPI::Unit* unit)
 
 void ICEStarCraftModule::onUnitMorph(BWAPI::Unit* unit)
 {
+  if (!Broodwar->enemy()) return;
 	if (!Broodwar->isReplay())
 	{
 		this->mental->onUnitMorph(unit);
@@ -554,6 +566,7 @@ void ICEStarCraftModule::onUnitMorph(BWAPI::Unit* unit)
 
 void ICEStarCraftModule::onUnitRenegade(BWAPI::Unit* unit)
 {
+  if (!Broodwar->enemy()) return;
 	if (Broodwar->isReplay()) return;
 	unitGroupManager->onUnitRenegade(unit);
 }

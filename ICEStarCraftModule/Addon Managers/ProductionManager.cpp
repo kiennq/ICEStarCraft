@@ -253,7 +253,7 @@ void ProductionManager::cancelUnit(BWAPI::UnitType type)
       startedCount[i->second.type.type]--;
       plannedCount[i->second.type.type]--;
       //if the build unit is the right type, stop training it too
-      if (i->second.type.type == i->second.unit->getType())
+      if (i->second.unit && i->second.type.type == i->second.unit->getType())
         i->first->cancelTrain();
       producingUnits.erase(i);
     }
