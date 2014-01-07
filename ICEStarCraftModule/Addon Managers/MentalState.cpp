@@ -140,7 +140,7 @@ void MentalClass::setEnemyPlanFlag()
 
 	}
 	// enemy is terran
-	if (Broodwar->enemy()->getRace() == Races::Terran &&!openCheckFlag &&scm->enemyStartLocation!=NULL && Broodwar->getFrameCount()<24*60*6)
+	if (Broodwar->enemy()->getRace() == Races::Terran && !openCheckFlag && scm->enemyStartLocation && Broodwar->getFrameCount() < 24*60*6)
 	{
 		int bc = 0;
 		int bb = 0;
@@ -161,18 +161,24 @@ void MentalClass::setEnemyPlanFlag()
 		tank = enemyInfo->CountEunitNum(UnitTypes::Terran_Siege_Tank_Tank_Mode);
 		vulture = enemyInfo->CountEunitNum(UnitTypes::Terran_Vulture);
 
-		if (Broodwar->getFrameCount()<=24*60*2){
-			if(bb>0)
-				STflag = TrushMarine;
+		if (Broodwar->getFrameCount() <= 24*60*2)
+    {
+			if (bb > 0) STflag = TrushMarine;
 		}
-		if (Broodwar->getFrameCount()<=24*60*2+24*30){
-			if (marine>0)
-				STflag = TrushMarine;
+		if (Broodwar->getFrameCount() <= 24*60*2 + 24*30)
+    {
+			if (marine > 0)	STflag = TrushMarine;
 		}
-
-		if (Broodwar->getFrameCount()>=24*60*3){
-			if (bb==0 || bb==2 || (scv>0 && scv<=11))
-				STflag = TrushMarine;
+		if (Broodwar->getFrameCount() >= 24*60*3)
+    {
+			if (bb == 0
+          ||
+          (bb >= 2 && (vf == 0 || bc == 1))
+          ||
+          (scv > 0 && scv <= 11))
+      {
+        STflag = TrushMarine;
+      }
 		}
 	}
 
@@ -406,49 +412,46 @@ void MentalClass::counterMeasure()
 			{
 				if (!reactionFinish)
 				{
-					if ((gf->bunkerPosition == NULL && myInfo->countUnitNum(UnitTypes::Terran_Bunker,1) < 1) ||
-						 myInfo->countUnitNum(UnitTypes::Terran_Marine,1) < 4)
-					{
-						// train marine
-						if (bom->getPlannedCount(UnitTypes::Terran_Marine,80) < 15)
-						{
-							bom->build(15,UnitTypes::Terran_Marine,80);
-						}
-						if (bom->getPlannedCount(UnitTypes::Terran_Barracks) < 2)
-						{
-							bom->build(2,UnitTypes::Terran_Barracks,75);
-						}
-						// build a bunker
-						if (myInfo->countUnitNum(UnitTypes::Terran_Bunker,2) < 1)
-						{									
-							Position pos = Positions::None;
-							BWTA::Chokepoint* cp = terrainManager->mFirstChokepoint;
-							if (cp->getWidth() >= 200)
-							{
-								pos = terrainManager->mFirstChokepoint->getCenter();
-							}
-							else
-							{
-								ICEStarCraft::Vector2 v = cp->getSides().first - cp->getSides().second;
-								ICEStarCraft::Vector2 u = ICEStarCraft::Vector2(v.y(),-v.x());
-								u = u * (32.0 * 4 /u.approxLen());
-								pos = u + cp->getCenter();
-								if (BWTA::getRegion(pos) == terrainManager->mNearestBase->getRegion())
-								{
-									pos = -u + cp->getCenter();
-								}
-							}
-							bom->build(1,UnitTypes::Terran_Bunker,106,TilePosition(pos));
-						}
+          bom->deleteItem(UnitTypes::Terran_Command_Center);
+          // train marine
+          if (bom->getPlannedCount(UnitTypes::Terran_Marine,80) < 15)
+          {
+            bom->build(15,UnitTypes::Terran_Marine,80);
+          }
+          if (bom->getPlannedCount(UnitTypes::Terran_Barracks) < 2)
+          {
+            bom->build(2,UnitTypes::Terran_Barracks,75);
+          }
+          // build a bunker
+          if (myInfo->countUnitNum(UnitTypes::Terran_Bunker,2) < 1)
+          {									
+            Position pos = Positions::None;
+            BWTA::Chokepoint* cp = terrainManager->mFirstChokepoint;
+            if (cp->getWidth() >= 200)
+            {
+              pos = terrainManager->mFirstChokepoint->getCenter();
+            }
+            else
+            {
+              ICEStarCraft::Vector2 v = cp->getSides().first - cp->getSides().second;
+              ICEStarCraft::Vector2 u = ICEStarCraft::Vector2(v.y(),-v.x());
+              u = u * (32.0 * 4 /u.approxLen());
+              pos = u + cp->getCenter();
+              if (BWTA::getRegion(pos) == terrainManager->mNearestBase->getRegion())
+              {
+                pos = -u + cp->getCenter();
+              }
+            }
+            bom->build(1,UnitTypes::Terran_Bunker,106,TilePosition(pos));
+          }
 
-						if (Broodwar->getFrameCount() >= 24*60*10 || myInfo->countUnitNum(UnitTypes::Terran_Marine,1) >= 12)
-						{
-							bom->deleteItem(UnitTypes::Terran_Marine);
-							bom->deleteItem(UnitTypes::Terran_Barracks,75);
-							reactionFinish = true;
-						}
-					}
-				}
+          if (Broodwar->getFrameCount() >= 24*60*10 || myInfo->countUnitNum(UnitTypes::Terran_Marine,1) >= 12)
+          {
+            //bom->deleteItem(UnitTypes::Terran_Marine);
+            //bom->deleteItem(UnitTypes::Terran_Barracks,75);
+            reactionFinish = true;
+          }
+        }
 				break;
 			}
 		case TrushMarine:
@@ -486,11 +489,11 @@ void MentalClass::counterMeasure()
 				{
 					if (bom->getPlannedCount(UnitTypes::Terran_Marine,60) < 8)
 					{
-						bom->build(8,UnitTypes::Terran_Marine,200);
+						bom->build(8,UnitTypes::Terran_Marine,100);
 					}
 					if (bom->getPlannedCount(UnitTypes::Terran_Bunker,60) < 2)
 					{
-						bom->buildAdditional(1,UnitTypes::Terran_Bunker,201,*gf->bunkerPosition);
+						bom->buildAdditional(1,UnitTypes::Terran_Bunker,90,*gf->bunkerPosition);
 					}
 				}
 			}
@@ -501,22 +504,50 @@ void MentalClass::counterMeasure()
 		{
 			if (enemyInfo->EnemyhasBuilt(UnitTypes::Zerg_Mutalisk,1) || enemyInfo->EnemyhasBuilt(UnitTypes::Zerg_Spire,2))
 			{
-				TilePosition buildPos = TilePosition(terrainManager->mSecondChokepoint->getCenter());
-				if (bom->getPlannedCount(UnitTypes::Terran_Missile_Turret,100) < 4)
+        if (bom->getPlannedCount(UnitTypes::Terran_Academy) > 0 &&
+            myInfo->countUnitNum(UnitTypes::Terran_Academy,2) == 0 &&
+            myInfo->countUnitNum(UnitTypes::Terran_Goliath,2) < 6)
+        {
+          // we don't need Academy and Comsat Station at this time
+          bom->deleteItem(UnitTypes::Terran_Academy);
+        }
+
+        TilePosition buildPos = TilePositions::None;
+        if (terrainManager->mNearestBase && terrainManager->mSecondChokepoint)
+        {
+          int x = (terrainManager->mNearestBase->getTilePosition().x() + terrainManager->mSecondChokepoint->getCenter().x() / 32) / 2;
+          int y = (terrainManager->mNearestBase->getTilePosition().y() + terrainManager->mSecondChokepoint->getCenter().y() / 32) / 2;
+          buildPos = TilePosition(x,y);
+        }
+				if (bom->getPlannedCount(UnitTypes::Terran_Missile_Turret,100) < 6)
 				{
 					if (myInfo->countUnitNum(UnitTypes::Terran_Engineering_Bay,2) < 1)
 					{
 						bom->build(1,UnitTypes::Terran_Engineering_Bay,110);
 					}
-					bom->build(4,UnitTypes::Terran_Missile_Turret,110,buildPos,false);
+          				
+          bom->buildAdditional(2,UnitTypes::Terran_Missile_Turret,110,buildPos);
+          bom->buildAdditional(2,UnitTypes::Terran_Missile_Turret,110,Broodwar->self()->getStartLocation());
+          bom->buildAdditional(2,UnitTypes::Terran_Missile_Turret,105,terrainManager->mNearestBase->getTilePosition());
 				}
-				bom->build(2,UnitTypes::Terran_Bunker,120,buildPos,false);
-				bom->build(8,UnitTypes::Terran_Marine,119);
+        bom->build(8,UnitTypes::Terran_Marine,110);
+        if (bom->getPlannedCount(UnitTypes::Terran_Armory,100) < 1)
+        {
+          bom->build(1,UnitTypes::Terran_Armory,100);
+        }
 				bom->build(12,UnitTypes::Terran_Goliath,100);
-				bom->build(1,UnitTypes::Terran_Starport,90);
-				bom->build(1,UnitTypes::Terran_Control_Tower,88);
-				bom->build(6,UnitTypes::Terran_Valkyrie,86);
-				bom->build(24,UnitTypes::Terran_Goliath,85);
+        if (myInfo->countUnitNum(UnitTypes::Terran_Goliath,1) > 0)
+        {
+          bom->build(1,UnitTypes::Terran_Starport,90);
+          bom->build(1,UnitTypes::Terran_Control_Tower,88);
+          bom->build(6,UnitTypes::Terran_Valkyrie,86);
+          bom->build(24,UnitTypes::Terran_Goliath,85);
+          if (enemyInfo->countUnitNum(UnitTypes::Zerg_Zergling) > 12)
+          {
+            bom->build(2,UnitTypes::Terran_Bunker,90,buildPos);
+          }
+        }
+			
 				if (Broodwar->self()->getUpgradeLevel(UpgradeTypes::Charon_Boosters) < 1)
 				{
 					bom->upgrade(1,UpgradeTypes::Charon_Boosters,80);
@@ -860,32 +891,42 @@ void MentalClass::attackTimingCheck()
 	//for zerg timing
 	if (Broodwar->enemy()->getRace() == Races::Zerg)
 	{
-		//Broodwar->drawTextScreen(460,30,"\x11 ME: %d | ENEMY: %d",(int)myInfo->myFightingValue(),(int)enemyInfo->enemyFightingValue());
-		//calculate timing
-		if (STflag==ZrushZergling && SelectAll()(Marine)(isCompleted).not(isLoaded).size()>=10 && Broodwar->getFrameCount()<(24*60*7+24*30))
-			goAttack = true;
-		else
+		if (STflag == ZrushZergling && Broodwar->getFrameCount() < 24*60*7.5)
 		{
-			if (SelectAll()(Marine)(isCompleted).not(isLoaded).size() < 4 || Broodwar->getFrameCount()>(24*60*7+24*30))
-				goAttack = false;
+			if (goAttack)
+			{
+				if (SelectAll(UnitTypes::Terran_Marine)(isCompleted).not(isLoaded).size() < 4)
+				{
+					goAttack = false;
+				}
+			}
+			else
+			{
+				if (SelectAll(UnitTypes::Terran_Marine)(isCompleted).not(isLoaded).size() >= 8)
+				{
+					goAttack = true;
+				}
+			}
 		}
-
-		if (enemyInfo->allenemyFighter.size()>5 || Broodwar->getFrameCount() > 24*60*6)
+    
+		if (Broodwar->getFrameCount() > 24*60*7.5)
 		{
-			int detectorCount = SelectAll()(isCompleted)(Comsat_Station)(Energy,">=",50).size() + SelectAll()(isCompleted)(Science_Vessel).size();
+      int detectorCount = SelectAll(UnitTypes::Terran_Comsat_Station)(isCompleted)(Energy,">=",50).size() + myInfo->countUnitNum(UnitTypes::Terran_Science_Vessel,1);
 			if (goAttack)
 			{
 				if ((!SelectAllEnemy().not(isDetected)(isAttacking).empty() && detectorCount < 1)
 					  ||
-					  myInfo->myFightingValue().first < enemyInfo->enemyFightingValue().second) 
+					  myInfo->myFightingValue().first < enemyInfo->enemyFightingValue().first + enemyInfo->enemyFightingValue().second / enemyInfo->countBaseNum()) 
 				{
 					goAttack = false;
 				}
 			}
 			else if (detectorCount > 0)
 			{
-				if (myInfo->myFightingValue().first > enemyInfo->enemyFightingValue().first * 2.4 &&
-					  myInfo->myFightingValue().first > enemyInfo->enemyFightingValue().second &&
+				//if (myInfo->myFightingValue().first > enemyInfo->enemyFightingValue().first * 2.4 &&
+				//	  myInfo->myFightingValue().first > enemyInfo->enemyFightingValue().second &&
+				//	  myInfo->getMyArmyNum() >= 30)
+				if (myInfo->myFightingValue().first > enemyInfo->enemyFightingValue().first + enemyInfo->enemyFightingValue().second / enemyInfo->countBaseNum() &&
 					  myInfo->getMyArmyNum() >= 30)
 				{
 					goAttack = true;
@@ -900,7 +941,7 @@ void MentalClass::attackTimingCheck()
 	//for protoss timng
 	else if (Broodwar->enemy()->getRace() == Races::Protoss)
 	{
-		if (STflag == PtechCarrier)
+		if (STflag == PtechCarrier && Broodwar->getFrameCount() < 24*60*10)
 		{
 			if ((Broodwar->self()->hasResearched(TechTypes::Tank_Siege_Mode) || Broodwar->self()->isResearching(TechTypes::Tank_Siege_Mode)) &&
 				  SelectAll()(Siege_Tank)(isCompleted).size() > 0)
@@ -916,7 +957,7 @@ void MentalClass::attackTimingCheck()
 		{
 			if (goAttack)
 			{
-				if(Broodwar->self()->supplyUsed()/2 < 190 && myInfo->myFightingValue().first < 1.0 * enemyInfo->enemyFightingValue().first) //1.2
+				if (Broodwar->self()->supplyUsed()/2 < 190 && myInfo->myFightingValue().first < 1.0 * enemyInfo->enemyFightingValue().first)
 				{
 					goAttack = false;
 				}
@@ -933,144 +974,48 @@ void MentalClass::attackTimingCheck()
 	//for terran timing
 	else if (Broodwar->enemy()->getRace() == Races::Terran)
 	{
-		//for 8bb rush
-		int killedMarine = Broodwar->self()->deadUnitCount(UnitTypes::Terran_Marine);
-		if (Broodwar->getFrameCount()<=24*60*8 && myInfo->countUnitNum(UnitTypes::Terran_Marine,1)>=2 && !marineRushOver)
-		{
-			//if we lost too many marine and barely kill any enemy
-			if (killedMarine>=4 && enemyInfo->killedEnemyNum < killedMarine)
-			{
-				goAttack = false;	
-				marineRushOver = true;
-				//cancel rush bunker
-				if (bom->getPlannedCount(UnitTypes::Terran_Bunker)>0){
-					bom->deleteItem(UnitTypes::Terran_Bunker,95, BWTA::getRegion(scm->enemyStartLocation->getTilePosition()));
-				}
-				//delete marine
-				//&& bom->getPlannedCount(UnitTypes::Terran_Marine)>0
-				if (SelectAll()(isCompleted)(Marine).size()>=4)
-					bom->deleteItem(UnitTypes::Terran_Marine);
-			}					
-			//if our fight value is larger & enemy doesn't have bunker & enemy number <7 
-			//else if (myInfo->myFightingValue().first > enemyInfo->enemyFightingValue().first &&
-			//_T_
-			else if (myInfo->myFightingValue().first * 2 > enemyInfo->enemyFightingValue().first &&
-				!enemyInfo->EnemyhasBuilt(UnitTypes::Terran_Bunker,1) &&
-				SelectAllEnemy()(isCompleted)(canAttack).not(isWorker,isBuilding).size()<7)
-			{
-					//if we already have bunker
-					if (myInfo->countUnitNum(UnitTypes::Terran_Bunker,1)>0)
-					{
-						int mrInBk = SelectAll()(isCompleted)(isLoaded)(Marine).size();
-						//if we have marine in bunker, then continue rush
-						if (mrInBk > 0){
-							goAttack = true;
-							bom->build(2,UnitTypes::Terran_Siege_Tank_Tank_Mode,140);
-							if(!Broodwar->self()->hasResearched(TechTypes::Tank_Siege_Mode))
-								bom->research(TechTypes::Tank_Siege_Mode,135);
-						}
+		int mTank = ArmyManager::create()->getAttackers()(Siege_Tank).size() + BattleManager::create()->getMyUnits()(Siege_Tank).size();
+		int eTank = enemyInfo->countUnitNum(UnitTypes::Terran_Siege_Tank_Tank_Mode) + enemyInfo->countUnitNum(UnitTypes::Terran_Siege_Tank_Siege_Mode);
 
-						//if bunker is empty, and enemy has no vulture, continue rush
-						else if (mrInBk == 0 && !enemyInfo->EnemyhasBuilt(UnitTypes::Terran_Vulture,1))
-							goAttack = true;
-						bom->build(2,UnitTypes::Terran_Siege_Tank_Tank_Mode,140);
-						if(!Broodwar->self()->hasResearched(TechTypes::Tank_Siege_Mode))
-							bom->research(TechTypes::Tank_Siege_Mode,135);
-					}
-					//if don't have bunker yet
-					else
-					{
-						//enemy has vulture
-						if (enemyInfo->EnemyhasBuilt(UnitTypes::Terran_Vulture,1) 
-							&& myInfo->countUnitNum(UnitTypes::Terran_Marine,1)/enemyInfo->CountEunitNum(UnitTypes::Terran_Vulture)<3){
-								goAttack = false;
-								marineRushOver = true;
-								//cancel bunker plan
-								if (bom->getPlannedCount(UnitTypes::Terran_Bunker)>0){
-									bom->deleteItem(UnitTypes::Terran_Bunker,95, BWTA::getRegion(scm->enemyStartLocation->getTilePosition()));
-								}
-								// delete marine
-								if (SelectAll()(isCompleted)(Marine).size()>=4 && bom->getPlannedCount(UnitTypes::Terran_Marine)>0)
-									bom->deleteItem(UnitTypes::Terran_Marine);
-						}
-						//_T_
-						//enemy has medic or firebat
-						//else if (enemyInfo->EnemyhasBuilt(UnitTypes::Terran_Medic,1) || enemyInfo->EnemyhasBuilt(UnitTypes::Terran_Firebat,1))
-						//{
-						//	goAttack = false;
-						//	marineRushOver = true;
-						//	//cancel bunker plan
-						//	if (bom->getPlannedCount(UnitTypes::Terran_Bunker)>0){
-						//		bom->deleteItem(UnitTypes::Terran_Bunker,95, BWTA::getRegion(scm->enemyStartLocation->getTilePosition()));
-						//	}
-						//	// delete marine
-						//	if (SelectAll()(isCompleted)(Marine).size()>=4 && bom->getPlannedCount(UnitTypes::Terran_Marine)>0)
-						//		bom->deleteItem(UnitTypes::Terran_Marine);
-						//}
-						else
-							goAttack = true;
-					}
-			}				
-			else
+		if (goAttack)
+		{
+			if (Broodwar->self()->supplyUsed()/2 < 180 &&
+				  SelectAll()(isCompleted)(Battlecruiser)(HitPoints,">",400).size() < 6 &&
+				  myInfo->myFightingValue().first < enemyInfo->enemyFightingValue().first)
 			{
 				goAttack = false;
-				marineRushOver = true;
-				int see = bom->getPlannedCount(UnitTypes::Terran_Bunker,95);
-				if (bom->getPlannedCount(UnitTypes::Terran_Bunker)>0){
-					bom->deleteItem(UnitTypes::Terran_Bunker,95, BWTA::getRegion(scm->enemyStartLocation->getTilePosition()));
-					see = bom->getPlannedCount(UnitTypes::Terran_Bunker,95);
-				}
+			}
 
-				if (SelectAll()(isCompleted)(Marine).size()>=4 && bom->getPlannedCount(UnitTypes::Terran_Marine)>0)
-					bom->deleteItem(UnitTypes::Terran_Marine);
-			}				
+			if (Broodwar->self()->supplyUsed()/2 < 100 &&
+				  (myInfo->myFightingValue().first < 1.2 * enemyInfo->enemyFightingValue().first || mTank <= eTank))
+			{
+				goAttack = false;
+			}
 		}
-		//_T_
 		else
 		{
-			int mTank = ArmyManager::create()->getAttackers()(Siege_Tank).size() + BattleManager::create()->getMyUnits()(Siege_Tank).size();
-			int eTank = enemyInfo->countUnitNum(UnitTypes::Terran_Siege_Tank_Tank_Mode) + enemyInfo->countUnitNum(UnitTypes::Terran_Siege_Tank_Siege_Mode);
-
-			if (goAttack)
+			if (Broodwar->getFrameCount() < 24*60*10 &&
+				  Broodwar->self()->supplyUsed()/2 > 80 &&
+				  myInfo->myFightingValue().first > 1.8 * enemyInfo->enemyFightingValue().first &&
+				  mTank >= eTank + 4)
 			{
-				if (Broodwar->self()->supplyUsed()/2 < 180 &&
-						SelectAll()(isCompleted)(Battlecruiser)(HitPoints,">",400).size() < 6 &&
-					  myInfo->myFightingValue().first < enemyInfo->enemyFightingValue().first)
-				{
-					goAttack = false;
-				}
-
-				if (Broodwar->self()->supplyUsed()/2 < 100 &&
-					  (myInfo->myFightingValue().first < 1.2 * enemyInfo->enemyFightingValue().first || mTank <= eTank))
-				{
-					goAttack = false;
-				}
+				goAttack = true;
 			}
-			else
+			else if (Broodwar->getFrameCount() > 24*60*10 &&
+				       Broodwar->getFrameCount() < 24*60*14 &&
+				       Broodwar->self()->supplyUsed()/2 > 120 &&
+				       myInfo->myFightingValue().first > 1.3 * enemyInfo->enemyFightingValue().first &&
+				       (mTank >= eTank + 6 || enemyInfo->countUnitNum(UnitTypes::Terran_Command_Center) > 2))
 			{
-				if (Broodwar->getFrameCount() < 24*60*10 &&
-					  Broodwar->self()->supplyUsed()/2 > 80 &&
-						myInfo->myFightingValue().first > 1.8 * enemyInfo->enemyFightingValue().first &&
-						mTank >= eTank + 4)
-				{
-					goAttack = true;
-				}
-				else if (Broodwar->getFrameCount() > 24*60*10 &&
-					       Broodwar->getFrameCount() < 24*60*14 &&
-					       Broodwar->self()->supplyUsed()/2 > 120 &&
-						     myInfo->myFightingValue().first > 1.3 * enemyInfo->enemyFightingValue().first &&
-								 (mTank >= eTank + 6 || enemyInfo->countUnitNum(UnitTypes::Terran_Command_Center) > 2))
-				{
-					goAttack = true;
-				}
-				else if (SelectAll()(isCompleted)(Battlecruiser)(HitPoints,">=",400).size() >= 6)
-				{
-					goAttack = true;
-				}
-				else if (Broodwar->self()->supplyUsed()/2 >= 180 || Broodwar->getFrameCount() > 24*60*45)
-				{
-					goAttack = true;
-				}
+				goAttack = true;
+			}
+			else if (SelectAll()(isCompleted)(Battlecruiser)(HitPoints,">=",400).size() >= 6)
+			{
+				goAttack = true;
+			}
+			else if (Broodwar->self()->supplyUsed()/2 >= 180 || Broodwar->getFrameCount() > 24*60*45)
+			{
+				goAttack = true;
 			}
 		}
 	}

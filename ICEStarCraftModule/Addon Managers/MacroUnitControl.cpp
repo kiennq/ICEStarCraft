@@ -287,7 +287,7 @@ void MacroManager::controlLiftedBuildings()
 		}
 	}
 
-	if (Broodwar->getFrameCount() > 24*60*6 && mental->enemyInSight.empty() && SelectAll()(Siege_Tank)(isCompleted).size() > 1)
+	if (Broodwar->getFrameCount() > 24*60*5.75 && mental->enemyInSight.empty() && SelectAll()(Siege_Tank)(isCompleted).size() >= 1)
 	{
 		SelectAll()(isCompleted)(Barracks,Engineering_Bay).not(isLifted).lift();
 	}

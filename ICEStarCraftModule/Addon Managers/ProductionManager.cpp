@@ -239,7 +239,7 @@ bool ProductionManager::train(BWAPI::UnitType type, bool forceNoAddon)
 
 void ProductionManager::cancelUnit(BWAPI::UnitType type)
 {
-	//production order starts here
+ 	//production order starts here
 	if (!type.whatBuilds().first.canProduce() || type.isBuilding()) //we only accept things that can be produced
 		return;
 	//go through all the factories that are producing units

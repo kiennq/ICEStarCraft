@@ -1377,6 +1377,29 @@ void MicroUnitControl::tankAttack(BWAPI::Unit* u, BWAPI::Position p, int reachRa
 				}
 				else
 				{
+          if (p != siegePoint)
+          {
+            Vector2 v = Vector2();
+            for each (Unit* i in Broodwar->self()->getUnits())
+            {
+              if (!i->isCompleted() || i->getPosition().getApproxDistance(u->getPosition()) > 64)
+              {
+                continue;
+              }
+              if (i->getType() == UnitTypes::Terran_Siege_Tank_Siege_Mode
+                  ||
+                  (i->getType() == UnitTypes::Terran_Siege_Tank_Tank_Mode && i->getOrder() == Orders::Sieging))
+              {
+                v += PFFunctions::getVelocitySource(i->getPosition(),u->getPosition()) * 1000;
+              }
+            }
+            if (v != Vector2())
+            {
+              v = v * (96.0 / v.approxLen());
+              move(u,(v + u->getPosition()).makeValid());
+              return;
+            }
+          }
 					u->siege();
 				}
 			}

@@ -551,12 +551,14 @@ void BaseClass::scvDefendBase()
 
 	// attack enemy
 	Unit* target = this->enemyToDefend.size() == 1 ? *(this->enemyToDefend.begin()) : NULL;
-	Position targetPos = this->enemyToDefend.getCenter();
+	//Position targetPos = this->enemyToDefend.getCenter();
+  Position targetPos = this->enemyToDefend.getNearest(base->getPosition())->getPosition();
+
 	for each (Unit* scv in this->scvDefendTeam)
 	{
 		if (target)
 		{
-			if (scv->getLastCommand().getType() == UnitCommandTypes::Attack_Unit && scv->getLastCommand().getTarget() == target)
+			if (!scv->isIdle() && scv->getLastCommand().getType() == UnitCommandTypes::Attack_Unit && scv->getLastCommand().getTarget() == target)
 			{
 				continue;
 			}
@@ -564,17 +566,13 @@ void BaseClass::scvDefendBase()
 		}
 		else
 		{
-			if (scv->isAttacking())
+			if (!scv->isIdle() &&
+          scv->getLastCommand().getType() == UnitCommandTypes::Attack_Move &&
+          scv->getLastCommand().getTargetPosition().getApproxDistance(targetPos) < 64)
 			{
 				continue;
 			}
-
-			if (scv->getLastCommand().getType() == UnitCommandTypes::Attack_Move && scv->getLastCommand().getTargetPosition().getApproxDistance(targetPos) < 64)
-			{
-				continue;
-			}
-
 			scv->attack(targetPos);
-		}	
+		}
 	}
 }

@@ -56,6 +56,8 @@ TerrainManager::TerrainManager()
 	}
 
 	analyzeTankDropPositions();
+
+	analyzeTurretPositions();
 }
 
 void TerrainManager::setScoutManager(ScoutManager* scout)
@@ -710,11 +712,48 @@ void TerrainManager::analyzeTankDropPositions()
 
 	if (!TankDropPositions.empty())
 	{
-		Broodwar->printf("Tank drop positions available | Unknown map");
+		//Broodwar->printf("Tank drop positions available | Unknown map");
 	}
 	else
 	{
-		Broodwar->printf("Tank drop positions NOT available | Unknown map");
+		//Broodwar->printf("Tank drop positions NOT available | Unknown map");
+	}
+}
+
+void TerrainManager::analyzeTurretPositions()
+{
+	TurretPositions.clear();
+
+	for each (BWTA::BaseLocation* base in BWTA::getStartLocations())
+	{
+		BWTA::Region* reg = BWTA::getRegion(base->getTilePosition());
+		if (!reg)
+		{
+			continue;
+		}
+		BWTA::Polygon vertices = reg->getPolygon();
+		Position cen = reg->getCenter();
+		vector<TilePosition> tiles;
+
+		for (int i = 0; i < vertices.size(); i++)
+		{
+			if (i%5 == 0)
+			{
+				Vector2 v = Vector2(cen) - Vector2(vertices[i]);
+				v = v * (3.0 * 32 / v.approxLen());
+				Position p = v + vertices[i];
+				if (BWTA::getRegion(p) != base->getRegion())
+				{
+					continue;
+				}
+				if (BWTA::getNearestChokepoint(p) && p.getApproxDistance(BWTA::getNearestChokepoint(p)->getCenter()) < 32*4)
+				{
+					continue;
+				}
+				tiles.push_back(TilePosition(p));
+			}
+		}
+		TurretPositions.insert(make_pair(base->getTilePosition(),tiles));
 	}
 }
 
@@ -731,6 +770,22 @@ TilePosition TerrainManager::getTankDropPosition(BaseLocation* base)
 	}
 
 	return TankDropPositions[base->getTilePosition()];
+}
+
+vector<TilePosition> TerrainManager::getTurretPositions(BaseLocation* base)
+{
+	vector<TilePosition> tiles;
+	if (base == NULL)
+	{
+		return tiles;
+	}
+
+	if (TurretPositions.find(base->getTilePosition()) == TurretPositions.end())
+	{
+		return tiles;
+	}
+
+	return TurretPositions[base->getTilePosition()];
 }
 
 TilePosition TerrainManager::getConnectedTilePositionNear(TilePosition tp, int radius /* = 5*/)

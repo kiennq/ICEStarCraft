@@ -32,23 +32,14 @@ public:
 	void setManagers(BuildOrderManager* bom,UpgradeManager* um);
 	void stopGasTimeSlotSet(int time1,int time2,int stoplevel,int resumelevel);
 	void onUnitDiscover(Unit* u);
-	void factoryAutoTrain(int limitV,int limitT,int limitG,int priV,int priT,int priG);
-	void factoryTrainSet(int numV,int numT,int numG,int priV,int priT,int priG);
-	void balanceArmyCombination();
+	
 	TilePosition* bunkerPosition;
 	TilePosition secondBaseTile;
-	void TTonFrame();
 	
 	//_T_
 	bool debug;
-	void onFrameTP();
-	void onFrameTZ();
-	void onFrameTT();
-
 	int mineral;
 	int gas;
-
-	std::set<BWAPI::TilePosition> TurretTilePositions;
 
 	void showDebugInfo();
 
@@ -73,7 +64,13 @@ private:
 	MentalClass* mental;
 
 	//_T_
-	void autoTrainArmy();
+  std::set<BWAPI::TilePosition> TurretTilePositions;
+	void onFrameTP();
+  void onFrameTZ();
+  void onFrameTT();
+  void autoTrainArmy();
+  void buildTurretsAroundMainBase();
+  void buildTurretsInsideBases();
 
 protected:
 

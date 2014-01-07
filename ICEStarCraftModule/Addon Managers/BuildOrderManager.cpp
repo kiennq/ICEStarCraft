@@ -1211,71 +1211,75 @@ void BuildOrderManager::autoExpand(int priority,int maxlimit)
 	}
 
 	this->planExpandLocation = NULL;
-	double minD = 99999999;
-	for each (BWTA::BaseLocation* i in this->bmc->getPlanExpansionSet())
-	{
-		if (this->existBaseOrder.find(i->getTilePosition()) != this->existBaseOrder.end())
-		{
-			continue;
-		}
-		if (i->isIsland())
-		{
-			continue;
-		}
-		if (!Broodwar->hasPath(Position(Broodwar->self()->getStartLocation()),i->getPosition())
-			  ||
-				terrainManager->getGroundDistance(Broodwar->self()->getStartLocation(),i->getTilePosition()) < 0)
-		{
-			continue;
-		}
-		if (Broodwar->self()->completedUnitCount(UnitTypes::Terran_Command_Center) < 3 && i->getGeysers().size() < 1)
-		{
-			continue;
-		}
-		if (Broodwar->self()->completedUnitCount(UnitTypes::Terran_Command_Center) < 4 && i->getTilePosition().getDistance(TilePosition(Broodwar->mapWidth()/2,Broodwar->mapHeight()/2)) < 6)
-		{
-			continue;
-		}
-		// don't expand near enemy start location
-		if (checkDistance && scoutManager->enemyStartLocation && Broodwar->self()->completedUnitCount(UnitTypes::Terran_Command_Center) <= 3)
-		{
-			if (i->getTilePosition().getDistance(scoutManager->enemyStartLocation->getTilePosition()) < 50)
-			{
-				continue;
-			}
-			
-			double ratio = 1.0;
-			if (Broodwar->self()->completedUnitCount(UnitTypes::Terran_Command_Center) <= 2)
-			{
-				ratio = 1.2;
-			}
-			
-			double d1 = this->terrainManager->getGroundDistance(Broodwar->self()->getStartLocation(),i->getTilePosition());
-			double d2 = this->terrainManager->getGroundDistance(scoutManager->enemyStartLocation->getTilePosition(),i->getTilePosition());
-			if (d1 * ratio > d2) 
-			{
-				continue;
-			}
-		}
-		// don't expand at/near enemy expansion
-		if (enemyInfo->isEnemyBase(i)
-			  ||
-				i == terrainManager->eNearestBase
-			  ||
-			  (i != terrainManager->mNearestBase &&
-				 !SelectAllEnemy()(canAttack,Carrier,Reaver,Bunker).not(Vulture_Spider_Mine,Scarab,Interceptor).inRadius(32*6,i->getPosition()).empty()))
-		{
-			continue;
-		}
+  if (Broodwar->getFrameCount() < 24*60*7 &&
+      Broodwar->self()->allUnitCount(UnitTypes::Terran_Command_Center) == 1 &&
+      terrainManager->mNearestBase)
+  {
+    this->planExpandLocation = terrainManager->mNearestBase;
+  }
 
-		//calculated by ground dis
-		double dis = terrainManager->getGroundDistance(Broodwar->self()->getStartLocation(),i->getTilePosition());
-		if (dis < minD)
-		{
-			minD = dis;
-			this->planExpandLocation = i;
-		}
-	}
+  if (this->planExpandLocation == NULL)
+  {
+    double minD = 99999999;
+    for each (BWTA::BaseLocation* i in this->bmc->getPlanExpansionSet())
+    {
+      if (this->existBaseOrder.find(i->getTilePosition()) != this->existBaseOrder.end())
+      {
+        continue;
+      }
+      if (i->isIsland() || terrainManager->getGroundDistance(Broodwar->self()->getStartLocation(),i->getTilePosition()) < 0)
+      {
+        continue;
+      }
+      if (Broodwar->self()->completedUnitCount(UnitTypes::Terran_Command_Center) < 3 && i->getGeysers().size() < 1)
+      {
+        continue;
+      }
+      if (Broodwar->self()->completedUnitCount(UnitTypes::Terran_Command_Center) < 4 && i->getTilePosition().getDistance(TilePosition(Broodwar->mapWidth()/2,Broodwar->mapHeight()/2)) < 6)
+      {
+        continue;
+      }
+      // don't expand near enemy start location
+      if (checkDistance && scoutManager->enemyStartLocation && Broodwar->self()->completedUnitCount(UnitTypes::Terran_Command_Center) <= 3)
+      {
+        if (i->getTilePosition().getDistance(scoutManager->enemyStartLocation->getTilePosition()) < 50)
+        {
+          continue;
+        }
+
+        double ratio = 1.0;
+        if (Broodwar->self()->completedUnitCount(UnitTypes::Terran_Command_Center) <= 2)
+        {
+          ratio = 1.2;
+        }
+
+        double d1 = this->terrainManager->getGroundDistance(Broodwar->self()->getStartLocation(),i->getTilePosition());
+        double d2 = this->terrainManager->getGroundDistance(scoutManager->enemyStartLocation->getTilePosition(),i->getTilePosition());
+        if (d1 * ratio > d2) 
+        {
+          continue;
+        }
+      }
+      // don't expand at/near enemy expansion
+      if (enemyInfo->isEnemyBase(i)
+          ||
+          i == terrainManager->eNearestBase
+          ||
+          (i != terrainManager->mNearestBase &&
+          !SelectAllEnemy()(canAttack,Carrier,Reaver,Bunker).not(Vulture_Spider_Mine,Scarab,Interceptor).inRadius(32*6,i->getPosition()).empty()))
+      {
+        continue;
+      }
+
+      //calculated by ground dis
+      double dis = terrainManager->getGroundDistance(Broodwar->self()->getStartLocation(),i->getTilePosition());
+      if (dis < minD)
+      {
+        minD = dis;
+        this->planExpandLocation = i;
+      }
+    }
+  }
 
 	if (this->planExpandLocation != NULL)
 	{

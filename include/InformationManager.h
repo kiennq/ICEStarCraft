@@ -112,6 +112,7 @@ public:
 	std::set<EnemyUnit*>& getAllEnemyUnits();
 	EnemyUnit* getEnemyUnit(BWAPI::Unit*);
 	bool isEnemyBase(BWTA::BaseLocation*);
+	int countBaseNum();
 	int countUnitNum(UnitType type, BWAPI::Position p = Positions::None, int radius = 12 * 32);
 	int countDangerToAir(BWAPI::Position p, int radius = 12 * 32);
 	int countDangerToGround(BWAPI::Position p, int radius = 12 * 32);

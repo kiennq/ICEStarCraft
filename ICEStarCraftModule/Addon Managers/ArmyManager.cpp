@@ -483,7 +483,7 @@ bool ArmyManager::allUnitsGather(Position p, bool needTank)
 		return true;
 	}
 
-	if (state != ICEStarCraft::ArmyAttack || !shouldGatherBeforeAttack)
+	if (state != ICEStarCraft::ArmyAttack || !shouldGatherBeforeAttack || attackers(Siege_Tank).size() < attackers.size() / 3)
 	{
 		return false;
 	}
@@ -695,7 +695,7 @@ void ArmyManager::ArmyGuard()
 	state = ICEStarCraft::ArmyGuard;
 	attackTarget->update(NULL,setPoint,"NoAttackTarget");
 
-	if (Broodwar->getFrameCount()%(10) != 9)
+	if (Broodwar->getFrameCount()%(8) != 2)
 	{
 		return;
 	}
@@ -746,11 +746,6 @@ void ArmyManager::ArmyGuard()
 void ArmyManager::ArmyDefend()
 {
 	state = ICEStarCraft::ArmyDefend;
-
-	if (attackers.empty())
-	{
-		return;
-	}
 
 	if (Broodwar->getFrameCount()%8 == 4)
 	{

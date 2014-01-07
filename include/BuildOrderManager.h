@@ -117,7 +117,7 @@ public:
 
 
 	void deleteItem(BWAPI::UnitType t, int priority);
-	void deleteItem(BWAPI::UnitType t,int priority, BWTA::Region* r);
+	void deleteItem(BWAPI::UnitType t, int priority, BWTA::Region* r);
 	void adjustPriority(BWAPI::UnitType t,int variation);
 	void autoExpand(int priority, int maxlimit);
 	void onUnitDestroy(BWAPI::Unit* u);

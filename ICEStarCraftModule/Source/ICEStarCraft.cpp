@@ -333,6 +333,7 @@ void ICEStarCraftModule::onSendText(std::string text)
 		Broodwar->sendText("show me the money");
 		Broodwar->sendText("operation cwal");
 		Broodwar->sendText("food for thought");
+		Broodwar->sendText("black sheep wall");
 		//Broodwar->sendText("power overwhelming");
 	}
 	if (text=="/wudi"){
@@ -712,10 +713,10 @@ void ICEStarCraftModule::onUnitComplete(BWAPI::Unit *unit)
 
 void ICEStarCraftModule::showDebugInfo()
 {
-	Broodwar->drawTextScreen(5,15,"Time: %02d:%02d",(Broodwar->getFrameCount()/24)/60,(Broodwar->getFrameCount()/24)%60);
-	Broodwar->drawTextScreen(5,25,"%s | %s",ArmyManager::create()->getArmyStateString().c_str(),ArmyManager::create()->getAttackTarget()->getType().c_str());
-	Broodwar->drawTextScreen(5,35,"EnemyOpening: %s",MentalClass::create()->getSTflag().c_str());
-	Broodwar->drawTextScreen(5,45,"EnemyInSight: %d",MentalClass::create()->enemyInSight.size());
+	//Broodwar->drawTextScreen(5,15,"Time: %02d:%02d",(Broodwar->getFrameCount()/24)/60,(Broodwar->getFrameCount()/24)%60);
+	//Broodwar->drawTextScreen(5,25,"%s | %s",ArmyManager::create()->getArmyStateString().c_str(),ArmyManager::create()->getAttackTarget()->getType().c_str());
+	//Broodwar->drawTextScreen(5,35,"EnemyOpening: %s",MentalClass::create()->getSTflag().c_str());
+	//Broodwar->drawTextScreen(5,45,"EnemyInSight: %d",MentalClass::create()->enemyInSight.size());
 
 	if (!_showAllDebug) return;
 	ArmyManager::create()->showDebugInfo();

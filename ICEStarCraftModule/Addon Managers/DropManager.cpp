@@ -666,6 +666,12 @@ void DropManager::update()
 				if (debug) Broodwar->printf("Dangerous path. Skip expansion (%d,%d)",i->second.base->getTilePosition().x(),i->second.base->getTilePosition().y());
 				continue;
 			}
+      if (debug)
+        Broodwar->printf("New drop target: Base(%d,%d), %d workers, %d dangers",
+        i->second.base->getPosition().x()/32,
+        i->second.base->getPosition().y()/32,
+        eInfo->countUnitNum(Broodwar->enemy()->getRace().getWorker(),i->second.base->getPosition()),
+        eInfo->countDangerTotal(i->second.base->getPosition()));
 			dropTargets.insert(new DropTarget(i->second.base,i->second.base->getPosition(),Harrass,path));
 		}
 	}

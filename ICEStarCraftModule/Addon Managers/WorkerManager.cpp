@@ -1034,7 +1034,7 @@ void WorkerManager::workerRepair()
 	
 	// for emergency, enlarge repair group
 	Unit* bunker = SelectAll(UnitTypes::Terran_Bunker)(isCompleted).getNearest(TerrainManager::create()->mSecondChokepoint->getCenter());
-	if (bunker && SelectAllEnemy()(canAttack)(isDetected).inRadius(32*10,bunker->getPosition()).size() > 1)
+	if (bunker && SelectAllEnemy()(canAttack)(isDetected).inRadius(32*10,bunker->getPosition()).size() > 3)
 	{
 		if (this->_mInfo->myFightingValue().first < this->_eInfo->enemyFightingValue().first
 			  ||
@@ -1250,7 +1250,7 @@ void WorkerManager::autoTrainSCV()
 		this->_buildOrderManager->build(need,UnitTypes::Terran_SCV,this->_autoBuildPriority+30);
 	}
 
-	if (MentalClass::create()->STflag != MentalClass::PtechCarrier)
+  if (/*Broodwar->enemy()->getRace() != Races::Zerg && */MentalClass::create()->STflag != MentalClass::PtechCarrier)
 	{
 		if (Broodwar->self()->allUnitCount(UnitTypes::Terran_SCV) < need && Broodwar->getFrameCount()%(24) == 0)
 		{

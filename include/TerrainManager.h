@@ -48,6 +48,7 @@ public:
 	BWTA::BaseLocation* getNearestBase(BWTA::BaseLocation*, bool isStartLocation = false, bool hasGas = true);
 	std::vector<BWTA::Chokepoint*> getUsefulChokepoints(BWTA::BaseLocation*);
 	BWAPI::TilePosition getTankDropPosition(BWTA::BaseLocation*);
+	std::vector<BWAPI::TilePosition> getTurretPositions(BWTA::BaseLocation*);
 	BWAPI::TilePosition getConnectedTilePositionNear(BWAPI::TilePosition, int radius = 5);
 	BWAPI::TilePosition getBlockingMineral();
 
@@ -66,6 +67,7 @@ private:
 	BWTA::RectangleArray<double> distanceFromEnemyStartLocation;
 
 	std::map<BWAPI::TilePosition,BWAPI::TilePosition> TankDropPositions;
+	std::map<BWAPI::TilePosition,std::vector<BWAPI::TilePosition>> TurretPositions;
 
 	double getBuildingDistance(BWAPI::UnitType, BWAPI::TilePosition, BWAPI::Position);
 	bool canBuildHere(BWAPI::UnitType, BWAPI::TilePosition);
@@ -77,4 +79,5 @@ private:
 	void analyzeSiegePoint();
 	void analyzeWallinPositions();
 	void analyzeTankDropPositions();
+	void analyzeTurretPositions();
 };

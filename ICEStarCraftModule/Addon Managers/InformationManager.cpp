@@ -819,6 +819,23 @@ bool EnemyInfoManager::isEnemyBase(BWTA::BaseLocation* base)
 	return false;
 }
 
+int EnemyInfoManager::countBaseNum()
+{
+	int count = 0;
+	for each (BWTA::BaseLocation* base in BWTA::getBaseLocations())
+	{
+		if (isEnemyBase(base))
+		{
+			count++;
+		}
+	}
+	if (count == 0)
+	{
+		count = 1;
+	}
+	return count;
+}
+
 int EnemyInfoManager::countUnitNum(UnitType type, Position p, int radius)
 {
 	int n = 0;
@@ -1122,6 +1139,8 @@ void EnemyInfoManager::showDebugInfo()
 		if (isEnemyBase(b))
 		{
 			Broodwar->drawCircleMap(b->getPosition().x(),b->getPosition().y(),50,Colors::Blue);
+      Broodwar->drawTextMap(b->getPosition().x(),b->getPosition().y(),"%d workers, %d dangers",
+        countUnitNum(Broodwar->enemy()->getRace().getWorker(),b->getPosition()),countDangerTotal(b->getPosition()));
 		}
 	}
 }
