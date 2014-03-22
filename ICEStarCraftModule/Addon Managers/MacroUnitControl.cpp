@@ -315,7 +315,7 @@ void MacroManager::liftBuildingsNearChokepoints()
 		return;
 	}
 
-	if (mental->goAttack || (Broodwar->getFrameCount() >= 24*60*7.5 && mental->enemyInSight.not(isWorker).size() < 2))
+	//if (mental->goAttack || (Broodwar->getFrameCount() >= 24*60*7.5 && mental->enemyInSight.not(isWorker).size() < 2))
 	{
 		for each (Unit* u in Broodwar->self()->getUnits())
 		{
@@ -324,15 +324,29 @@ void MacroManager::liftBuildingsNearChokepoints()
 				continue;
 			}
 
-			if (u->getPosition().getApproxDistance(terrainManager->mFirstChokepoint->getCenter())  <= 32*3
+			if (u->getPosition().getApproxDistance(terrainManager->mFirstChokepoint->getCenter()) <= 32*3
 				  ||
 				  u->getPosition().getApproxDistance(terrainManager->mSecondChokepoint->getCenter()) <= 32*3
 					||
 					u->getPosition().getApproxDistance(getSetPoint()) <= 32*3
 					||
-					(terrainManager->bbPos != TilePositions::None && u->getPosition().getApproxDistance(Position(terrainManager->bbPos)) <= 32*3))
+					(terrainManager->bbPos != TilePositions::None && u->getTilePosition().getDistance(terrainManager->bbPos) <= 3))
 			{
-				u->lift();
+				//u->lift();
+				if (mental->goAttack
+					  ||
+						(Broodwar->getFrameCount() >= 24*60*7.5 && mental->enemyInSight.not(isWorker).size() < 2)
+						||
+						(u->getPosition().getDistance(terrainManager->mFirstChokepoint->getCenter()) <= 32*5
+						 &&
+						 buildOrder->getPlannedCount(UnitTypes::Terran_Command_Center) > 1
+						 &&
+						 Broodwar->self()->allUnitCount(UnitTypes::Terran_Command_Center) == 1
+						 &&
+						 mental->enemyInSight.not(isWorker).size() < 2))
+				{
+					u->lift();
+				}
 			}
 		}
 	}

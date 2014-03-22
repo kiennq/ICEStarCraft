@@ -322,6 +322,11 @@ int MicroUnitControl::getGroundCooldown(UnitType type)
 		return 60;
 	}
 
+  if (type == UnitTypes::Protoss_Carrier)
+  {
+    return 30;
+  }
+
 	return getGroundWeapon(type).damageCooldown();
 }
 
@@ -493,6 +498,11 @@ int MicroUnitControl::getGroundCooldown(Unit* unit)
 		// reavers launch scarabs every 60 frames
 		return 60;
 	}
+
+  if (unit->getType() == UnitTypes::Protoss_Carrier)
+  {
+    return 30;
+  }
 
 	return getGroundWeapon(unit).damageCooldown();
 }
@@ -1194,6 +1204,7 @@ void MicroUnitControl::tankAttack(BWAPI::Unit* u, BWAPI::Position p, int reachRa
 	Position siegePoint = ArmyManager::create()->getSiegePoint();
 	int attackRange = UnitTypes::Terran_Siege_Tank_Siege_Mode.groundWeapon().maxRange();
 
+	int eMeleeUnitCount = 0;
 	UnitGroup enemyInRange;
 	for each (Unit* e in Broodwar->enemy()->getUnits())
 	{
@@ -1207,6 +1218,10 @@ void MicroUnitControl::tankAttack(BWAPI::Unit* u, BWAPI::Position p, int reachRa
 			continue;
 		}
 
+		if (e->getType().groundWeapon().maxRange() > 0 && e->getType().groundWeapon().maxRange() < MELEE_RANGE)
+		{
+			eMeleeUnitCount++;
+		}
 		enemyInRange.insert(e);
 	}
 
@@ -1219,7 +1234,8 @@ void MicroUnitControl::tankAttack(BWAPI::Unit* u, BWAPI::Position p, int reachRa
 	// if attack position is near siege point then just stay there
 	if (siegePoint != Positions::None)
 	{
-		if (ArmyManager::create()->getArmyState() != ICEStarCraft::ArmyAttack &&
+		if (//ArmyManager::create()->getArmyState() != ICEStarCraft::ArmyAttack &&
+        ArmyManager::create()->getArmyState() == ICEStarCraft::ArmyGuard &&
 			  p.getDistance(siegePoint) < attackRange*1.5 &&
 			  BWTA::getRegion(p) != BWTA::getRegion(Broodwar->self()->getStartLocation()))
 		{
@@ -1377,6 +1393,7 @@ void MicroUnitControl::tankAttack(BWAPI::Unit* u, BWAPI::Position p, int reachRa
 				}
 				else
 				{
+					// try to make a separated formation
           if (p != siegePoint)
           {
             Vector2 v = Vector2();
@@ -1406,22 +1423,23 @@ void MicroUnitControl::tankAttack(BWAPI::Unit* u, BWAPI::Position p, int reachRa
 		}
 		else // enemy in range not empty
 		{
-			//don't siege if there are enemy units close to this tank
-			int count = 0;
-			for each (Unit* e in u->getUnitsInRadius(32*2))
+			//don't siege if there are enemy units very close to this tank or there are many melee units around
+			
+			Vector2 v = Vector2();
+			for each (Unit* e in u->getUnitsInRadius(32*2.5))
 			{
 				if (e->getPlayer() == Broodwar->enemy() &&
 					  e->isCompleted() &&
-					  !e->getType().isFlyer() &&
+					  (!e->getType().isFlyer() || e->getType() == UnitTypes::Terran_Dropship || e->getType() == UnitTypes::Protoss_Shuttle) &&
 					  (e->getType().canAttack() || e->getType() == UnitTypes::Protoss_Reaver) &&
 					  e->getType() != UnitTypes::Terran_Vulture_Spider_Mine &&
 					  e->getType() != UnitTypes::Protoss_Scarab)
 				{
-					count++;
+					v += PFFunctions::getVelocitySource(e->getPosition(),u->getPosition()) * 1000;
 				}
 			}
 
-			if (count == 0)
+			if (v == Vector2() && eMeleeUnitCount < enemyInRange.size() * 0.7)
 			{
 				BWTA::Chokepoint* nearestCp = BWTA::getNearestChokepoint(u->getPosition());
 				if (nearestCp && nearestCp->getWidth() < 120 && u->getPosition().getDistance(nearestCp->getCenter()) < 32*4)
@@ -1435,8 +1453,13 @@ void MicroUnitControl::tankAttack(BWAPI::Unit* u, BWAPI::Position p, int reachRa
 				return;
 			}
 
-			if (u->getGroundWeaponCooldown() > 1)
+			// retreat
+			if (u->getGroundWeaponCooldown() > 1 && v != Vector2())
 			{
+				v = v * (128.0 / v.approxLen());
+				Position des = (v + u->getPosition()).makeValid();
+
+				move(u,des);
 				return;
 			}
 
@@ -1520,12 +1543,18 @@ void MicroUnitControl::tankAttack(BWAPI::Unit* u, BWAPI::Position p, int reachRa
 
 		if (!enemyInRange.empty())
 		{
-			// unsiege if enemy melee units are close to this tank
-			for each (Unit* e in u->getUnitsInRadius(32*2))
+			// unsiege if there are enemy units very close to this tank or there are many melee units around
+			if (eMeleeUnitCount > enemyInRange.size() * 0.7)
+			{
+				u->unsiege();
+				return;
+			}
+
+			for each (Unit* e in u->getUnitsInRadius(32*2.5))
 			{
 				if (e->getPlayer() == Broodwar->enemy() &&
 					  e->isCompleted() &&
-					  !e->getType().isFlyer() &&
+					  (!e->getType().isFlyer() || e->getType() == UnitTypes::Terran_Dropship || e->getType() == UnitTypes::Protoss_Shuttle) &&
 					  (e->getType().canAttack() || e->getType() == UnitTypes::Protoss_Reaver) &&
 					  e->getType() != UnitTypes::Terran_Vulture_Spider_Mine &&
 					  e->getType() != UnitTypes::Protoss_Scarab)

@@ -628,7 +628,30 @@ void TerrainManager::analyzeWallinPositions()
 		// other maps
 		Position cp = mSecondChokepoint->getCenter();
 		BWTA::Region* secondReg = mNearestBase->getRegion();
+		
+		if (false && Broodwar->enemy()->getRace() == Races::Protoss)
+		{
+			// wall-in at first chokepoint
+			cp = mFirstChokepoint->getCenter();
+			secondReg = NULL;
+			for each (BWTA::Region* r in BWTA::getRegions())
+			{
+				if (ICEStarCraft::Helper::isDirectlyConnected(r,mNearestBase->getRegion()) &&
+					  (ICEStarCraft::Helper::isDirectlyConnected(r,BWTA::getRegion(Broodwar->self()->getStartLocation()))
+					  ||
+					  r == BWTA::getRegion(Broodwar->self()->getStartLocation())))
+				{
+					secondReg = r;
+					break;
+				}
+			}
 
+			if (!secondReg)
+			{
+				secondReg = BWTA::getRegion(Broodwar->self()->getStartLocation());
+			}
+		}
+		
 		BWTA::Region* reg = NULL;
 		int radius = 10;
 

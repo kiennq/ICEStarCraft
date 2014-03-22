@@ -106,6 +106,9 @@ private:
 	bool draw_self_targets;
   bool _showAllDebug;
 
+  bool shouldQuitGame;
+  int  quitFrame;
+
 #ifdef _TIME_DEBUG
 	std::map<std::string,float> CalculationTime;
 #endif

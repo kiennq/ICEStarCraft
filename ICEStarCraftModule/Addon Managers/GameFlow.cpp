@@ -254,7 +254,7 @@ void GameFlow::onFrameTZ()
 			{
 				worker->setWorkerPerGas(0);
 			}
-      else if (mental->STflag == MentalClass::ZrushZergling && mInfo->countUnitNum(UnitTypes::Terran_Command_Center,2) < 2)
+      else if (mental->STflag == MentalClass::ZrushZergling && mInfo->countUnitNum(UnitTypes::Terran_Command_Center,2) < 2 && mInfo->countUnitNum(UnitTypes::Terran_Factory,2) < 1)
       {
         worker->setWorkerPerGas(0);
       }
@@ -394,8 +394,8 @@ void GameFlow::onFrameTZ()
 		{
 			if (buildOrder->getPlannedCount(UnitTypes::Terran_Barracks,100) < 1)
 				buildOrder->build(1,UnitTypes::Terran_Barracks,100);
-			if (buildOrder->getPlannedCount(UnitTypes::Terran_Marine,63) < 1)
-				buildOrder->build(2,UnitTypes::Terran_Marine,63);
+			if (buildOrder->getPlannedCount(UnitTypes::Terran_Marine,85) < 2)//63
+				buildOrder->build(2,UnitTypes::Terran_Marine,85);//63
 		}
 
     if (Broodwar->self()->supplyUsed()/2 == 12 && mental->STflag != MentalClass::ZrushZergling)
@@ -407,7 +407,7 @@ void GameFlow::onFrameTZ()
 		{
 			//Broodwar->printf("stage 1");
 			//expand 2nd base
-			if (buildOrder->getPlannedCount(UnitTypes::Terran_Command_Center,100) < 2)
+			if (buildOrder->getPlannedCount(UnitTypes::Terran_Command_Center,100) < 2 && mInfo->countUnitNum(UnitTypes::Terran_Marine,2) >= 2)
 			{
 				if (mental->STflag && mental->STflag == MentalClass::ZrushZergling)
 				{
@@ -420,7 +420,7 @@ void GameFlow::onFrameTZ()
 				}						
 				else
 				{
-					buildOrder->autoExpand(200,2);
+					buildOrder->autoExpand(100,2);//200
 					buildOrder->build(1,UnitTypes::Terran_Refinery,99);
 				}
 			}
@@ -796,14 +796,14 @@ void GameFlow::onFrameTT()
 		//first check buildings for stage 2
 		if (mInfo->countUnitNum(UnitTypes::Terran_Machine_Shop,1) > 0)
 		{
-			if (buildOrder->getPlannedCount(UnitTypes::Terran_Siege_Tank_Tank_Mode,72) < 1)
+			if (buildOrder->getPlannedCount(UnitTypes::Terran_Siege_Tank_Tank_Mode,82) < 1)
 			{
-				buildOrder->build(1,UnitTypes::Terran_Siege_Tank_Tank_Mode,72);
+				buildOrder->build(1,UnitTypes::Terran_Siege_Tank_Tank_Mode,82);//72
 			}
 
 			if (!Broodwar->self()->hasResearched(TechTypes::Tank_Siege_Mode) && !Broodwar->self()->isResearching(TechTypes::Tank_Siege_Mode))
 			{
-				buildOrder->research(TechTypes::Tank_Siege_Mode,69);
+				buildOrder->research(TechTypes::Tank_Siege_Mode,79);//69
 			}
 
 			//train goliath
@@ -819,7 +819,7 @@ void GameFlow::onFrameTT()
 				buildOrder->build(9,UnitTypes::Terran_Goliath,69);
 			}
 			//train siege tank
-			if (Broodwar->self()->minerals()>100 && buildOrder->getPlannedCount(UnitTypes::Terran_Siege_Tank_Tank_Mode,65)<25 && Broodwar->getFrameCount()%(24*4)==0)
+			if (Broodwar->self()->minerals() > 100 && buildOrder->getPlannedCount(UnitTypes::Terran_Siege_Tank_Tank_Mode,65) < 25 && Broodwar->getFrameCount()%(24*4)==0)
 			{
 				buildOrder->buildAdditional(mInfo->countUnitNum(UnitTypes::Terran_Machine_Shop,1),UnitTypes::Terran_Siege_Tank_Tank_Mode,69);
 			}
@@ -833,7 +833,7 @@ void GameFlow::onFrameTT()
 			{
 				buildOrder->buildAdditional(mInfo->countUnitNum(UnitTypes::Terran_Factory,1),UnitTypes::Terran_Vulture,68);
 				if (!Broodwar->self()->hasResearched(TechTypes::Spider_Mines))
-					buildOrder->research(TechTypes::Spider_Mines,68);
+					buildOrder->research(TechTypes::Spider_Mines,74);
 			}
 
 			//build more factories
@@ -864,7 +864,7 @@ void GameFlow::onFrameTT()
 			//if we have advantages or too much money, then expand again
 			if((Broodwar->self()->supplyUsed()/2 >= 100 && mInfo->myDeadArmy < eInfo->killedEnemyNum) ||
 				 (Broodwar->self()->minerals() >= 1500 && Broodwar->self()->gas()<=300))
-				buildOrder->autoExpand(100,5);
+				buildOrder->autoExpand(100,4);//5
 			else if (Broodwar->self()->supplyUsed()/2 > 80 || Broodwar->getFrameCount() > 24*60*10)
 			{
 				buildOrder->autoExpand(200,3);
@@ -1080,19 +1080,40 @@ void GameFlow::onFrameTP()
 				buildOrder->build(1,UnitTypes::Terran_Siege_Tank_Tank_Mode,72);
 			if (buildOrder->getPlannedCount(UnitTypes::Terran_Vulture,70) < 4 && mInfo->countUnitNum(UnitTypes::Terran_Siege_Tank_Tank_Mode,1) > 0)
 				buildOrder->build(4,UnitTypes::Terran_Vulture,70);
-			if(SelectAll()(isCompleted)(Siege_Tank,Vulture).size() == 5 && buildOrder->getPlannedCount(UnitTypes::Terran_Siege_Tank_Tank_Mode,72) < 3)
+			if (SelectAll()(isCompleted)(Siege_Tank,Vulture).size() == 5 && buildOrder->getPlannedCount(UnitTypes::Terran_Siege_Tank_Tank_Mode,72) < 3)
 				buildOrder->build(3,UnitTypes::Terran_Siege_Tank_Tank_Mode,72);
 			if (buildOrder->getPlannedCount(UnitTypes::Terran_Marine,68) < 6)
 				buildOrder->buildAdditional(2,UnitTypes::Terran_Marine,68);
 		}
 
-		if ((mInfo->countUnitNum(UnitTypes::Terran_Vulture,2) >= 1 ||
-          eInfo->killedEnemyNum > 2 ||
-          Broodwar->self()->minerals() > 600) &&
+    //_T_
+    //int priority = (mental->STflag == MentalClass::PrushZealot || mental->STflag == MentalClass::PtechCarrier) ? 68 : 78;
+    //if (buildOrder->getPlannedCount(UnitTypes::Terran_Engineering_Bay,priority) < 1)
+    //  buildOrder->build(1,UnitTypes::Terran_Engineering_Bay,priority);
+    //if (buildOrder->getPlannedCount(UnitTypes::Terran_Missile_Turret,priority-1) < 2)
+    //{
+    //  buildOrder->buildAdditional(1,UnitTypes::Terran_Missile_Turret,priority-1,TilePosition(terrainManager->mFirstChokepoint->getCenter()));
+    //  buildOrder->buildAdditional(1,UnitTypes::Terran_Missile_Turret,priority-1,TilePosition(terrainManager->mSecondChokepoint->getCenter()));
+    //}//_T_
+
+		if ((eInfo->killedEnemyNum > 2 || Broodwar->self()->minerals() > 600) &&
 			  mInfo->countUnitNum(UnitTypes::Terran_Command_Center,1) < 2 &&
 				mInfo->countUnitNum(UnitTypes::Terran_SCV,2) > 14)
 		{
-			buildOrder->autoExpand(100,2);
+			if (mental->STflag == MentalClass::PrushDragoon)
+			{
+        if (SelectAll()(Siege_Tank)(isCompleted).size() > 0)
+        {
+          buildOrder->autoExpand(100,2);
+        }		
+			}
+      else
+      {
+        if (SelectAll()(Siege_Tank,Vulture,Goliath)(isCompleted).size() > 0)
+        {
+          buildOrder->autoExpand(100,2);
+        }
+      }
 		}
 	}
 
@@ -1178,7 +1199,8 @@ void GameFlow::onFrameTP()
 		}
 
 		// build combat station
-		if (Broodwar->self()->supplyUsed()/2>60 && Broodwar->self()->minerals()>130 && mInfo->countUnitNum(UnitTypes::Terran_Factory,1) >= 2)
+		//if (Broodwar->self()->supplyUsed()/2>60 && Broodwar->self()->minerals()>130 && mInfo->countUnitNum(UnitTypes::Terran_Factory,1) >= 2)
+		if (Broodwar->self()->supplyUsed()/2 > 50 && mInfo->countUnitNum(UnitTypes::Terran_Factory,1) > 0)
 		{
 			if (buildOrder->getPlannedCount(UnitTypes::Terran_Comsat_Station,88) < 2)
 			{
@@ -1186,6 +1208,7 @@ void GameFlow::onFrameTP()
 				buildOrder->build(mInfo->countUnitNum(UnitTypes::Terran_Command_Center,1),UnitTypes::Terran_Comsat_Station,88);//68
 			}
 		}
+		
 		if (Broodwar->self()->supplyUsed()/2>50 && buildOrder->getPlannedCount(UnitTypes::Terran_Marine,60)>0)
 			buildOrder->deleteItem(UnitTypes::Terran_Marine,70);
 

@@ -98,6 +98,9 @@ void ICEStarCraftModule::onStart()
   _showAllDebug = Config::i().DEBUG_ALL();
 
 	//_T_
+  shouldQuitGame = false;
+  quitFrame = 0;
+
 #ifdef _TIME_DEBUG
 	CalculationTime.clear();
 #endif
@@ -140,11 +143,18 @@ void ICEStarCraftModule::onFrame()
 	if (Broodwar->isReplay()) return;
   if (!Broodwar->enemy()) return;
 
-	if (Broodwar->getFrameCount() == 24*5)
+	if (Broodwar->isBattleNet())
 	{
-		Broodwar->sendText("gl hf");
+		if (Broodwar->getFrameCount() == 24*3)
+		{
+			Broodwar->sendText("Hi, this is ICEbot - a Terran bot programmed in C++ using BWAPI");
+		}
+		if (Broodwar->getFrameCount() == 24*4)
+		{
+			Broodwar->sendText("gl hf");
+		}
 	}
-
+	
 #ifndef _TIME_DEBUG
 	if (this->drawObjects)
 	{
@@ -317,6 +327,27 @@ void ICEStarCraftModule::onFrame()
 #ifdef _LOG_TO_FILE
 	Broodwar->drawTextScreen(0,50,"%d games left",reTryTimes+1);
 #endif // _LOG_TO_FILE
+
+
+  // should quit game or not
+  if (shouldQuitGame)
+  {
+    if (Broodwar->getFrameCount() == quitFrame)
+    {
+      Broodwar->leaveGame();
+    }
+  }
+  else
+  {
+    if (Broodwar->self()->allUnitCount(Broodwar->self()->getRace().getWorker()) < 4 &&
+        Broodwar->self()->supplyUsed()/2 < 30 &&
+        MentalClass::create()->enemyInSight.not(isWorker).size() > 3)
+    {
+      shouldQuitGame = true;
+      quitFrame = Broodwar->getFrameCount() + 24;
+      Broodwar->sendText("gg");
+    }
+  }
 }
 
 void ICEStarCraftModule::onSendText(std::string text)
@@ -469,7 +500,7 @@ void ICEStarCraftModule::onSendText(std::string text)
 
 void ICEStarCraftModule::onReceiveText(BWAPI::Player* player, std::string text)
 {
-	Broodwar->printf("%s said '%s'", player->getName().c_str(), text.c_str());
+	//Broodwar->printf("%s said '%s'", player->getName().c_str(), text.c_str());
 }
 
 void ICEStarCraftModule::onPlayerLeft(BWAPI::Player* player)
@@ -742,7 +773,7 @@ void ICEStarCraftModule::showDebugInfo()
 	MyInfoManager::create()->showDebugInfo();
 	TerrainManager::create()->showDebugInfo();
 
-	for each (Unit* u in Broodwar->self()->getUnits())
+  for each (Unit* u in Broodwar->self()->getUnits())
 	{
 		if (u->isSelected())
 		{

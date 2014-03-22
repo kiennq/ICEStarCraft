@@ -988,10 +988,9 @@ void WorkerManager::workerRepair()
 			continue;
 		}
 
-
 		if (((u->getType() == UnitTypes::Terran_Bunker || u->getType() == UnitTypes::Terran_Missile_Turret) && u->getHitPoints() < u->getType().maxHitPoints())
 			  ||
-			  (u->getType().isBuilding() && u->getHitPoints() <= u->getType().maxHitPoints() / 3)
+			  (u->getType().isBuilding() && u->getHitPoints() <= u->getType().maxHitPoints() * 0.4)
 				||
 				(u->getType() == UnitTypes::Terran_Command_Center && u->getHitPoints() <= u->getType().maxHitPoints() / 2)
 				||
@@ -1250,9 +1249,42 @@ void WorkerManager::autoTrainSCV()
 		this->_buildOrderManager->build(need,UnitTypes::Terran_SCV,this->_autoBuildPriority+30);
 	}
 
-  if (/*Broodwar->enemy()->getRace() != Races::Zerg && */MentalClass::create()->STflag != MentalClass::PtechCarrier)
+	// AUTO TRAIN SCV
+	int mineral = Broodwar->self()->minerals();
+	if (mineral < 50)
 	{
-		if (Broodwar->self()->allUnitCount(UnitTypes::Terran_SCV) < need && Broodwar->getFrameCount()%(24) == 0)
+		return;
+	}
+	
+	for each (UnitType type in UnitTypes::allUnitTypes())
+	{
+		if (type == UnitTypes::Terran_Command_Center)
+		{
+			if (_buildOrderManager->getPlannedCount(type) - Broodwar->self()->allUnitCount(type) - Broodwar->self()->deadUnitCount(type) > 0 && Broodwar->self()->allUnitCount(type) < 3)
+			{
+				mineral -= type.mineralPrice();
+			}
+		}
+		else
+		{
+			//int minPriority = (type == UnitTypes::Terran_Siege_Tank_Tank_Mode) ? 65 : 100;
+			int minPriority = (Broodwar->getFrameCount() < 24*60*5) ? 80 : 80;
+			if (_buildOrderManager->getPlannedCount(type,minPriority) - Broodwar->self()->allUnitCount(type) - Broodwar->self()->deadUnitCount(type) > 0 &&
+					Broodwar->self()->allUnitCount(type) == 0)
+			{
+				mineral -= type.mineralPrice();
+			}
+		}
+	}
+
+	if (mineral < 50)
+	{
+		return;
+	}
+
+  //if (/*Broodwar->enemy()->getRace() != Races::Zerg && */MentalClass::create()->STflag != MentalClass::PtechCarrier)
+	{
+		if (Broodwar->self()->allUnitCount(UnitTypes::Terran_SCV) < need /*&& Broodwar->getFrameCount()%(24) == 0*/)
 		{
 			for each (Unit* u in Broodwar->self()->getUnits())
 			{

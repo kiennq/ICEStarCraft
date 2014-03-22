@@ -197,13 +197,9 @@ void BattleManager::update()
 			}
 		}
 
-		if (u->getGroundWeaponCooldown() > 1 && u->getAirWeaponCooldown() > 1)
+		// retreat
+		if (!u->getType().isFlyer() && u->getType().canMove() && u->getType().groundWeapon().maxRange() > MELEE_RANGE)
 		{
-			if (u->getType().isFlyer() || !u->getType().canMove() || u->getType().groundWeapon().maxRange() <= MELEE_RANGE)
-			{
-				continue;
-			}
-
 			Vector2 v = Vector2();
 			for each (Unit* e in eUnits)
 			{
@@ -212,9 +208,20 @@ void BattleManager::update()
 					continue;
 				}
 
-				if (e->getPosition().getApproxDistance(u->getPosition()) <= 32*4)
+				if (u->getGroundWeaponCooldown() > 1 && u->getAirWeaponCooldown() > 1)
 				{
-					v += PFFunctions::getVelocitySource(e->getPosition(),u->getPosition()) * 1000;
+					if (e->getPosition().getDistance(u->getPosition()) <= 32*4)
+					{
+						v += PFFunctions::getVelocitySource(e->getPosition(),u->getPosition()) * 1000;
+					}
+				}
+				else
+				{
+					if (e->getPosition().getDistance(u->getPosition()) <= 32*2 && MicroUnitControl::getDamage(e,u) > MicroUnitControl::getDamage(u,e))
+					{
+						// run away, don't care about cooldown
+						v += PFFunctions::getVelocitySource(e->getPosition(),u->getPosition()) * 1000;
+					}
 				}
 			}
 
@@ -222,12 +229,34 @@ void BattleManager::update()
 			{
 				v = v * (128.0 / v.approxLen());
 				Position des = (v + u->getPosition()).makeValid();
-								
+
 				MicroUnitControl::move(u,des);
 				continue;
 			}
 		}
 
+		// place mine
+		if (u->getType() == UnitTypes::Terran_Vulture && u->getSpiderMineCount() > 0 && Broodwar->self()->hasResearched(TechTypes::Spider_Mines) && u->getGroundWeaponCooldown() > 1)
+		{
+			Unit* target = eUnits.not(isFlyer,isBuilding).getNearest(u->getPosition());
+			if (target)
+			{
+				//Broodwar->printf("place mine");
+				Position pos = target->getPosition() + u->getPosition();
+				pos = Position(pos.x()/2,pos.y()/2);
+				if (!u->isIdle() &&
+					  u->getLastCommand().getType() == UnitCommandTypes::Use_Tech_Position &&
+					  u->getLastCommand().getTargetPosition().getDistance(pos) < 32 &&
+					  u->getLastCommandFrame() > Broodwar->getFrameCount() - 24*5)
+				{
+					continue;
+				}
+				u->useTech(TechTypes::Spider_Mines,pos);
+				continue;
+			}
+		}
+
+		// attack
 		if (u->getGroundWeaponCooldown() <= 1 || u->getAirWeaponCooldown() <= 1)
 		{
 			Unit* target = MicroUnitControl::getBestAttackTartget(u,eUnits);

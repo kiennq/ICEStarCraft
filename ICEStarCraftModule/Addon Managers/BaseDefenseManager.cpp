@@ -93,7 +93,7 @@ void BaseDefenseManager::onUnitDestroy(BWAPI::Unit* unit)
 
 void BaseDefenseManager::update()
 {
-	if (Broodwar->enemy()->getRace() != Races::Terran)
+	if (Broodwar->enemy()->getRace() != Races::Terran || Broodwar->getFrameCount()%(24*5) != 48)
 	{
 		return;
 	}
@@ -109,26 +109,28 @@ void BaseDefenseManager::update()
 
 			for each (Unit* u in SelectAll()(isCompleted)(Siege_Tank)(HitPoints,">=",120))
 			{
+        if (u->getTilePosition().getDistance(Broodwar->self()->getStartLocation()) > 30)
+        {
+          continue;
+        }
+
 				if (tanks.find(u) != tanks.end())
 				{
 					continue;
 				}
 
-				arbitrator->setBid(this, u, 1000);
+				arbitrator->setBid(this, u, 480);
 				requestedUnits.insert(make_pair(u, b));
 				break;
 			}
 		}
 	}
 	
-	if (Broodwar->getFrameCount()%(24*5) == 48)
-	{
-		for each (BaseClass* b in baseManager->getBaseSet())
-		{
-			for each (Unit* u in b->protectors)
-			{
-				MicroUnitControl::tankAttack(u,b->getBaseLocation()->getPosition(),32*3);
-			}
-		}
-	}
+  for each (BaseClass* b in baseManager->getBaseSet())
+  {
+    for each (Unit* u in b->protectors)
+    {
+      MicroUnitControl::tankAttack(u,b->getBaseLocation()->getPosition(),32*3);
+    }
+  }
 }

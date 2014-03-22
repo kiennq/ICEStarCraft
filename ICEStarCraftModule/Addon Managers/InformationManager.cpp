@@ -185,7 +185,7 @@ void EnemyInfoManager::onUnitDiscover(Unit* u)
 		return;
 
 	//_T_
-	if(Broodwar->self()->isEnemy(u->getPlayer()))
+	if (Broodwar->self()->isEnemy(u->getPlayer()))
 	{
 		EnemyUnit* e = NULL;
 		for each (EnemyUnit* eu in this->allEnemyUnits)
@@ -207,7 +207,7 @@ void EnemyInfoManager::onUnitDiscover(Unit* u)
 		}
 	}
 
-	if(Broodwar->self()->isEnemy(u->getPlayer()))
+	if (Broodwar->self()->isEnemy(u->getPlayer()))
 	{
 		UnitType thisType=u->getType();
 		if (thisType == UnitTypes::Protoss_Cybernetics_Core && u->isResearching())
@@ -236,10 +236,12 @@ void EnemyInfoManager::onUnitDiscover(Unit* u)
 
 
 		//collect all enemy resource depot
-		if (u->getType().isResourceDepot()){
-			if(this->enemyBaseMap.find(u)==this->enemyBaseMap.end()){
+		if (u->getType().isResourceDepot() && !u->isLifted())
+		{
+			if (this->enemyBaseMap.find(u) == this->enemyBaseMap.end())
+			{
 				//if resource depot already finished when find it
-				if(u->isCompleted())
+				if (u->isCompleted())
 				{
 					this->enemyBaseMap[u].position = u->getPosition();
 					this->enemyBaseMap[u].tPosition = u->getTilePosition();
@@ -288,7 +290,8 @@ void EnemyInfoManager::onUnitDiscover(Unit* u)
 					}
 				}
 				//if resource hasn't finish yet
-				else if(!u->isCompleted()){
+				else //if (!u->isCompleted())
+				{
 					this->enemyBaseMap[u].checkFinish = false;
 					this->enemyBaseMap[u].uType = u->getType();
 					this->enemyBaseMap[u].currentTime=Broodwar->getFrameCount();
@@ -318,7 +321,7 @@ void EnemyInfoManager::onUnitDiscover(Unit* u)
 void EnemyInfoManager::onUnitDestroy(Unit* u)
 {
 	//_T_
-	if(Broodwar->self()->isEnemy(u->getPlayer()))
+	if (Broodwar->self()->isEnemy(u->getPlayer()))
 	{
 		EnemyUnit* e = NULL;
 		for each (EnemyUnit* eu in this->allEnemyUnits)
@@ -622,6 +625,20 @@ void EnemyInfoManager::onFrame()
 		if (!researchingCC.empty())
 			drRangeUpgradeFlag = true;
 		
+		// update enemy base map
+		for (map<Unit*,eBaseData>::iterator i = enemyBaseMap.begin(); i != enemyBaseMap.end();)
+		{
+			map<Unit*,eBaseData>::iterator j = i++;
+			Unit* u = j->first;
+			eBaseData b = j->second; 
+			if (b.base->getTilePosition().getDistance(b.tPosition) < 6 &&
+				  Broodwar->isVisible(b.base->getTilePosition()) &&
+					(!u->exists() || u->getTilePosition() == TilePositions::Unknown))
+			{
+				// this base somehow no longer exists even though we didn't destroy it
+				enemyBaseMap.erase(j);
+			}
+		}
 	
 		enemyMainBaseConfirm();
 

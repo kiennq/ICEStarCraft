@@ -935,10 +935,10 @@ bool BuildOrderManager::hasResources(std::pair<int, BuildOrderManager::Resources
 		m-=i->second.minerals;
 		g-=i->second.gas;
 		//m+t*this->workerManager->getMineralRate()<0
-		if (m+t*this->workerManager->getMineralRate()<0)
+		if (m+t*this->workerManager->getMineralRate()<-30)
 			mineralLimited=true;
 		//g+t*this->workerManager->getGasRate()<0
-		if (g+t*this->workerManager->getGasRate()<0)
+		if (g+t*this->workerManager->getGasRate()<-30)
 			gasLimited=true;
 	}
 	this->unreserveResources(res);

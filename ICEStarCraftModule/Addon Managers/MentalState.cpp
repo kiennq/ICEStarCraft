@@ -110,9 +110,10 @@ void MentalClass::setEnemyPlanFlag()
 			}
 		}
 
-		if(vc>0 ||vt>0)
+		if(vc > 0 || vt > 0)
 		{
 			STflag = PtechDK;
+			reactionFinish = false;
 			//Broodwar->printf("see vc or vt");
 		}
 
@@ -132,10 +133,10 @@ void MentalClass::setEnemyPlanFlag()
 				STflag = P2Base;
 			}
 
-		if (Broodwar->getFrameCount() <= 24*60*4 && bf > 0 && bc >= 2)
+		if (Broodwar->getFrameCount() <= 24*60*4 && bc >= 2)
 			STflag = PtechCarrier;
 
-		if (vb==1 ||(bg==1&&vr==1&&!enemyInfo->drRangeUpgradeFlag))
+		if (vb == 1 || (bg == 1 && vr == 1 && !enemyInfo->drRangeUpgradeFlag))
 			STflag = PtechReaver;
 
 	}
@@ -245,7 +246,7 @@ void MentalClass::counterMeasure()
 		{
 		case NotSure:
 			{
-				if (Broodwar->getFrameCount() >= 24*60*2.5 && Broodwar->getFrameCount() <= 24*60*5 &&
+				if (Broodwar->getFrameCount() >= 24*60*2.25 && Broodwar->getFrameCount() <= 24*60*5 &&
 					  Broodwar->enemy()->getRace() == Races::Protoss &&
 						myInfo->countUnitNum(UnitTypes::Terran_Bunker,2) < 1)
 				{
@@ -332,18 +333,19 @@ void MentalClass::counterMeasure()
 				break;
 			}
 		case PrushDragoon:
-			{ 
+			{
 				//break;
 				if (Broodwar->getFrameCount() < 24*60*8 && !reactionFinish)
 				{
 					//Broodwar->printf("DR rush");
 					if (terrainManager->buPos != TilePositions::None)
 					{
+						bom->build(2,UnitTypes::Terran_Marine,106);
 						bom->build(1,UnitTypes::Terran_Bunker,106,terrainManager->buPos);
 					}
 					if (!Broodwar->self()->hasResearched(TechTypes::Tank_Siege_Mode) && !techMng->planned(TechTypes::Tank_Siege_Mode))
 						bom->research(TechTypes::Tank_Siege_Mode,95);
-					if (bom->getPlannedCount(UnitTypes::Terran_Siege_Tank_Tank_Mode,65)<3)
+					if (bom->getPlannedCount(UnitTypes::Terran_Siege_Tank_Tank_Mode,95) < 3)
 					{
 						bom->buildAdditional(3,UnitTypes::Terran_Siege_Tank_Tank_Mode,95);
 					}
@@ -447,9 +449,27 @@ void MentalClass::counterMeasure()
 
           if (Broodwar->getFrameCount() >= 24*60*10 || myInfo->countUnitNum(UnitTypes::Terran_Marine,1) >= 12)
           {
-            //bom->deleteItem(UnitTypes::Terran_Marine);
-            //bom->deleteItem(UnitTypes::Terran_Barracks,75);
+            bom->deleteItem(UnitTypes::Terran_Marine);
+            bom->deleteItem(UnitTypes::Terran_Barracks,75);
             reactionFinish = true;
+          }
+
+          //_T_
+          if (enemyInfo->EnemyhasBuilt(UnitTypes::Zerg_Lurker,2) || enemyInfo->EnemyhasBuilt(UnitTypes::Zerg_Lurker_Egg,2) || enemyInfo->EnemyhasBuilt(UnitTypes::Zerg_Mutalisk,2)) 
+          {
+            bom->deleteItem(UnitTypes::Terran_Marine);
+            bom->deleteItem(UnitTypes::Terran_Barracks,75);
+            reactionFinish = true;
+          }
+
+          if (enemyInfo->EnemyhasBuilt(UnitTypes::Zerg_Lair,2))
+          {
+            if (enemyInfo->EnemyhasBuilt(UnitTypes::Zerg_Hydralisk_Den,2) || enemyInfo->EnemyhasBuilt(UnitTypes::Zerg_Hydralisk,2) || enemyInfo->EnemyhasBuilt(UnitTypes::Zerg_Spire,2))
+            {
+              bom->deleteItem(UnitTypes::Terran_Marine);
+              bom->deleteItem(UnitTypes::Terran_Barracks,75);
+              reactionFinish = true;
+            }
           }
         }
 				break;
@@ -550,14 +570,14 @@ void MentalClass::counterMeasure()
 			
 				if (Broodwar->self()->getUpgradeLevel(UpgradeTypes::Charon_Boosters) < 1)
 				{
-					bom->upgrade(1,UpgradeTypes::Charon_Boosters,80);
+					bom->upgrade(1,UpgradeTypes::Charon_Boosters,100);
 				}
 				if (Broodwar->self()->getUpgradeLevel(UpgradeTypes::Terran_Ship_Weapons) < 1)
 				{
-					bom->upgrade(1,UpgradeTypes::Terran_Ship_Weapons,65);
+					bom->upgrade(1,UpgradeTypes::Terran_Ship_Weapons,75);
 				}		
 			}
-			else if (enemyInfo->EnemyhasBuilt(UnitTypes::Zerg_Hydralisk,1) || enemyInfo->EnemyhasBuilt(UnitTypes::Zerg_Hydralisk_Den,2))
+			/*else*/ if (enemyInfo->EnemyhasBuilt(UnitTypes::Zerg_Hydralisk,1) || enemyInfo->EnemyhasBuilt(UnitTypes::Zerg_Hydralisk_Den,2))
 			{
 				//research siege mode
 				if (!Broodwar->self()->hasResearched(TechTypes::Tank_Siege_Mode) && !techMng->planned(TechTypes::Tank_Siege_Mode))
@@ -613,7 +633,7 @@ void MentalClass::counterMeasure()
 		}
 	}
 
-	//for against protoss carrier
+	//for protoss carrier
 	if ((enemyInfo->EnemyhasBuilt(UnitTypes::Protoss_Carrier,1) || enemyInfo->EnemyhasBuilt(UnitTypes::Protoss_Fleet_Beacon,2)) &&
 		 myInfo->countUnitNum(UnitTypes::Terran_Command_Center,1) >= 2 && myInfo->countUnitNum(UnitTypes::Terran_Factory,1) >= 3)
 	{
@@ -653,7 +673,7 @@ void MentalClass::counterMeasure()
 		}
 	}
 
-	//for against protoss arbiter
+	//for protoss arbiter
 	if ((enemyInfo->EnemyhasBuilt(UnitTypes::Protoss_Arbiter,1) || enemyInfo->EnemyhasBuilt(UnitTypes::Protoss_Arbiter_Tribunal,2)) &&
 		  myInfo->countUnitNum(UnitTypes::Terran_Command_Center,1) >= 2)
 	{
@@ -703,7 +723,7 @@ void MentalClass::counterMeasure()
 		}
 	}
 
-	//for against protoss dark templar
+	//for protoss dark templar
 	if (enemyInfo->EnemyhasBuilt(UnitTypes::Protoss_Dark_Templar,1) ||
 		  (enemyInfo->EnemyhasBuilt(UnitTypes::Protoss_Templar_Archives,2) && Broodwar->getFrameCount() < 24*60*8))
 	{
@@ -730,7 +750,7 @@ void MentalClass::counterMeasure()
 		}
 	}
 
-	//for against enemy air unit
+	//for enemy air unit
 	if (enemyInfo->EnemyhasBuilt(UnitTypes::Protoss_Stargate,2) || 
 		  enemyInfo->EnemyhasBuilt(UnitTypes::Terran_Starport,2) || 
 		  enemyInfo->EnemyhasBuilt(UnitTypes::Zerg_Spire,2))
@@ -758,7 +778,7 @@ void MentalClass::counterMeasure()
 
 void MentalClass::baseUnderAttack()
 {
-	if (Broodwar->getFrameCount()%24 != 0)
+	if (Broodwar->getFrameCount()%24 != 17)
 	{
 		return;
 	}
@@ -776,7 +796,19 @@ void MentalClass::baseUnderAttack()
 			centers.insert(make_pair(cc->getPosition(),32*20));
 		}
 	}
-	if (terrainManager->mNearestBase) centers.insert(make_pair(terrainManager->mNearestBase->getPosition(),32*20));
+
+  if (SelectAll(UnitTypes::Terran_Command_Center).inRadius(32*4,Position(Broodwar->self()->getStartLocation())).empty() &&
+      SelectAll()(isBuilding).inRegion(BWTA::getRegion(Broodwar->self()->getStartLocation())).size() > 5)
+  {
+    centers.insert(make_pair(Position(Broodwar->self()->getStartLocation()),32*25));
+  }
+
+	if (terrainManager->mNearestBase &&
+      SelectAll(UnitTypes::Terran_Command_Center).inRadius(32*4,terrainManager->mNearestBase->getPosition()).empty() &&
+      SelectAll()(isBuilding).inRadius(32*8,terrainManager->mNearestBase->getPosition()).size() > (Broodwar->getReplayFrameCount() > 24*60*7 ? 2 : 0))
+  {
+    centers.insert(make_pair(terrainManager->mNearestBase->getPosition(),32*20));
+  }
 
 	for (map<Position,int>::iterator i = centers.begin(); i != centers.end(); i++)
 	{
@@ -809,7 +841,9 @@ void MentalClass::baseUnderAttack()
 			    ||
 			    type == UnitTypes::Protoss_Shuttle
 			    ||
-			    type == UnitTypes::Terran_Dropship)
+			    type == UnitTypes::Terran_Dropship
+					||
+					type == UnitTypes::Zerg_Overlord)
 			{
 				enemyInSight.insert(u);	
 			}

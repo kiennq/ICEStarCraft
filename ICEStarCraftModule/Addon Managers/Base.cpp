@@ -353,10 +353,22 @@ void BaseClass::scvDefendBase()
 			}
 			else if (TerrainManager::create()->mNearestBase &&
 				       e->getTilePosition().getDistance(TerrainManager::create()->mNearestBase->getTilePosition()) < 8 &&
-							 e->getType().isBuilding() &&
 							 Broodwar->getFrameCount() < 24*60*7)
 			{
-				enemyToDefend.insert(e);
+				if (e->getType().isBuilding())
+				{
+					enemyToDefend.insert(e);
+				}
+				else if (e->getType().isWorker() && (e->getOrder() == Orders::AttackUnit || e->isAttacking()))
+				{
+					Unit* target = e->getOrderTarget();
+					if (target && target->exists() && (target->isConstructing() || target->getOrder() == Orders::ConstructingBuilding))
+					{
+						// constructing SCV under attack
+						Broodwar->printf("constructing SCV under attack");
+						enemyToDefend.insert(e);
+					}
+				}
 			}
 		}
 		else

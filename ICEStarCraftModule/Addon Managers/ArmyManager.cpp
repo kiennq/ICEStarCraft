@@ -133,7 +133,7 @@ void ArmyManager::update()
 
 	if (mental->goAttack)
 	{
-		if (mental->enemyInSight.not(isWorker).size() < 10 || Broodwar->self()->supplyUsed()/2 > 180)
+		if (mental->enemyInSight.not(isWorker).size() < 10 || Broodwar->self()->supplyUsed()/2 > 190)
 		{
 			ArmyAttack();
 		}
@@ -144,7 +144,9 @@ void ArmyManager::update()
 	}
 	else
 	{
-		if (mental->enemyInSight.empty())
+		if (mental->enemyInSight.empty()
+        ||
+        (mental->enemyInSight(isWorker).size() == mental->enemyInSight.size() && mental->enemyInSight.size() <= 3))
 		{
 			ArmyGuard();
 		}
@@ -385,9 +387,7 @@ void ArmyManager::updateSetPoint()
 	}
 	else
 	{
-		//clock_t t = clock();
 		vector<TilePosition> path = BWTA::getShortestPath(TilePosition(setPoint),TilePosition(terrainManager->eSecondChokepoint->getCenter()));
-		//Broodwar->printf("getShortestPath %.0f",(float)(1000*(clock()-t)/CLOCKS_PER_SEC));
 		if (path.empty() || path.size() < 5)
 		{
 			setPoint2 = setPoint;
@@ -521,7 +521,7 @@ bool ArmyManager::allUnitsGather(Position p, bool needTank)
 		gatherPoint = Positions::None;
 	}
 
-	if (gatherPoint == Positions::None || Broodwar->getFrameCount() - startGatheringFrame > 24*90)
+	if (gatherPoint == Positions::None || Broodwar->getFrameCount() - startGatheringFrame > 24*45)
 	{
 		shouldGatherBeforeAttack = false;
 		return false;
@@ -695,7 +695,7 @@ void ArmyManager::ArmyGuard()
 	state = ICEStarCraft::ArmyGuard;
 	attackTarget->update(NULL,setPoint,"NoAttackTarget");
 
-	if (Broodwar->getFrameCount()%(8) != 2)
+	if (Broodwar->getFrameCount()%(6) != 2)
 	{
 		return;
 	}
@@ -747,7 +747,7 @@ void ArmyManager::ArmyDefend()
 {
 	state = ICEStarCraft::ArmyDefend;
 
-	if (Broodwar->getFrameCount()%8 == 4)
+	if (Broodwar->getFrameCount()%4 == 3)
 	{
 		for each (Unit* bunker in SelectAll(UnitTypes::Terran_Bunker))
 		{
@@ -783,7 +783,10 @@ void ArmyManager::ArmyDefend()
 	{
 		Position tankPos = (siegePoint == Positions::None) ? setPoint : siegePoint;
 		bool needTank = true;
-		if (mental->enemyInSight.not(isWorker).size() < 6 && attackTarget->getPosition().getApproxDistance(tankPos) > 32*15)
+		if (BWTA::getRegion(attackTarget->getPosition()) != BWTA::getRegion(Broodwar->self()->getStartLocation()) &&
+			  mental->enemyInSight.not(isWorker).size() < 6 &&
+				mental->enemyInSight(isSieged).empty() &&
+			  attackTarget->getPosition().getApproxDistance(tankPos) > 32*15)
 		{
 			needTank = false;
 		}

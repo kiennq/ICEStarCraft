@@ -102,7 +102,7 @@ void ScoutManager::SCVScout(ScoutPurpose purpose)
 		{
       continue;
     }
-    else if (this->scoutGroup.find(u) == this->scoutGroup.end())
+    if (this->scoutGroup.find(u) == this->scoutGroup.end())
       this->scoutGroup.insert(u);
   }
 
@@ -112,7 +112,7 @@ void ScoutManager::SCVScout(ScoutPurpose purpose)
 		{
       continue;
     }
-    else if (this->ScoutUnitPurposeMap.find(u) == this->ScoutUnitPurposeMap.end())
+    if (this->ScoutUnitPurposeMap.find(u) == this->ScoutUnitPurposeMap.end())
       this->ScoutUnitPurposeMap[u] = purpose;
   }
 }
@@ -789,17 +789,18 @@ void ScoutManager::AsPreWarning(Unit* u)
 
 void ScoutManager::onFrame()
 {
-  if(Broodwar->getFrameCount()>=24*60*3 && (Broodwar->enemy()->getRace()==Races::Zerg))
+  if (Broodwar->getFrameCount()>=24*60*3 && (Broodwar->enemy()->getRace()==Races::Zerg))
 	{
     // enemy doesn't has lurker,or doesn't have intention to produce lurker,then we don't need to save scanner's energy
     // if time <=10 mins
     // if no lurker , no lurker egg, no lair + (hydralisk den or hydralisk) 
-    if(this->mental->goAttack ||
-      (this->eInfo->EnemyhasBuilt(UnitTypes::Zerg_Lurker,2))||(this->eInfo->EnemyhasBuilt(UnitTypes::Zerg_Lurker_Egg,2))||
-      ((this->eInfo->EnemyhasBuilt(UnitTypes::Zerg_Lair,2))&&((this->eInfo->EnemyhasBuilt(UnitTypes::Zerg_Hydralisk_Den,2))||(this->eInfo->EnemyhasBuilt(UnitTypes::Zerg_Hydralisk,2))))){
-        ScannerScout(EnemyOpening,4);
+    if (this->mental->goAttack ||
+        (this->eInfo->EnemyhasBuilt(UnitTypes::Zerg_Lurker,2))||(this->eInfo->EnemyhasBuilt(UnitTypes::Zerg_Lurker_Egg,2))||
+        ((this->eInfo->EnemyhasBuilt(UnitTypes::Zerg_Lair,2))&&((this->eInfo->EnemyhasBuilt(UnitTypes::Zerg_Hydralisk_Den,2))||(this->eInfo->EnemyhasBuilt(UnitTypes::Zerg_Hydralisk,2)))))
+    {
+      ScannerScout(EnemyOpening,4);
     }			
-    else if(Broodwar->getFrameCount()<=24*60*8)
+    else if (Broodwar->getFrameCount() <= 24*60*8)
       ScannerScout(EnemyOpening,0);
     else
       ScannerScout(EnemyOpening,1);
