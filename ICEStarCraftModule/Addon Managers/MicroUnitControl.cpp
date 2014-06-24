@@ -1549,6 +1549,7 @@ void MicroUnitControl::tankAttack(BWAPI::Unit* u, BWAPI::Position p, int reachRa
 				u->unsiege();
 				return;
 			}
+			int inRadCount = 0;
 
 			for each (Unit* e in u->getUnitsInRadius(32*2.5))
 			{
@@ -1557,13 +1558,17 @@ void MicroUnitControl::tankAttack(BWAPI::Unit* u, BWAPI::Position p, int reachRa
 					  (!e->getType().isFlyer() || e->getType() == UnitTypes::Terran_Dropship || e->getType() == UnitTypes::Protoss_Shuttle) &&
 					  (e->getType().canAttack() || e->getType() == UnitTypes::Protoss_Reaver) &&
 					  e->getType() != UnitTypes::Terran_Vulture_Spider_Mine &&
-					  e->getType() != UnitTypes::Protoss_Scarab)
+					  e->getType() != UnitTypes::Protoss_Scarab) //change
 				{
-					u->unsiege();
-					return;
+					inRadCount++;
+					if (inRadCount > 2 || enemyInRange.size() < 3)
+					{
+						u->unsiege();
+						return;
+					}
 				}
+				
 			}
-
 			if (u->getGroundWeaponCooldown() > 1)
 			{
 				return;

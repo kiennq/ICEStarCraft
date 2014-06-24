@@ -928,7 +928,8 @@ void GameFlow::onFrameTT()
 				buildOrder->autoExpand(100,5);
 
 			//for produce battle cruiser , build star port first
-			if (Broodwar->self()->supplyUsed()/2 >= 130 && SelectAll()(isCompleted)(Siege_Tank).size() >= 8 && mInfo->countUnitNum(UnitTypes::Terran_Command_Center,1) >= 2)
+			//if (Broodwar->self()->supplyUsed()/2 >= 130 && SelectAll()(isCompleted)(Siege_Tank).size() >= 8 && mInfo->countUnitNum(UnitTypes::Terran_Command_Center,1) >= 2)
+			if (Broodwar->self()->supplyUsed()/2 >= 130 && SelectAll()(isCompleted)(Siege_Tank).size() >= 8 && mInfo->countUnitNum(UnitTypes::Terran_Command_Center,1) >= 2 && eInfo->countBaseNum() >= 3)
 			{
 				if (buildOrder->getPlannedCount(UnitTypes::Terran_Starport) < 5)
 				{
