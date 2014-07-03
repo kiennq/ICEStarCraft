@@ -1187,7 +1187,7 @@ bool MicroUnitControl::move(Unit* unit, Position target)
 	return unit->move(target);
 }
 
-void MicroUnitControl::tankAttack(BWAPI::Unit* u, BWAPI::Position p, int reachRange /*= 32*6*/)
+void MicroUnitControl::tankAttack(BWAPI::Unit* u, BWAPI::Position p, int reachRange /*= 32*6.5*/)
 {
 	if (!u || !u->exists() || p == Positions::None
 		  ||
@@ -1544,14 +1544,23 @@ void MicroUnitControl::tankAttack(BWAPI::Unit* u, BWAPI::Position p, int reachRa
 		if (!enemyInRange.empty())
 		{
 			// unsiege if there are enemy units very close to this tank or there are many melee units around
+			set<Unit*> unitInRad = u->getUnitsInRadius(32*2.5);
 			if (eMeleeUnitCount > enemyInRange.size() * 0.7)
 			{
-				u->unsiege();
-				return;
+				int inRad = 0;
+				for each (Unit* e in unitInRad)
+				{
+					if (e->getPlayer() == Broodwar->enemy()) inRad++;
+				}
+				if (inRad > 3)
+				{
+					u->unsiege();
+					return;
+				}
 			}
 			int inRadCount = 0;
 
-			for each (Unit* e in u->getUnitsInRadius(32*2.5))
+			for each (Unit* e in unitInRad)
 			{
 				if (e->getPlayer() == Broodwar->enemy() &&
 					  e->isCompleted() &&

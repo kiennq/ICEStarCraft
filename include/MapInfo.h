@@ -17,6 +17,7 @@ namespace ICEStarCraft
 		void setHash(std::string);
 		void setBaseInfo(std::map<BWAPI::TilePosition,std::vector<BWAPI::Position>>);
 		void setTankDropPositions(std::map<BWAPI::TilePosition,BWAPI::TilePosition>);
+		void setTankSiegePositions(std::map<BWAPI::TilePosition,BWAPI::Position>);
 		
 		bool operator == (const Map m) const
 		{ 
@@ -33,7 +34,9 @@ namespace ICEStarCraft
 		std::string getHash() const;
 		std::vector<BWAPI::Position> getChokepoints(BWAPI::TilePosition);
 		BWAPI::TilePosition getTankDropPosition(BWAPI::TilePosition);
+		BWAPI::Position getTankSiegePosition(BWAPI::TilePosition);
 		std::map<BWAPI::TilePosition,BWAPI::TilePosition> getTankDropPositions();
+		std::map<BWAPI::TilePosition,BWAPI::Position>& getTankSiegePositions();
 
 	private:
 		bool _Known;
@@ -45,6 +48,7 @@ namespace ICEStarCraft
 
 		// base locations and positions to drop tanks on high ground 
 		std::map<BWAPI::TilePosition,BWAPI::TilePosition> _TankDropPositions;
+		std::map<BWAPI::TilePosition,BWAPI::Position> _TankSiegePositions;
 	};
 
 	class MapInfo

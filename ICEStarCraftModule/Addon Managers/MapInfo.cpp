@@ -37,6 +37,11 @@ void Map::setTankDropPositions(map<TilePosition,TilePosition> TankDropPosition)
 	_TankDropPositions = TankDropPosition;
 }
 
+void Map::setTankSiegePositions(map<TilePosition,Position> TankSiegePosition)
+{
+	_TankSiegePositions = TankSiegePosition;
+}
+
 bool Map::isKnown() const
 {
 	return _Known;
@@ -76,6 +81,21 @@ map<TilePosition,TilePosition> Map::getTankDropPositions()
 	return _TankDropPositions;
 }
 
+Position Map::getTankSiegePosition(TilePosition tp)
+{
+	map<TilePosition, Position>::iterator i = _TankSiegePositions.find(tp);
+	if (i != _TankSiegePositions.end())
+	{
+		return i->second;
+	}
+	return Positions::None;
+}
+
+map<TilePosition,BWAPI::Position>& Map::getTankSiegePositions()
+{
+	return _TankSiegePositions;
+}
+
 /************************************************************************/
 
 namespace ICEStarCraft
@@ -108,6 +128,7 @@ namespace ICEStarCraft
 			vector<Position> _chokepoints;
 			map<TilePosition,vector<Position>> _baseinfo;
 			map<TilePosition,TilePosition> _tankdropposition;
+			map<TilePosition,Position> _tanksiegeposition;
 
 
 			/************************************************************************/
@@ -298,7 +319,7 @@ namespace ICEStarCraft
 			_chokepoints.push_back(Position(3452,1424));
 			_chokepoints.push_back(Position(2468,2313));
 			_baseinfo.insert(make_pair(TilePosition(117,9),_chokepoints));
-
+			
 			// for start location at (93,118)
 			_chokepoints.clear();
 			_chokepoints.push_back(Position(2152,3676));
@@ -313,6 +334,10 @@ namespace ICEStarCraft
 			_tankdropposition.insert(make_pair(TilePosition(14,13),TilePosition(9,4)));
 			_tankdropposition.insert(make_pair(TilePosition(51,113),TilePosition(39,116)));
 			_map.setTankDropPositions(_tankdropposition);
+
+			_tanksiegeposition.clear();
+			_tanksiegeposition.insert(make_pair(TilePosition(117,9),Position(3100,1400)));
+			_map.setTankSiegePositions(_tanksiegeposition);
 
 			Tau_Cross = _map;
 

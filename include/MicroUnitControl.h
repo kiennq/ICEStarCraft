@@ -61,7 +61,7 @@ public:
 	static bool attack(BWAPI::Unit*,BWAPI::Position);
 	static bool move(BWAPI::Unit*,BWAPI::Position);
 
-	static void tankAttack(BWAPI::Unit*,BWAPI::Position, int reachRange = 32*6);
+	static void tankAttack(BWAPI::Unit*,BWAPI::Position, int reachRange = 32*6.5);
 	static void battlecruiserAttack(BWAPI::Unit*,BWAPI::Position);
 	static void scienceVesselMicro(BWAPI::Unit*);
 	

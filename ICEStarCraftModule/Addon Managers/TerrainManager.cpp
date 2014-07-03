@@ -374,6 +374,14 @@ vector<BWTA::Chokepoint*> TerrainManager::getUsefulChokepoints(BWTA::BaseLocatio
 
 void TerrainManager::analyzeSiegePoint()
 {
+	siegePoint = gameMap.getTankSiegePosition(Broodwar->self()->getStartLocation());
+	if (siegePoint != Positions::None)
+	{
+		Broodwar->printf("Set siege point using predefined data");
+		return;
+	}
+
+
 	if (!mChokepointsAnalyzed)
 	{
 		analyzeMyChokepoints();
@@ -389,6 +397,8 @@ void TerrainManager::analyzeSiegePoint()
 	
 	BWTA::Region* startReg  = BWTA::getRegion(Broodwar->self()->getStartLocation());
 	BWTA::Region* secondReg = BWTA::getRegion(mNearestBase->getTilePosition());
+
+
 	
 
 	// find siege point on high ground
