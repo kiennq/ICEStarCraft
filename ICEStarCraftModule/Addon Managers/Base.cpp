@@ -384,13 +384,12 @@ void BaseClass::scvDefendBase()
 	UnitGroup army;
 	UnitGroup bunkers;
 
-	for each (Unit* u in Broodwar->self()->getUnits())
-	{
+  for each (Unit* u in worker->_workerUnits)
+  {
 		if (u->isCompleted() &&
         u->getType() == UnitTypes::Terran_SCV &&
         !u->isConstructing() &&
-        !u->isRepairing() &&
-        (!worker->getArbitrator()->hasBid(u) || worker->getArbitrator()->getHighestBidder(u).first==worker))
+        !u->isRepairing())
 		{
 			if (base == BWTA::getStartLocation(Broodwar->self()))
 			{
@@ -407,6 +406,31 @@ void BaseClass::scvDefendBase()
 				}
 			}
 		}
+  }
+
+	for each (Unit* u in Broodwar->self()->getUnits())
+	{
+    //if (u->isCompleted() &&
+    //  u->getType() == UnitTypes::Terran_SCV &&
+    //  !u->isConstructing() &&
+    //  !u->isRepairing() &&
+    //  (!worker->getArbitrator()->hasBid(u) || worker->getArbitrator()->getHighestBidder(u).first==worker))
+		//{
+		//	if (base == BWTA::getStartLocation(Broodwar->self()))
+		//	{
+		//		if (BWTA::getRegion(u->getPosition()) == base->getRegion())
+		//		{
+		//			workers.insert(u);
+		//		}
+		//	}
+		//	else
+		//	{
+		//		if (u->getTilePosition().getDistance(base->getTilePosition()) < 12)
+		//		{
+		//			workers.insert(u);
+		//		}
+		//	}
+		//}
 
 		if (u->isCompleted() && !u->isLoaded() && u->getType().canAttack() && !u->getType().isWorker() && !u->getType().isBuilding() &&
 				u->getType() != UnitTypes::Terran_Vulture_Spider_Mine)
