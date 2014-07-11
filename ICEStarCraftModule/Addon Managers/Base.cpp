@@ -365,7 +365,6 @@ void BaseClass::scvDefendBase()
 					if (target && target->exists() && (target->isConstructing() || target->getOrder() == Orders::ConstructingBuilding))
 					{
 						// constructing SCV under attack
-						Broodwar->printf("constructing SCV under attack");
 						enemyToDefend.insert(e);
 					}
 				}
@@ -560,9 +559,11 @@ void BaseClass::scvDefendBase()
 			{
 				continue;
 			}
-
-			this->scvDefendTeam.insert(scv);
-			this->worker->_workerUnits.erase(scv);
+			if(scv->getID() != this->worker->get_repairGroupID())
+			{
+				this->scvDefendTeam.insert(scv);
+				this->worker->_workerUnits.erase(scv);
+			}
 		}
 	}
 	// remove scv from defend team

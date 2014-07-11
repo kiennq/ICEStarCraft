@@ -1091,6 +1091,7 @@ void WorkerManager::workerRepair()
 					workers.erase(nearestSCV);
 					this->_repairGroup.insert(nearestSCV);
 					arbitrator->setBid(this, nearestSCV, 50);
+					
 				}
 			}
 		}
@@ -1315,4 +1316,12 @@ void WorkerManager::onUnitDiscover(BWAPI::Unit* u)
 void WorkerManager::addToNotRepairList( Unit* u )
 {
   _notRepairList.insert(u);
+}
+int WorkerManager::get_repairGroupID()
+{
+	for (set<Unit*>::iterator i = this->_repairGroup.begin(); i != this->_repairGroup.end();)
+	{
+		return (*i)->getID();
+	}
+	return 0;
 }

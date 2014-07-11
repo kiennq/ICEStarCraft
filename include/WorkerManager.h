@@ -56,7 +56,6 @@ public:
 	void onOffer(std::set<BWAPI::Unit*>);
 	void onRevoke(BWAPI::Unit*, double);
 	void update();
-
 	void setBaseManagerClass(BaseManager* bmc);
 	void addUnit(BWAPI::Unit* unit);
 	void onUnitDestroy(BWAPI::Unit* unit);
@@ -98,6 +97,8 @@ public:
 	bool isInRepairList(Unit*) const;
 
   void addToNotRepairList(Unit* u);
+	int get_repairGroupID();
+
 
 protected:
 	//Single ton class
