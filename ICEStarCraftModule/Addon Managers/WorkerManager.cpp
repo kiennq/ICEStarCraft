@@ -1213,6 +1213,11 @@ UnitGroup WorkerManager::getRepairList()
 	return this->_repairList;
 }
 
+UnitGroup& WorkerManager::getRepairGroup()
+{
+	return this->_repairGroup;
+}
+
 bool WorkerManager::isInRepairList(Unit* u) const
 {
 	return (_repairList.find(u) != _repairList.end());

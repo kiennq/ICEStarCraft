@@ -405,10 +405,11 @@ void BaseClass::scvDefendBase()
 				}
 			}
 		}
+  }
   
 
-//	for each (Unit* u in Broodwar->self()->getUnits())
-//	{
+	for each (Unit* u in Broodwar->self()->getUnits())
+	{
     //if (u->isCompleted() &&
     //  u->getType() == UnitTypes::Terran_SCV &&
     //  !u->isConstructing() &&

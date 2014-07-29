@@ -94,6 +94,7 @@ public:
 	UnitGroup constructingSCV;
 
 	UnitGroup getRepairList();
+	UnitGroup& getRepairGroup();
 	bool isInRepairList(Unit*) const;
 
   void addToNotRepairList(Unit* u);
