@@ -749,22 +749,22 @@ void ArmyManager::ArmyDefend()
 
 	if (Broodwar->getFrameCount()%4 == 3)
 	{
-		for each (Unit* bunker in SelectAll(UnitTypes::Terran_Bunker))
-		{
-			if (!bunker->isCompleted() || bunker->getLoadedUnits().empty())
-			{
-				continue;
-			}
+		//for each (Unit* bunker in SelectAll(UnitTypes::Terran_Bunker))
+		//{
+		//	if (!bunker->isCompleted() || bunker->getLoadedUnits().empty())
+		//	{
+		//		continue;
+		//	}
 
-			Position p = this->mental->enemyInSight.getTargetPosition();
-			if (p != Positions::None)
-			{
-				if (p.getApproxDistance(bunker->getPosition()) > 32*6 && mental->enemyInSight.inRadius(32*10,bunker->getPosition()).empty())
-				{
-					bunker->unloadAll();
-				}
-			}
-		}
+		//	Position p = this->mental->enemyInSight.getTargetPosition();
+		//	if (p != Positions::None)
+		//	{
+		//		if (p.getApproxDistance(bunker->getPosition()) > 32*6 && mental->enemyInSight.inRadius(32*10,bunker->getPosition()).empty())
+		//		{
+		//			bunker->unloadAll();
+		//		}
+		//	}
+		//}
 
 		Unit* target = mental->enemyInSight.getNearest(setPoint);
 		Position targetPos = (target && target->exists()) ? target->getPosition() : setPoint;
@@ -833,16 +833,16 @@ void ArmyManager::ArmyAttack()
 		return;
 	}
 
-	if (Broodwar->getFrameCount()%24 == 12)
-	{
-		for each (Unit* u in SelectAll()(Bunker))
-		{
-			if (!u->getLoadedUnits().empty())
-			{
-				u->unloadAll();
-			}
-		}
-	}
+	//if (Broodwar->getFrameCount()%24 == 12)
+	//{
+	//	for each (Unit* u in SelectAll()(Bunker))
+	//	{
+	//		if (!u->getLoadedUnits().empty())
+	//		{
+	//			u->unloadAll();
+	//		}
+	//	}
+	//}
 
 	if (Broodwar->getFrameCount()%(24*5) == 0)
 	{
