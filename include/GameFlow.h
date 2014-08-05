@@ -19,6 +19,9 @@ class MentalClass;
 class BuildOrderManager;
 class UpgradeManager;
 class TerrainManager;
+class MyInfoManager;
+class EnemyInfoManager;
+class ScoutManager;
 
 class GameFlow
 {

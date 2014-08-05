@@ -12,6 +12,7 @@ namespace ICEStarCraft
 			:_ID(unit->getID())
 			,_Unit(unit)
 			,_UnitType(unit->getType())
+      ,_order(unit->getOrder())
 			,_Player(unit->getPlayer())
 			,_Position(unit->getPosition())
 			,_HitPoints(unit->getHitPoints())
@@ -24,6 +25,8 @@ namespace ICEStarCraft
       ,_isInvincible(unit->isInvincible())
       ,_isLifted(unit->isLifted())
       ,_isBurrowed(unit->isBurrowed())
+      ,_isCompleted(unit->isCompleted())
+      ,_isConstructing(unit->isConstructing())
       ,_target(unit->getTarget() ? unit->getTarget() : unit->getOrderTarget())
       ,_fadeTime(fadeTime)
 		{}
@@ -38,6 +41,7 @@ namespace ICEStarCraft
 		BWAPI::Player* getPlayer() const;
 		BWAPI::Position getPosition() const;
     BWAPI::Unit* getTarget() const;
+    BWAPI::Order getOrder() const;
 		int getHitPoints() const;
 		int getShields() const;
 		int getInterceptorCount() const;
@@ -48,6 +52,8 @@ namespace ICEStarCraft
     bool isInvincible() const;
     bool isLifted() const;
     bool isBurrowed() const;
+    bool isCompleted() const;
+    bool isConstructing() const;
     int getFadeTime() const;
 
 		void update(bool hasGone = false);
@@ -63,6 +69,7 @@ namespace ICEStarCraft
 		BWAPI::Unit* _Unit;
     BWAPI::Unit* _target;
 		BWAPI::UnitType _UnitType;
+		BWAPI::Order _order;
 		BWAPI::Player* _Player;
 		BWAPI::Position _Position;
 		int _HitPoints;
@@ -76,5 +83,7 @@ namespace ICEStarCraft
     bool _isInvincible;
     bool _isLifted;
     bool _isBurrowed;
+    bool _isCompleted;
+    bool _isConstructing;
 	};
 }

@@ -20,6 +20,11 @@ BWAPI::UnitType EnemyUnit::getType() const
 	return _UnitType;
 }
 
+BWAPI::Order EnemyUnit::getOrder() const
+{
+	return _order;
+}
+
 BWAPI::Player* EnemyUnit::getPlayer() const
 {
 	return _Player;
@@ -80,6 +85,7 @@ void EnemyUnit::update(bool hasGone /*= false*/)
 	{
 		_ID                 = _Unit->getID();
 		_UnitType           = _Unit->getType();
+    _order              = _Unit->getOrder();
 		_Player             = _Unit->getPlayer();
 		_Position           = _Unit->getPosition();
 		_HitPoints          = _Unit->getHitPoints();
@@ -92,6 +98,8 @@ void EnemyUnit::update(bool hasGone /*= false*/)
     _isInvincible       = _Unit->isInvincible();
     _isLifted           = _Unit->isLifted();
     _isBurrowed         = _Unit->isBurrowed();
+    _isCompleted        = _Unit->isCompleted();
+    _isConstructing     = _Unit->isConstructing();
     _target             = _Unit->getTarget() ? _Unit->getTarget() 
                                              : _Unit->getOrderTarget();
 	}
@@ -135,6 +143,16 @@ bool EnemyUnit::isLifted() const
 BWAPI::Unit* EnemyUnit::getTarget() const
 {
   return _target;
+}
+
+bool EnemyUnit::isCompleted() const
+{
+  return _isCompleted;
+}
+
+bool EnemyUnit::isConstructing() const
+{
+  return _isConstructing; 
 }
 
 EnemyUnit* EnemyUnit::operator->()

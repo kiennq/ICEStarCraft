@@ -2,6 +2,7 @@
 #include "UnitGroup.h"
 #include "UnitGroupManager.h"
 using namespace BWAPI;
+using namespace ICEStarCraft;
 using namespace std;
 
 std::set<Unit*> emptySet;
@@ -338,41 +339,72 @@ void BaseClass::scvDefendBase()
 	BWTA::BaseLocation* base = this->mBaseLocation;
 	enemyToDefend.clear();
 
-	for each (Unit* e in Broodwar->enemy()->getUnits())
+  //for each (Unit* e in Broodwar->enemy()->getUnits())
+	for each (EnemyUnit* e in EnemyInfoManager::create()->getAllEnemyUnits())
 	{
-		if (!e->isDetected() || e->isLifted() ||
-			  e->getType().isFlyer() || e->getType() == UnitTypes::Terran_Vulture_Spider_Mine || e->getType() == UnitTypes::Protoss_Scarab)
+		if (e->isLifted() || e->getType().isFlyer() ||
+        e->getType() == UnitTypes::Terran_Vulture_Spider_Mine || e->getType() == UnitTypes::Protoss_Scarab)
 		{
 			continue;
 		}
 		if (base == BWTA::getStartLocation(Broodwar->self()))
 		{
+
 			if (BWTA::getRegion(e->getPosition()) == base->getRegion())
 			{
 				enemyToDefend.insert(e);
 			}
 			else if (TerrainManager::create()->mNearestBase &&
-				       e->getTilePosition().getDistance(TerrainManager::create()->mNearestBase->getTilePosition()) < 8 &&
+				       //e->getPosition().getDistance(TerrainManager::create()->mNearestBase->getPosition()) < 8*TILE_SIZE &&
 							 Broodwar->getFrameCount() < 24*60*7)
 			{
-				if (e->getType().isBuilding())
-				{
+        // make sure to check enemy inside designated regions
+        std::set<BWTA::BaseLocation*> list_base;
+        list_base.insert(base);
+        if (TerrainManager::create()->mFirstChokepoint)
+        {
+          BWTA::BaseLocation* secondBase = TerrainManager::create()->mNearestBase;
+          pair<BWTA::Region*, BWTA::Region*> reg_pair = TerrainManager::create()->mFirstChokepoint->getRegions();
+          BWTA::Region* next = reg_pair.first == secondBase->getRegion()? reg_pair.second : reg_pair.first;
+          list_base.insert(next->getBaseLocations().begin(), next->getBaseLocations().end());
+        }
+        list_base.insert(TerrainManager::create()->mNearestBase);
+        bool inRegion = false;
+        for each (BWTA::BaseLocation* b in list_base)
+        {
+          if (BWTA::getRegion(e->getPosition()) == b->getRegion())
+          {
+            inRegion = true;
+          }
+        }
+        if (!inRegion) continue;
+
+				if (e->getType().isBuilding() && (e->isBeingConstructed() || e->isCompleted() || e->getType() == UnitTypes::Terran_Barracks))
+        {
 					enemyToDefend.insert(e);
-				}
-				else if (e->getType().isWorker() && (e->getOrder() == Orders::AttackUnit || e->isAttacking()))
-				{
-					Unit* target = e->getOrderTarget();
-					if (target && target->exists() && (target->isConstructing() || target->getOrder() == Orders::ConstructingBuilding))
-					{
-						// constructing SCV under attack
-						enemyToDefend.insert(e);
-					}
-				}
+        }
+        else if (e->getType().isWorker())
+        {
+          enemyToDefend.insert(e);
+        }
+				//else if (e->getType().isWorker() && (e->getOrder() == Orders::ConstructingBuilding || e->isConstructing()))
+				//{
+				//	enemyToDefend.insert(e);
+				//}
+				//else if (e->getType().isWorker() && (e->getOrder() == Orders::AttackUnit || (e->getUnit()->isAttacking())))
+				//{
+				//	Unit* target = e->getTarget();
+				//	if (target && target->exists() && (target->isConstructing() || target->getOrder() == Orders::ConstructingBuilding))
+				//	{
+				//		// constructing SCV under attack
+				//		enemyToDefend.insert(e);
+				//	}
+				//}
 			}
 		}
 		else
 		{
-			if (e->getTilePosition().getDistance(base->getTilePosition()) < 12)
+			if (e->getPosition().getDistance(base->getPosition()) < 12*TILE_SIZE)
 			{
 				enemyToDefend.insert(e);
 			}
@@ -471,6 +503,14 @@ void BaseClass::scvDefendBase()
 	}
 
 	// check if we need to defend at this base
+  bool existsLurkerReaver = false;
+  for each (EnemyUnit *eu in enemyToDefend)
+  {
+    if (eu->getType() == UnitTypes::Zerg_Lurker || eu->getType() == UnitTypes::Protoss_Reaver)
+    {
+      existsLurkerReaver = true;
+    }
+  }
 	if (enemyToDefend.empty()
 		  ||
 			enemyToDefend.size() > 8
@@ -481,7 +521,7 @@ void BaseClass::scvDefendBase()
 			||
 			(Broodwar->getFrameCount() < 24*60*10 && !bunkers.empty())
 			||
-			!enemyToDefend(Lurker,Reaver).empty())
+			existsLurkerReaver)
 	{
 		// no need to defend at this base
 		for (set<Unit*>::iterator i = this->scvDefendTeam.begin(); i != this->scvDefendTeam.end();)
@@ -504,7 +544,7 @@ void BaseClass::scvDefendBase()
 	int buildingNum = 0;
   bool onlySCV = true;
 
-	for each (Unit* e in this->enemyToDefend)
+	for each (EnemyUnit* e in this->enemyToDefend)
 	{
 		UnitType type = e->getType();
 		
@@ -588,9 +628,25 @@ void BaseClass::scvDefendBase()
 	}
 
 	// attack enemy
-	Unit* target = this->enemyToDefend.size() == 1 ? *(this->enemyToDefend.begin()) : NULL;
+	Unit* target = this->enemyToDefend.size() == 1 ? (*(this->enemyToDefend.begin()))->getUnit() : NULL;
 	//Position targetPos = this->enemyToDefend.getCenter();
-  Position targetPos = this->enemyToDefend.getNearest(base->getPosition())->getPosition();
+  int dist = 9999;
+  Position targetPos = Positions::None;
+  Position targetPosClose = Positions::None;
+  for each (EnemyUnit* eu in enemyToDefend)
+  {
+    int tdist = eu->getPosition().getDistance(base->getPosition());
+    if (tdist < dist)
+    {
+      dist = tdist;
+      if (eu->getType().canAttack())
+      {
+        targetPos = eu->getPosition();
+      }
+      targetPosClose = eu->getPosition();
+    }
+  }
+  targetPos = targetPos == Positions::None ? targetPosClose : targetPos;
 
 	for each (Unit* scv in this->scvDefendTeam)
 	{
