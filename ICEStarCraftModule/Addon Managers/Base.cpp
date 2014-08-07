@@ -566,7 +566,7 @@ void BaseClass::scvDefendBase()
 	}
 	
 	// the number of scv we need 
-	int num = (int)(ePower / scvPower) + (onlySCV ? 0 : 1) + 2 * buildingNum;
+	unsigned int num = (unsigned int)(ePower / scvPower) + (onlySCV ? 0 : 1) + 2 * buildingNum;
   num = num > 0 ? num : 1;
 	//Broodwar->printf("ePower: %.2f | scvPower: %.2f | need %d",ePower,scvPower,num);
 
@@ -600,7 +600,8 @@ void BaseClass::scvDefendBase()
 			{
 				continue;
 			}
-			if(scv->getID() != this->worker->get_repairGroupID())
+			//if(scv->getID() != this->worker->get_repairGroupID())
+			if(worker->getRepairGroup().find(scv) == worker->getRepairGroup().end())
 			{
 				this->scvDefendTeam.insert(scv);
 				this->worker->_workerUnits.erase(scv);
@@ -632,25 +633,22 @@ void BaseClass::scvDefendBase()
 	//Position targetPos = this->enemyToDefend.getCenter();
   int dist = 9999;
   Position targetPos = Positions::None;
-  Position targetPosClose = Positions::None;
   for each (EnemyUnit* eu in enemyToDefend)
   {
-    int tdist = eu->getPosition().getDistance(base->getPosition());
+    int tdist = eu->getPosition().getApproxDistance(base->getPosition())
+                - (eu->getType().canAttack()? 5 * TILE_SIZE : 0)
+                - (eu->getOrder() == Orders::ConstructingBuilding || eu->getOrder() == Orders::Repair ? 7 * TILE_SIZE : 0);
     if (tdist < dist)
     {
       dist = tdist;
-      if (eu->getType().canAttack())
-      {
-        targetPos = eu->getPosition();
-      }
-      targetPosClose = eu->getPosition();
+      targetPos = eu->getPosition();
+      target = eu->getUnit();
     }
   }
-  targetPos = targetPos == Positions::None ? targetPosClose : targetPos;
 
 	for each (Unit* scv in this->scvDefendTeam)
 	{
-		if (target)
+		if (target && (this->enemyToDefend.size() == 1 || target->getOrder() == Orders::Repair))
 		{
 			if (!scv->isIdle() && scv->getLastCommand().getType() == UnitCommandTypes::Attack_Unit && scv->getLastCommand().getTarget() == target)
 			{

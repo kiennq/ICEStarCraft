@@ -127,14 +127,12 @@ void ConstructionManager::update()
 					{
             // we consider HP into choosing unit too
 						double dist = (*u)->getPosition().getDistance((*b)->position) +
-                          ((*u)->getType().maxHitPoints() - (*u)->getHitPoints())*32;
-						if (dist < min_dist)
-							min_dist = dist;
+                          ((*u)->getType().maxHitPoints() - (*u)->getHitPoints())*32 + 
+                          ((*u)->getOrder() == Orders::AttackMove || (*u)->getOrder() == Orders::AttackUnit ? 25 * TILE_SIZE : 0);
+						if (dist < min_dist) min_dist = dist;
 					}
-					if (min_dist < 10)
-						min_dist = 10;
-					if (min_dist > 256*32 + 10)
-						min_dist = 256*32 + 10;
+					if (min_dist < 10) min_dist = 10;
+					if (min_dist > 256*32 + 10) min_dist = 256*32 + 10;
 					double bid = 80 - (min_dist - 10)/(256*32)*60;
 					//if this isn't a worker, we don't care about distance
 					if (!(*u)->getType().isWorker())
